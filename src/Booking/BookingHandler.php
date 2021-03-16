@@ -7,9 +7,9 @@ if (!defined('ABSPATH')) {
 }
 
 use FF_Booking\Booking\AjaxHandler;
-use FF_Booking\Booking\Components\BookingDate;
+use FF_Booking\Booking\Components\BookingFields;
 use FF_Booking\Booking\Components\Service;
-use FF_Booking\Booking\BookingActions;
+use  \FluentForm\App\Helpers\Helper;
 //use FluentFormPro\App\Modules\Acl\Acl;
 //use FluentFormPro\App\Modules\Form\FormFieldsParser;
 //use FluentFormPro\App\Services\FormBuilder\ShortCodeParser;
@@ -25,16 +25,14 @@ class BookingHandler
     public function init($app)
     {
         $this->app = $app;
-        
-    
+      
         add_filter('fluentform_addons_extra_menu', function ($menus) {
             $menus['fluentform_booking'] = __('Fluent Forms Booking', 'fluentform');
             return $menus;
         }, 99, 1);
         
         add_action('fluentform_addons_page_render_fluentform_booking', [$this, 'renderSettings']);
-    
-    
+        
         add_action('wp_ajax_handle_booking_ajax_endpoint', [$this, 'handleAjaxEndpoints']);
         add_action('wp_ajax_nopriv_handle_booking_ajax_endpoint', [$this, 'handleAjaxEndpoints']);
         
@@ -42,36 +40,26 @@ class BookingHandler
             return;
         }
         //components
-        new Service();
-        new BookingDate();
+        new BookingFields();
         add_filter('fluentform_global_settings_components', [$this, 'pushGlobalSettings'], 1, 1);
         add_action('fluentform_global_settings_component_booking_settings_global', [$this, 'renderGlobalSettings']);
-        
-      
         
         add_action('fluentform_before_form_actions_processing', array($this, 'maybeHandleBooking'), 10, 3);
         
         //add_action('fluentform_before_form_render', [$this, 'checkBookingForm']);
-    
-    
-    
+        
     }
 
     public function maybeHandleBooking($insertId, $formData, $form)
     {
-//        need to fix this
-        $form = (array)$form;
-        $elements  = ArrayHelper::get($form,'form_fields');
-        $elements = json_decode($elements,true);
-
-        $hasBooking =   BookingHelper::hasBooking($elements['fields']);
-
-        if($hasBooking){
-
-            $paymentAction = new BookingActions($insertId, $formData, $form);
-            $paymentAction->bookingEntry();
-
+        //check for booking date picker element
+        if(!Helper::hasFormElement($form->id,'booking_date')){
+            return;
         }
+    
+        $action = new BookingActions($insertId, $formData, $form);
+        $action->bookingEntry();
+       
 
     }
 

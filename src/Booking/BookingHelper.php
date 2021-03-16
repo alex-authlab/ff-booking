@@ -71,20 +71,7 @@ class BookingHelper{
         return $slots;
     
     }
-
-
-    public static function hasBooking($fields)
-    {
-
-      foreach ($fields as $field) {
-            if(ArrayHelper::get($field, 'element') == 'booking_date') {
-                return true;
-            }
-        }
-        return false;
-
-
-    }
+    
     
     public static function getBookedSlotByDate($serviceId, $date,$formId ,$status="booked")
     {

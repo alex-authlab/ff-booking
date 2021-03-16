@@ -40,7 +40,30 @@
 
                 <el-calendar v-model="value" :range="[weekStart, weekEnd]">
 
+
                 </el-calendar>
+
+                <el-table
+                        :data="tableData"
+                        border
+                        style="width: 100%">
+                    <el-table-column
+                            prop="date"
+                            label=""
+                            width="180">
+                    </el-table-column>
+                    <el-table-column
+                            prop="name"
+                            label="monday"
+                            width="180">
+                    </el-table-column>
+                    <el-table-column
+                            prop="address"
+                            label="Address">
+                    </el-table-column>
+                </el-table>
+
+
 
             </div>
         </el-form>
@@ -62,6 +85,31 @@
         },
         data() {
             return {
+                weekDays:[
+                    'Monday',
+                    'Tuesday',
+                    'Wednesday',
+                    'ThursDay',
+                    'Friday',
+
+                ],
+                tableData: [{
+                    date: '2016-05-03',
+                    name: 'Tom',
+                    address: 'No. 189, Grove St, Los Angeles'
+                }, {
+                    date: '2016-05-02',
+                    name: 'Tom',
+                    address: 'No. 189, Grove St, Los Angeles'
+                }, {
+                    date: '2016-05-04',
+                    name: 'Tom',
+                    address: 'No. 189, Grove St, Los Angeles'
+                }, {
+                    date: '2016-05-01',
+                    name: 'Tom',
+                    address: 'No. 189, Grove St, Los Angeles'
+                }],
                 settings:{},
                 value: new Date(),
                 weekStart: this.$date().weekday(-6).format('YYYY-MM-D') ,// last monday date

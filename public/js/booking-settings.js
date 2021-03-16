@@ -1877,12 +1877,53 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'Bookings',
   props: [],
   components: {},
   data: function data() {
     return {
+      weekDays: ['Monday', 'Tuesday', 'Wednesday', 'ThursDay', 'Friday'],
+      tableData: [{
+        date: '2016-05-03',
+        name: 'Tom',
+        address: 'No. 189, Grove St, Los Angeles'
+      }, {
+        date: '2016-05-02',
+        name: 'Tom',
+        address: 'No. 189, Grove St, Los Angeles'
+      }, {
+        date: '2016-05-04',
+        name: 'Tom',
+        address: 'No. 189, Grove St, Los Angeles'
+      }, {
+        date: '2016-05-01',
+        name: 'Tom',
+        address: 'No. 189, Grove St, Los Angeles'
+      }],
       settings: {},
       value: new Date(),
       weekStart: this.$date().weekday(-6).format('YYYY-MM-D'),
@@ -64448,7 +64489,29 @@ var render = function() {
                   },
                   expression: "value"
                 }
-              })
+              }),
+              _vm._v(" "),
+              _c(
+                "el-table",
+                {
+                  staticStyle: { width: "100%" },
+                  attrs: { data: _vm.tableData, border: "" }
+                },
+                [
+                  _c("el-table-column", {
+                    attrs: { prop: "date", label: "", width: "180" }
+                  }),
+                  _vm._v(" "),
+                  _c("el-table-column", {
+                    attrs: { prop: "name", label: "monday", width: "180" }
+                  }),
+                  _vm._v(" "),
+                  _c("el-table-column", {
+                    attrs: { prop: "address", label: "Address" }
+                  })
+                ],
+                1
+              )
             ],
             1
           )

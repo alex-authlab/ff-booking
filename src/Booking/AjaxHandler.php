@@ -158,6 +158,7 @@ class AjaxHandler
         $dates =  BookingHelper::getFullBookedDate ($data['service_id'],$data['form_id']);
         wp_send_json_success([
             'dates'        =>  ($dates),
+            'selected_date' =>$data['selected_date']
         ], 200);
     }
 
