@@ -14,6 +14,13 @@ use FF_Booking\Booking\Migrations\Migration;
 
 class AjaxHandler
 {
+    public function init()
+    {
+        $route = sanitize_text_field($_REQUEST['route']);
+        //nonce verify : todo
+        $this->handleEndpoint($route);
+
+    }
     public function handleEndpoint($route)
     {
         $validRoutes = [
@@ -138,7 +145,6 @@ class AjaxHandler
         if(empty($data['service_id'])){
             wp_send_json_success([
                 'html'  => 'Please select a service first !',
-
             ]);
             return;
         }

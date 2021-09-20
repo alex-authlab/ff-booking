@@ -81349,7 +81349,7 @@ var routes = [{
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /Users/nakib/Practice/wp_lab/wp-content/plugins/ff-booking/src/assets/BookingSettings/booking-settings.js */"./src/assets/BookingSettings/booking-settings.js");
+module.exports = __webpack_require__(/*! /Users/nkb/Projects/wp_lab/wp-content/plugins/ff-booking/src/assets/BookingSettings/booking-settings.js */"./src/assets/BookingSettings/booking-settings.js");
 
 
 /***/ })

@@ -2,15 +2,17 @@
 /*
 Plugin Name: FF Booking
 Description: Booking Test
-Version: 0.0
+Version: 1.0
 Author: WP Fluent Forms
-Author URI: https://wpfluentforms.com
-Plugin URI: https://wpfluentforms.com/
+Author URI: #
+Plugin URI: #
 License: GPLv2 or later
 Text Domain: fluentformpro
 Domain Path: /resources/languages
 */
 
+
+use FF_Booking\Booking\AjaxHandler;
 
 defined('ABSPATH') or die;
 
@@ -22,10 +24,9 @@ define('FF_BOOKING_DIR_FILE', __FILE__);
 include FF_BOOKINGDIR_PATH . 'autoload.php';
 
 if (!class_exists('FFBooking')) {
-
     class FFBooking
     {
-        
+
         /**
          * Bootstrap the Plugin
          * @param FluentForm\Framework\Foundation\Application $app
@@ -49,7 +50,6 @@ if (!class_exists('FFBooking')) {
             if (function_exists('wpFluentForm')) {
                 $this->registerHooks(wpFluentForm());
             }
-
         }
 
         protected function registerHooks($fluentForm)
@@ -57,8 +57,7 @@ if (!class_exists('FFBooking')) {
             $this->ajaxHooks($fluentForm);
             $this->adminHooks($fluentForm);
             $this->publicHooks($fluentForm);
-            $this->commonHooks($fluentForm);
-            
+
             (new \FF_Booking\Booking\BookingHandler)->init($fluentForm);
         }
 
@@ -94,7 +93,7 @@ if (!class_exists('FFBooking')) {
         {
             $activation = (object)[
                 'action' => 'install',
-                'url'    => ''
+                'url' => ''
             ];
 
             $allPlugins = get_plugins();
@@ -128,8 +127,6 @@ if (!class_exists('FFBooking')) {
          */
         public function adminHooks($app)
         {
-
-        
         }
 
         /**
@@ -138,16 +135,6 @@ if (!class_exists('FFBooking')) {
          */
         public function publicHooks($app)
         {
-        
-        }
-
-        /**
-         * Registers common hooks.
-         */
-        public function commonHooks($app)
-        {
-        
-        
         }
 
         /**
@@ -155,13 +142,9 @@ if (!class_exists('FFBooking')) {
          */
         public function ajaxHooks($app)
         {
-          
-
-            $app->addPublicAjaxAction('ff_booking_public_ajax', function () use ($app) {
-            
-            });
-            
-
+            $ajax = new AjaxHandler();
+            add_action('wp_ajax_handle_booking_ajax_endpoint', [$ajax, 'init']);
+            add_action('wp_ajax_nopriv_handle_booking_ajax_endpoint', [$ajax, 'init']);
         }
 
     }
@@ -171,14 +154,10 @@ if (!class_exists('FFBooking')) {
      * @return void
      */
     add_action('init', function () {
-
         (new FFBooking)->boot();
     });
 
     register_activation_hook(__FILE__, function ($siteWide) {
-        \FF_Booking\Booking\Migrations\Migration ::migrate();
-
+        \FF_Booking\Booking\Migrations\Migration::migrate();
     });
-
- 
 }
