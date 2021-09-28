@@ -156,4 +156,16 @@ class BookingHelper
         }
         return $time_slots;
     }
+
+    public static function getAvailableForms()
+    {
+        $forms = wpFluent()->table('fluentform_forms')
+            ->select(['id', 'title'])
+            ->get();
+        $formattedForms = [];
+        foreach ($forms as $form) {
+            $formattedForms[$form->id] = $form->title;
+        }
+        return $formattedForms;
+    }
 }

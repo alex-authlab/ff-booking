@@ -14,15 +14,12 @@ Vue.use(ElementUI);
 import {
     Tabs,
     TabPane,
-    ColorPicker,
     Button,
     ButtonGroup,
     Input,
     Checkbox,
     Select,
     Option,
-    Collapse,
-    CollapseItem,
     Popover,
     Slider,
     Form,
@@ -33,7 +30,8 @@ import {
     Tooltip,
     Loading,
     Message,
-    Notification
+    Notification,
+    Pagination
 } from 'element-ui';
 
 Vue.use(Loading.directive);
@@ -58,6 +56,7 @@ Vue.use(Select);
 Vue.use(Option);
 Vue.use(Popover);
 Vue.use(Slider);
+Vue.use(Pagination);
 
 import dayjs from 'dayjs';
 
@@ -82,7 +81,18 @@ Object.defineProperties(Vue.prototype, {
     }
 });
 
-
+Vue.mixin({
+    methods: {
+        $t(str) {
+            return str;
+        }
+    },
+    filters: {
+        ucFirst(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        },
+    }
+});
 
 new Vue({
     el: "#ff-booking-settings",

@@ -3,17 +3,15 @@
 namespace FF_Booking\Booking;
 
 if (!defined('ABSPATH')) {
-    exit; // Exit if accessed directly.
+    exit;
 }
 
-use FF_Booking\Booking\AjaxHandler;
 use FF_Booking\Booking\Components\BookingFields;
+use FF_Booking\Booking\Components\BookingDateTime;
+use FF_Booking\Booking\Components\Provider;
 use FF_Booking\Booking\Components\Service;
-use  \FluentForm\App\Helpers\Helper;
-
-//use FluentFormPro\App\Modules\Acl\Acl;
-//use FluentFormPro\App\Modules\Form\FormFieldsParser;
-//use FluentFormPro\App\Services\FormBuilder\ShortCodeParser;
+use FF_Booking\Booking\Models\BookingModel;
+use \FluentForm\App\Helpers\Helper;
 use \FluentForm\Framework\Helpers\ArrayHelper;
 
 
@@ -21,7 +19,6 @@ class BookingHandler
 {
     private $app;
 
-    private $hasBooking;
 
     public function init($app)
     {
@@ -41,11 +38,15 @@ class BookingHandler
         }
         //components
         new BookingFields();
+        new BookingDateTime();
+        new Service();
+        new Provider();
         add_filter('fluentform_global_settings_components', [$this, 'pushGlobalSettings'], 1, 1);
         add_action('fluentform_global_settings_component_booking_settings_global', [$this, 'renderGlobalSettings']);
-
         add_action('fluentform_before_form_actions_processing', array($this, 'maybeHandleBooking'), 10, 3);
         //add_action('fluentform_before_form_render', [$this, 'checkBookingForm']);
+
+        new BookingModel();
 
     }
 
@@ -90,6 +91,13 @@ class BookingHandler
             FLUENTFORM_VERSION,
             'all'
         );
+        wp_enqueue_style(
+            'ff_booking_settings_css',
+            FF_BOOKING_DIR_URL . 'public/js/booking-settings.css',
+            [],
+            FLUENTFORM_VERSION,
+            ''
+        );
 
         wp_enqueue_script(
             'ff-booking-settings',
@@ -107,6 +115,7 @@ class BookingHandler
             'is_setup' => $this->isEnabled(),
             'general' => $settings,
             'active_nav' => $nav,
+            'ajaxUrl' => admin_url('admin-ajax.php'),
         ];
 
         wp_localize_script('ff-booking-settings', 'ff_booking_settings', $data);

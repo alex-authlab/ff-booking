@@ -1,5 +1,5 @@
-<div class="ff_form_wrap">
-    <div class="ff_form_wrap_area">
+
+    <div>
             <h2>
                 Fluent Forms Booking Modules
             </h2>
@@ -12,4 +12,3 @@
         </div>
     </div>
    
-</div>

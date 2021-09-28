@@ -1,3 +1,6 @@
+.ff-booking-container  .ff-booking-date-time{
+    display: none;
+}
 .ff-booking-container  .flatpickr-calendar {
     width: 100%;
     margin-bottom: 20px;

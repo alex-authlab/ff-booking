@@ -1,0 +1,49 @@
+@import "~element-ui/lib/theme-chalk/menu.css";
+@import "~element-ui/lib/theme-chalk/menu-item.css";
+
+.ff_booking_settings_wrapper {
+  .el-menu-demo{
+    margin-bottom: 25px;
+  }
+}
+.ff_booking_general_settings{
+  .ff_booking_navigation {
+    display: block;
+    width: 100%;
+    margin-bottom: 25px;
+    ul{
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      border-bottom: 1px solid #e4e7ec;
+      li {
+        display: inline-block;
+        padding: 0 20px 15px;
+        cursor: pointer;
+        margin: 0;
+        border-bottom: 2px solid transparent;
+        &.ff_active {
+          border-bottom-color: #409eff;
+          color: #409eff;
+          font-weight: bold;
+        }
+      }
+    }
+
+  }
+}
+
+.ff_booking_form {
+  .el-form-item {
+    > label {
+      font-weight: 500;
+      line-height: 100%;
+    }
+
+    p {
+      margin-top: 5px;
+      color: gray;
+      font-size: 12px;
+    }
+  }
+}

@@ -13,53 +13,42 @@ use \FluentForm\App\Services\FormBuilder\BaseFieldManager;
 use \FluentForm\App\Services\FormBuilder\Components\Select;
 use \FluentForm\Framework\Helpers\ArrayHelper;
 
-class Service extends BaseFieldManager
+class Provider extends BaseFieldManager
 {
-   
+
     public function __construct(
-        $key = 'ff_booking_service',
-        $title = 'Service',
-        $tags = ['service', 'booking'],
+        $key = 'ff_booking_provider',
+        $title = 'Provider',
+        $tags = ['provider', 'booking'],
         $position = 'advanced'
-    )
-    {
+    ) {
         parent::__construct(
             $key,
             $title,
             $tags,
             $position
         );
-        add_filter('fluent_editor_element_customization_settings', function ($values) {
-
-            $extra['info'] = array(
-                'template' => 'infoBlock',
-                'label' => __('Info here', 'fluentform'),
-                'help_text' => __('Please provide Maximum value', 'fluentform')
-            );
-            return array_merge($values,$extra);
-
-        });
     }
-    
+
     function getComponent()
     {
         return [
-            'index'          => 29,
-            'element'        => $this->key,
-            'attributes'     => [
-                'name'        => $this->key,
+            'index' => 30,
+            'element' => $this->key,
+            'attributes' => [
+                'name' => $this->key,
                 'value' => '',
                 'id' => '',
                 'class' => '',
             ],
             'settings' => array(
                 'dynamic_default_value' => '',
-                'label' => __('Service', 'fluentform'),
+                'label' => __('Provider', 'fluentform'),
                 'admin_field_label' => '',
                 'help_message' => '',
                 'container_class' => '',
                 'label_placement' => '',
-                'info'=> 'test',
+                'info' => 'test',
                 'placeholder' => '- Select -',
                 'enable_select_2' => 'no',
                 'validation_rules' => array(
@@ -71,14 +60,14 @@ class Service extends BaseFieldManager
                 'conditional_logics' => array(),
             ),
             'editor_options' => array(
-                'title' => __('Service', 'fluentform'),
+                'title' => __('Provider', 'fluentform'),
                 'icon_class' => 'ff-edit-dropdown',
                 'element' => 'select',
                 'template' => 'select'
             )
         ];
     }
-    
+
     public function getGeneralEditorElements()
     {
         return [
@@ -88,7 +77,7 @@ class Service extends BaseFieldManager
             'label_placement',
         ];
     }
-    
+
     public function getAdvancedEditorElements()
     {
         return [
@@ -98,28 +87,24 @@ class Service extends BaseFieldManager
             'container_class',
             'class',
             'conditional_logics',
-            'enable_select_2',
-            'info'
+            'enable_select_2'
         ];
     }
+
     public function render($data, $form)
     {
-       
-        $serviceData = BookingHelper::getService ();
+        $providerData = BookingHelper::getService();
         $formattedOptions = [];
 
-        foreach ($serviceData as $service) {
+        foreach ($providerData as $provider) {
             $formattedOptions[] = [
-                'label' => $service->name,
-                'value' => $service->id,
+                'label' => $provider->name,
+                'value' => $provider->id,
                 'calc_value' => ''
             ];
         }
-        $data['attributes']['class'] .= ' ff_booking_service';
+        $data['attributes']['class'] .= ' ff_booking_provider';
         $data['settings']['advanced_options'] = $formattedOptions;
-        
         (new Select())->compile($data, $form);
-
-      
     }
 }
