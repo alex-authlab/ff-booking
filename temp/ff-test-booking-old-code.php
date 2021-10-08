@@ -99,8 +99,6 @@ class BookingFFTest
         wp_enqueue_style('ff-booking-css');
         wp_enqueue_script('ff-booking-js-file');
 
-//        wp_enqueue_script('ff-booking-js', FF_BOOKING_TEST_URL.'assets/booking.js','', '', true);
-
         $dateFormat = '';
         if (!$dateFormat) {
             $dateFormat = 'd/m/Y';

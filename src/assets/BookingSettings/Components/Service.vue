@@ -175,8 +175,17 @@
                 <p>Allowed advanced days for booking </p>
               </el-form-item>
             </el-col>
-
             <el-col :span="12">
+              <el-form-item label="Booking Status">
+
+                <el-select placeholer="Default Status"  v-model="editing_item.default_booking_status">
+                  <el-option v-for="(name,value) in booking_status" :key="value" :label="name" :value="value"></el-option>
+                </el-select>
+                <p> Default Booking Status </p>
+              </el-form-item>
+            </el-col>
+
+            <el-col :span="24">
               <el-form-item label="Applicable Forms">
                 <el-select placeholer="Select Forms" style="width: 100%;" multiple v-model="editing_item.allowed_form_ids">
                   <el-option v-for="(formName, formId) in available_forms" :key="formId" :label="formName" :value="formId"></el-option>
@@ -203,7 +212,7 @@
 </template>
 
 <script type="text/babel">
-  import Pagination from './inc/_Pagination'
+  import Pagination from './inc/_Pagination';
   import Remove from "./inc/confirmRemove";
   export default {
     name: 'Provider',
@@ -229,6 +238,13 @@
           'date_slot' :'Date Slot',
           'custom_slot' :'Custom Slot',
         },
+        booking_status:{
+          'booked' :'Booked',
+          'pending' :'Pending',
+          'canceled' :'Canceled',
+          'rejected' :'Rejected',
+          // 'completed' :'completed',
+        },
         days_value:'7',
         days_unit:'Days',
         pagination: {
@@ -252,7 +268,7 @@
           per_page: this.pagination.per_page
         })
             .then(response => {
-              console.log(response)
+
               this.items = response.data.service.data;
               this.pagination.total = response.data.service.total;
               this.available_forms = response.data.available_forms;
@@ -276,6 +292,7 @@
           max_bookings:'20',
           calc_value:'',
           status: 'active',
+          default_booking_status: 'booked',
           show_end_time: 'show',
           show_booked_time: 'hide',
           allowed_form_ids: [],

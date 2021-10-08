@@ -1,99 +1,120 @@
-.ff-booking-container  .ff-booking-date-time{
-    display: none;
+.ff-booking-container .ff-booking-date-time {
+  display: none;
 }
-.ff-booking-container  .flatpickr-calendar {
-    width: 100%;
-    margin-bottom: 20px;
+
+.ff-booking-container .flatpickr-calendar {
+  width: 100%;
+  margin-bottom: 20px;
 }
 
 .ff-booking-container .flatpickr-rContainer {
-    margin: 0px auto;
+  margin: 0px auto;
 }
 
-.ff-booking-picker-element + .dayContainer, .ff-booking-picker-element .flatpickr-days {
+.ff-time-slot-container input.ff-el-booking-slot > span {
+  border-left: 1px solid #dcdfe6;
 }
 
-.ff-booking-picker-element + .flatpickr-day {
+.ff-booking-container .ff-time-slot-details span {
+  align-items: center;
+  padding: .75rem .75rem;
+  width: 100%;
+  font-size: 12px;
+  display: block;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #495057;
+  text-align: center;
+  background-color: #e9ecef;
+  border-radius: .25rem;
 }
 
-.ff-radio-inline {
-    position: relative;
-    display: inline-block;
-    padding-left: 20px;
-    margin: 5px 0px;
-    font-weight: 400;
-    vertical-align: middle;
-    cursor: pointer;
-    border: 1px solid;
-    padding: 5px 25px;
-    border-radius: 3px;
-    background-color: #409efd36;
-    margin-right: 5px;;
+.ff-booked-slot label {
+  opacity: .6;
+  pointer-events: none;
 }
 
-.ff-radio-inline input[type=radio] {
-    position: absolute;
-    margin-top: 4px !important;
-    margin-left: -20px !important;
+.ff-booking-container .ff-time-slot-container label span {
+  border: 1px solid #dcdfe6 !important;
 }
 
-.ff-timeslot-div {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin: 15px 0px;
-}
-
-.ff-booked-slot {
-    opacity: .6;
-}
-
-/* Tooltip text */
 .tooltiptext {
-    visibility: hidden;
-    width: 120px;
-    background-color: black;
-    color: #fff;
-    text-align: center;
-    padding: 5px 0;
-    border-radius: 6px;
-
-    /* Position the tooltip text - see examples below! */
-    position: absolute;
-    bottom: 30px;
-    z-index: 1;
+  visibility: visible;
+  width: 240px;
+  background-color: white;
+  color: black;
+  font-size: 0.9em;
+  text-align: left;
+  border-radius: 5px;
+  padding: 25px;
+  position: absolute;
+  z-index: 1;
+  top: 100%;
+  left: 0;
+  box-shadow: 0px 4px 12px 0px rgba(97, 82, 244, 0.1);
 }
 
-/* Show the tooltip text when you mouse over the tooltip container */
-.tooltip:hover .tooltiptext {
-    visibility: visible;
+.tooltiptext::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 12px;
+  border-color: white transparent transparent white;
+  transform: rotate(45deg);
+  top: -12px;
+  left: 40px;
+  border-radius: 6px 0px 0px 0px;
 }
 
-.booking-loader {
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #559ff7;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 2s linear infinite;
+.tooltiptext a {
+  color: #6152f4;
+  text-decoration: none;
+}
+
+.ff-booking-loader {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #559ff7;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  margin: 10px auto;
+  -webkit-animation: spin 2s linear infinite;
+          animation: spin 2s linear infinite;
+}
+
+.ff-booking-loading-mask {
+  position: absolute;
+  z-index: 2000;
+  background-color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transition: opacity .3s;
 }
 
 /* Safari */
+
 @-webkit-keyframes spin {
-    0% {
-        -webkit-transform: rotate(0deg);
-    }
-    100% {
-        -webkit-transform: rotate(360deg);
-    }
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
 }
 
 @keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 

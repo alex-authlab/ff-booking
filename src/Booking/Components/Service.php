@@ -8,6 +8,7 @@ if (!defined('ABSPATH')) {
 }
 
 use FF_Booking\Booking\BookingHelper;
+use FF_Booking\Booking\Models\ServiceModel;
 use \FluentForm\App\Modules\Component\Component;
 use \FluentForm\App\Services\FormBuilder\BaseFieldManager;
 use \FluentForm\App\Services\FormBuilder\Components\Select;
@@ -15,39 +16,32 @@ use \FluentForm\Framework\Helpers\ArrayHelper;
 
 class Service extends BaseFieldManager
 {
-   
+
     public function __construct(
         $key = 'ff_booking_service',
         $title = 'Service',
         $tags = ['service', 'booking'],
         $position = 'advanced'
-    )
-    {
+    ) {
         parent::__construct(
             $key,
             $title,
             $tags,
             $position
         );
-        add_filter('fluent_editor_element_customization_settings', function ($values) {
-
-            $extra['info'] = array(
-                'template' => 'infoBlock',
-                'label' => __('Info here', 'fluentform'),
-                'help_text' => __('Please provide Maximum value', 'fluentform')
-            );
-            return array_merge($values,$extra);
-
-        });
+        add_filter('fluentform_response_render_ff_booking_service', function ($value, $field, $formId, $isHtml) {
+            $service = (array)(new ServiceModel())->getService($value);
+            return ArrayHelper::get($service,'title');
+        }, 10, 4);
     }
-    
+
     function getComponent()
     {
         return [
-            'index'          => 29,
-            'element'        => $this->key,
-            'attributes'     => [
-                'name'        => $this->key,
+            'index' => 29,
+            'element' => $this->key,
+            'attributes' => [
+                'name' => $this->key,
                 'value' => '',
                 'id' => '',
                 'class' => '',
@@ -59,7 +53,7 @@ class Service extends BaseFieldManager
                 'help_message' => '',
                 'container_class' => '',
                 'label_placement' => '',
-                'info'=> 'test',
+                'info' => 'test',
                 'placeholder' => '- Select -',
                 'enable_select_2' => 'no',
                 'validation_rules' => array(
@@ -78,7 +72,7 @@ class Service extends BaseFieldManager
             )
         ];
     }
-    
+
     public function getGeneralEditorElements()
     {
         return [
@@ -88,7 +82,7 @@ class Service extends BaseFieldManager
             'label_placement',
         ];
     }
-    
+
     public function getAdvancedEditorElements()
     {
         return [
@@ -102,24 +96,33 @@ class Service extends BaseFieldManager
             'info'
         ];
     }
+
     public function render($data, $form)
     {
-       
-        $serviceData = BookingHelper::getService ();
+        $serviceData = (new ServiceModel())->getServices();
         $formattedOptions = [];
-
         foreach ($serviceData as $service) {
+            if ($formIds = $service->allowed_form_ids) {
+                if (!in_array($form->id, $formIds)) {
+                    continue;
+                }
+            }
             $formattedOptions[] = [
-                'label' => $service->name,
+                'label' => $service->title,
                 'value' => $service->id,
-                'calc_value' => ''
+                'calc_value' => $service->calc_value
             ];
         }
-        $data['attributes']['class'] .= ' ff_booking_service';
+        $class = 'ff_booking_service';
+        $data['attributes']['class'] .= " {$class}";
+        $data['attributes']['id'] = $this->makeElementId($data, $form);
         $data['settings']['advanced_options'] = $formattedOptions;
-        
-        (new Select())->compile($data, $form);
+        add_filter('ff_booking_datetime_vars', function ($vars) use ($class, $data) {
+            $vars['ff_booking_service_input_class'] = $class;
+            $vars['ff_booking_service_input_id'] = $data['attributes']['id'];
+            return $vars;
+        }, 99, 1);
 
-      
+        (new Select())->compile($data, $form);
     }
 }

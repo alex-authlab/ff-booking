@@ -46,7 +46,7 @@
         :visible.sync="show_modal"
         :append-to-body="true"
         width="60%">
-      <div v-if="show_modal" class="ff_coupon_form">
+      <div v-if="show_modal" class="ff_booking_form">
         <el-form :data="editing_item" label-position="top">
           <el-form-item label="Provider Title">
             <el-input type="text" v-model="editing_item.title" placeholder="Provider Title"/>
@@ -240,6 +240,7 @@
             .then(response => {
               this.editing_item = {};
               this.show_modal = false;
+              this.saving = false;
               this.getItems();
               this.$notify.success({
                 title: 'Success',
@@ -248,7 +249,7 @@
               });
             })
             .fail(error => {
-              this.$notify.error(error.responseJSON.message);
+              console.log(error)
               this.errors = error.responseJSON.errors;
             })
             .always(() => {
@@ -257,8 +258,10 @@
       },
       editItem(provider) {
         const editing_item = JSON.parse(JSON.stringify(provider));
-
         this.$set(this, 'editing_item', editing_item);
+        if(this.editing_item.weekend_days =='' ||!this.editing_item.weekend_days){
+          this.editing_item.weekend_days=[];
+        }
         this.$nextTick(() => {
           this.show_modal = true;
         });

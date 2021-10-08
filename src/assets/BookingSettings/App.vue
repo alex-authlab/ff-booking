@@ -1,14 +1,11 @@
 <template>
   <div v-loading="loading" class="ff_booking_wrapper">
     <div class="ff_pre_settings_wrapper" v-if="!settings.is_setup">
-      <h2>Fluent Forms Payment Module</h2>
-      <p>Enable your users to pay online as part of the Forms submission process. With Fluent Forms Powerful payment
-        integration, you can easily accept and process payments in your Fluent Forms. Just activate this module and
-        setup your payment methods.</p>
+      <p>Enable appointment Booking</p>
       <el-button @click="enableBookingModule()" type="success" size="large">Enable Fluent Forms Booking Module
       </el-button>
     </div>
-    <div class="ff_booking_settings_wrapper " >
+    <div class="ff_booking_settings_wrapper " v-if="settings.is_setup">
       <el-menu :router="true" :default-active="selectedRoute" class="el-menu-demo" mode="horizontal">
         <el-menu-item v-for="menu in topMenus" :route="{ name: menu.name }" :index="menu.name" :key="menu.route">
           {{ menu.name }}
@@ -38,12 +35,12 @@
       setTopmenu() {
         this.topMenus = [
           {
-            route: 'general',
-            name: 'General'
-          },
-          {
             route: 'bookings',
             name: 'Bookings'
+          },
+          {
+            route: 'general',
+            name: 'General'
           },
           {
             route: 'service',
@@ -71,7 +68,7 @@
     mounted() {
       this.setTopmenu();
       if (this.$route.path == '/') {
-        this.$router.push({name: 'bookings'});
+        this.$router.push({name: window.ff_booking_settings.active_nav});
       }
 
       jQuery('li.ff_item_booking_settings').addClass('active');

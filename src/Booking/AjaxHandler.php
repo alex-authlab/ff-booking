@@ -35,8 +35,6 @@ class AjaxHandler
             'delete_service' => 'deleteService',
             'get_services' => 'getServices',
             'delete_service' => 'deleteService',
-            'get_slots' => 'getSlots',
-            'get_full_booked' => 'getFullBooked',
             'save_payment_method_settings' => 'savePaymentMethodSettings',
             'get_form_settings' => 'getFormSettings',
             'save_form_settings' => 'saveFormSettings',
@@ -45,6 +43,7 @@ class AjaxHandler
             'get_providers' => 'getProviders',
             'save_providers' => 'saveProviders',
             'delete_provider' => 'deleteProvider',
+            'change_status_booking'=>'changeStatusBooking'
 
         ];
 
@@ -88,7 +87,7 @@ class AjaxHandler
         // send response to reload the page
 
         wp_send_json_success([
-            'message' => __('Booking Module successfully enabled!', 'fluentformpro'),
+            'message' => 'Booking Module successfully disabled!',
             'settings' => $settings,
             'reload' => 'yes'
         ]);
@@ -99,16 +98,14 @@ class AjaxHandler
         update_option('_ff_booking_status', 'yes');
 
         global $wpdb;
-        $table = $wpdb->prefix . '_alex_booking_services';
+        $table = $wpdb->prefix . 'ff_booking_entries';
         $cols = $wpdb->get_col("DESC {$table}", 0);
 
         if ($cols && in_array('id', $cols)) {
-            // We are good
+            // check db version
 
         } else {
-            $wpdb->query("DROP TABLE IF EXISTS {$table}");
-            Migration::migrate();
-            // Migrate the database
+            (new Migration())->run();;
         }
     }
 
@@ -163,39 +160,9 @@ class AjaxHandler
     }
 
 
-    public function getSlots()
-    {
-        $data = $_REQUEST;
-
-        if (empty($data['service_id'])) {
-            wp_send_json_success([
-                'html' => 'Please select a service first !',
-            ]);
-            return;
-        }
-
-
-        $slot_html = BookingHelper::getTimeSlotsHtml($data);
-        wp_send_json_success([
-            'html' => $slot_html,
-        ]);
-    }
-
-    public function getFullBooked()
-    {
-        $data = $_REQUEST;
-
-        $dates = BookingHelper::getFullBookedDate($data['service_id'], $data['form_id']);
-        wp_send_json_success([
-            'dates' => ($dates),
-            'selected_date' => $data['selected_date']
-        ], 200);
-    }
-
     public function getBookings()
     {
-        $req = $_REQUEST;
-        $data = (new BookingModel())->bookings($req);
+        $data['bookings'] = (new BookingModel())->getBookings(true);
         wp_send_json_success($data, 200);
     }
 
@@ -208,7 +175,7 @@ class AjaxHandler
         $errors = ob_get_clean();
 
         if ($errors) {
-            (new ProviderModel())->migrate();
+            ProviderMode::migrate();
             $providers = $providerModel->getProviders(true);
         }
 
@@ -280,6 +247,19 @@ class AjaxHandler
         wp_send_json_success([
             'message' => 'Provider has been updated successfully',
             'provider_id' => $providerId
+        ], 200);
+
+    }
+
+    public function changeStatusBooking()
+    {
+        $bookingId = intval($_REQUEST['booking_id']);
+        $bookingStatus = sanitize_text_field($_REQUEST['booking_Status']);
+        do_action('ff_booking_status_changing',$bookingId,$bookingStatus);
+        $data['booking_status'] = $bookingStatus;
+        (new BookingModel())->changeStatus($bookingId,$data);
+        wp_send_json_success([
+            'message'   => 'Booking Status has been updated succesfully',
         ], 200);
 
     }

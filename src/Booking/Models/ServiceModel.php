@@ -23,7 +23,7 @@ class ServiceModel
             return $services;
         }
         $services = $query->get();
-        foreach ($services['data'] as $service) {
+        foreach ($services as $service) {
             $service->allowed_form_ids = maybe_unserialize($service->allowed_form_ids);
         }
 
@@ -71,30 +71,43 @@ class ServiceModel
 
         if ($wpdb->get_var("SHOW TABLES LIKE '$table'") != $table) {
             $sql = "CREATE TABLE $table (
-				id int(11) NOT NULL AUTO_INCREMENT,
-				title varchar(192),
-				duration tinytext(10),
-				gap_time tinytext(10) NULL,
-				slot_capacity int(11) NULL,
-				time_format tinytext(10) NULL,
-				show_end_time tinytext(10) NULL,
-				show_booked_time tinytext(10) NULL,
-				booking_type tinytext(15) DEFAULT 'time_slot',
-				max_bookings int(11) NULL,
-				allowed_form_ids varchar (255) NULL,
-				allowed_future_days varchar (20) NULL,
-				status tinytext(10) DEFAULT 'active',
-				calc_value int(11) NULL,
-				created_by int(11) NULL,
-				created_at timestamp NULL,
-				updated_at timestamp NULL,
-				PRIMARY  KEY  (id)
+				       id int NOT NULL AUTO_INCREMENT,
+                      title varchar(192) DEFAULT NULL,
+                      duration varchar (20) DEFAULT NULL,
+                      gap_time varchar(255) DEFAULT NULL,
+                      slot_capacity varchar(10) DEFAULT NULL,
+                      time_format varchar(255) DEFAULT NULL,
+                      booking_type varchar(100)  DEFAULT 'time_slot',
+                      show_end_time varchar(10) DEFAULT NULL,
+                      show_booked_time varchar(10) DEFAULT NULL,
+                      max_bookings int DEFAULT NULL,
+                      status varchar(192) DEFAULT 'active',
+                      default_booking_status varchar(100)  DEFAULT NULL,
+                      allowed_form_ids varchar(100)  DEFAULT NULL,
+                      allowed_future_days varchar(100)  DEFAULT NULL,
+                      created_by int DEFAULT NULL,
+                      calc_value int DEFAULT NULL,
+                      created_at timestamp DEFAULT NULL,
+                      updated_at timestamp DEFAULT NULL,
+				      PRIMARY  KEY  (id)
 			  ) $charsetCollate;";
 
             require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-
             dbDelta($sql);
         }
+    }
+
+    public function getService($serviceId)
+    {
+        $query = wpFluent()->table($this->table);
+        $query->where('id',$serviceId);
+        $query->where('status','active');
+        $service = $query->first();
+            if($service->allowed_form_ids == ''){
+            $service->allowed_form_ids= [];
+        }
+        $service->allowed_form_ids = maybe_unserialize($service->allowed_form_ids);
+        return $service;
     }
 
 }

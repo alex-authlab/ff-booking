@@ -66,7 +66,7 @@
             .then(response => {
               this.$notify.success(response.data.message);
               if (response.data.reload) {
-                // location.reload();
+                location.reload();
               }
             });
       },

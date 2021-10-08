@@ -67,9 +67,9 @@ import App from './App.vue';
 import {routes} from './routes';
 
 const router = new Router({
-                    routes: routes,
-                    linkActiveClass: 'active'
-                });
+    routes: routes,
+    linkActiveClass: 'is-active'
+});
 locale.use(lang);
 
 

@@ -3,13 +3,17 @@
 
 namespace FF_Booking\Booking\Migrations;
 
+use FF_Booking\Booking\Models\BookingModel;
+use FF_Booking\Booking\Models\ProviderModel;
+use FF_Booking\Booking\Models\ServiceModel;
+
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
 
 class Migration
 {
-    public static function run($network_wide = false)
+    public function run($network_wide = false)
     {
         global $wpdb;
         if ($network_wide) {
@@ -22,18 +26,18 @@ class Migration
             // Install the plugin for all these sites.
             foreach ($site_ids as $site_id) {
                 switch_to_blog($site_id);
-                self::migrate();
+                $this->migrate();
                 restore_current_blog();
             }
         } else {
-            self::migrate();
+            $this->migrate();
         }
     }
 
-    public static function migrate()
+    public function migrate()
     {
-        Services::migrate();
-        Bookings::migrate ();
-       
+        (new ServiceModel())->migrate();
+        (new ProviderModel())->migrate();
+        (new BookingModel())->migrate();
     }
 }

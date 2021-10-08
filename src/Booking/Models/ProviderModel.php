@@ -23,7 +23,6 @@ class ProviderModel
                 $provider->weekend_days = maybe_unserialize($provider->weekend_days);
                 $provider->holiday_dates = maybe_unserialize($provider->holiday_dates);
             }
-//            dd($providers);
             return $providers;
         }
         $providers = $query->get();
@@ -37,6 +36,35 @@ class ProviderModel
         return $providers;
     }
 
+    public function getServiceProvider($serviceId,$formId)
+    {
+        $query = wpFluent()->table($this->table);
+        $query->where('status','active');
+        $providers = $query->get();
+        $validProviders = [];
+        foreach ($providers as $key => $provider) {
+            $provider->allowed_form_ids = maybe_unserialize($provider->allowed_form_ids);
+            //check with allowed forms and services
+            if ($formIds = $provider->allowed_form_ids) {
+                if (!in_array($formId, $formIds)) {
+                    unset($providers[$key]);
+                }
+            }
+            $provider->assigned_services = maybe_unserialize($provider->assigned_services);
+            if ($assignedServices = $provider->assigned_services) {
+                if (!in_array($serviceId, $assignedServices)) {
+                    unset($providers[$key]);
+                }
+            }
+            $provider->weekend_days = maybe_unserialize($provider->weekend_days);
+            $provider->holiday_dates = maybe_unserialize($provider->holiday_dates);
+            $validProviders[] =$provider;
+        }
+        return $providers;
+
+
+
+    }
     public function insert($data)
     {
         $data['created_at'] = current_time('mysql');
@@ -83,6 +111,34 @@ class ProviderModel
             ->where('id', $id)
             ->update($data);
     }
+    public function getProvider($id)
+    {
+        $query = wpFluent()->table($this->table);
+        $query->where('id',$id);
+        $query->where('status','active');
+        $provider = $query->first();
+        if(!$provider){
+            return false;
+        }
+        if($provider->weekend_days && $provider->weekend_days == ''){
+            $provider->weekend_days= [];
+        }
+        if($provider->holiday_dates  && $provider->holiday_dates == ''){
+            $provider->holiday_dates= [];
+        }
+        if($provider->allowed_form_ids  && $provider->allowed_form_ids == ''){
+            $provider->allowed_form_ids= [];
+        }
+        if($provider->assigned_services  && $provider->assigned_services == ''){
+            $provider->assigned_services= [];
+        }
+        $provider->assigned_services = maybe_unserialize($provider->assigned_services);
+        $provider->allowed_form_ids = maybe_unserialize($provider->allowed_form_ids);
+        $provider->weekend_days = maybe_unserialize($provider->weekend_days);
+        $provider->holiday_dates = maybe_unserialize($provider->holiday_dates);
+        return $provider;
+
+    }
 
     public function delete($id)
     {
@@ -105,7 +161,8 @@ class ProviderModel
 				title varchar(192),
 				assigned_user INT(11),
 				assigned_services varchar(100) NULL,
-				weekend_days varchar(10) NULL,
+				allowed_form_ids varchar (100) NULL,
+				weekend_days varchar(100) NULL,
 				holiday_dates varchar(255) NULL,
 				start_time varchar(10) NULL,
 				end_time varchar(10) NULL,

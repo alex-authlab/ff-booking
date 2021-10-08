@@ -2,6 +2,10 @@
   margin-bottom: 25px;
 }
 
+.ff_booking_settings_wrapper .ff-booking-stat {
+  text-transform: capitalize;
+}
+
 .ff_booking_general_settings .ff_booking_navigation {
   display: block;
   width: 100%;
