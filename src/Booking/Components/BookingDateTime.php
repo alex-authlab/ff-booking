@@ -104,13 +104,13 @@ class BookingDateTime extends \FluentForm\App\Services\FormBuilder\BaseFieldMana
         return [
             'target_email' => array(
                 'template'  => 'targetField',
-                'target_element'=>'email',
+                'target_element'=>'input_email',
                 'label' => 'User Email Field Mapping',
                 'help_text' => 'Select Customer Email for thi booking'
             ),
             'target_name' => array(
                 'template'  => 'targetField',
-                'target_element'=>'name',
+                'target_element'=>'input_name',
                 'label' => 'User Name Field Mapping',
                 'help_text' => 'Select Customer Name for this booking'
             )

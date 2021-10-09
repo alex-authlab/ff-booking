@@ -10,7 +10,6 @@ use FF_Booking\Booking\Components\BookingFields;
 use FF_Booking\Booking\Components\BookingDateTime;
 use FF_Booking\Booking\Components\Provider;
 use FF_Booking\Booking\Components\Service;
-use FF_Booking\Booking\Models\BookingModel;
 use \FluentForm\App\Helpers\Helper;
 use \FluentForm\Framework\Helpers\ArrayHelper;
 use \FluentForm\App\Modules\Form\FormFieldsParser;
@@ -25,47 +24,36 @@ class BookingHandler
     {
         $this->app = $app;
 
+        //global settings page , need to select one only
+        add_filter('fluentform_global_settings_components', [$this, 'pushGlobalSettings'], 1, 1);
+        add_action('fluentform_global_settings_component_booking_settings_global', [$this, 'renderSettings']);
+        // add on page
+        add_action('fluentform_addons_page_render_fluentform_booking', [$this, 'renderSettings']);
         add_filter('fluentform_addons_extra_menu', function ($menus) {
             $menus['fluentform_booking'] = __('Fluent Forms Booking', 'fluentform');
             return $menus;
         }, 99, 1);
-
-        add_action('fluentform_global_settings_component_booking_settings_global', [$this, 'renderSettings']);
-        add_action('fluentform_addons_page_render_fluentform_booking', [$this, 'renderSettings']);
-
-        add_filter('fluentform_global_settings_components', [$this, 'pushGlobalSettings'], 1, 1);
-
+        
         if (!$this->isEnabled()) {
             return;
         }
         //components
-//        new BookingFields();
         new BookingDateTime();
         new Service();
         new Provider();
-        add_action('fluentform_global_settings_component_booking_settings_global', [$this, 'renderGlobalSettings']);
-        add_action('fluentform_before_insert_submission', array($this, 'proccessBooking'), 10, 3);
-//        add_action('fluentform_before_form_actions_processing', array($this, 'maybeHandleBooking'), 10, 3);
+        add_action('fluentform_before_insert_submission', array($this, 'maybeProccessBooking'), 10, 3);
         add_filter('fluentform_form_class', [$this, 'checkBookingForm'],10,2);
 
-        new BookingModel();
-        $this->setup();
     }
 
-    public function proccessBooking($insertData, $data, $form)
+    public function maybeProccessBooking($insertData, $data, $form)
     {
         if(!FormFieldsParser::hasElement($form, 'booking_datetime')){
             return;
         }
-        $action = new BookingActions($form, $insertData, $data);
-
+        new BookingActions($form, $insertData, $data);
     }
 
-    public function maybeHandleBooking($insertId, $formData, $form)
-    {
-
-
-    }
 
     public function checkBookingForm($classes, $targetForm)
     {
@@ -85,11 +73,6 @@ class BookingHandler
             ]
         ];
         return $components;
-    }
-
-    public function renderGlobalSettings()
-    {
-       //
     }
 
     public function renderSettings()
@@ -117,13 +100,10 @@ class BookingHandler
             true
         );
 
-        //for later
-        $settings = '';
         $nav = 'service';
-
         $data = [
             'is_setup' => $this->isEnabled(),
-            'general' => $settings,
+            'ff_booking_admin_nonce' => wp_create_nonce('ff_booking_admin_nonce'),
             'active_nav' => 'Bookings',
             'ajaxUrl' => admin_url('admin-ajax.php'),
         ];
@@ -142,8 +122,6 @@ class BookingHandler
         return get_option('_ff_booking_status') == 'yes';
     }
 
-    private function setup()
-    {
-    }
+
 
 }

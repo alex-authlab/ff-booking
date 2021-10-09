@@ -1859,8 +1859,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'BookingInfo',
   data: function data() {
@@ -1870,6 +1868,9 @@ __webpack_require__.r(__webpack_exports__);
       errors: '',
       booking_id: this.$route.params.bookingId
     };
+  },
+  methods: {
+    getBookingInfo: function getBookingInfo() {}
   }
 });
 
@@ -1885,6 +1886,14 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _inc_Pagination__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./inc/_Pagination */ "./src/assets/BookingSettings/Components/inc/_Pagination.vue");
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2115,13 +2124,14 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       this.loading = true;
-      jQuery.get(window.ff_booking_settings.ajaxUrl, {
+      var data = {
         action: 'handle_booking_ajax_endpoint',
         route: 'get_bookings',
         date_range: this.date_range,
         page: this.pagination.current_page,
         per_page: this.pagination.per_page
-      }).then(function (response) {
+      };
+      this.$get(data).then(function (response) {
         _this.tableData = response.data.bookings.data;
         _this.pagination.total = response.data.bookings.total;
       }).always(function () {
@@ -2131,7 +2141,7 @@ __webpack_require__.r(__webpack_exports__);
     changeStatus: function changeStatus(id, status) {
       var _this2 = this;
 
-      jQuery.post(window.ff_booking_settings.ajaxUrl, {
+      this.$post({
         action: 'handle_booking_ajax_endpoint',
         route: 'change_status_booking',
         booking_id: id,
@@ -2236,6 +2246,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'general_payment_settings',
   props: ['settings'],
@@ -2251,7 +2262,7 @@ __webpack_require__.r(__webpack_exports__);
     toggleBookingModule: function toggleBookingModule() {
       var _this = this;
 
-      jQuery.post(window.ff_booking_settings.ajaxUrl, {
+      this.$post({
         action: 'handle_booking_ajax_endpoint',
         status: this.general_settings.is_setup,
         route: 'toggle_booking'
@@ -2278,6 +2289,12 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _inc_Pagination__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./inc/_Pagination */ "./src/assets/BookingSettings/Components/inc/_Pagination.vue");
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2466,19 +2483,24 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       this.loading = true;
-      jQuery.get(window.ff_booking_settings.ajaxUrl, {
+      var data = {
         action: 'handle_booking_ajax_endpoint',
         route: 'get_providers',
         page: this.pagination.current_page,
         per_page: this.pagination.per_page
-      }).then(function (response) {
+      };
+      this.$get(data).then(function (response) {
         _this.items = response.data.providers.data;
         _this.users = response.data.users;
         _this.services = response.data.services;
         _this.pagination.total = response.data.providers.total;
         _this.available_forms = response.data.available_forms;
       }).fail(function (error) {
-        _this.$notify.error(error.responseJSON.message);
+        _this.$notify.error({
+          title: 'Error',
+          message: error.responseJSON.message,
+          offset: 30
+        });
       }).always(function () {
         _this.loading = false;
       });
@@ -2511,11 +2533,12 @@ __webpack_require__.r(__webpack_exports__);
 
       this.saving = true;
       this.errors = false;
-      jQuery.post(window.ff_booking_settings.ajaxUrl, {
+      var data = {
         action: 'handle_booking_ajax_endpoint',
         route: 'save_providers',
         provider: this.editing_item
-      }).then(function (response) {
+      };
+      this.$post(data).then(function (response) {
         _this2.editing_item = {};
         _this2.show_modal = false;
         _this2.saving = false;
@@ -2552,11 +2575,12 @@ __webpack_require__.r(__webpack_exports__);
       var _this4 = this;
 
       this.loading = true;
-      jQuery.post(window.ff_booking_settings.ajaxUrl, {
+      var data = {
         action: 'handle_booking_ajax_endpoint',
         route: 'delete_provider',
         provider_id: provider.id
-      }).then(function (response) {
+      };
+      this.$post(data).then(function (response) {
         _this4.getItems();
 
         _this4.$notify.success({
@@ -2564,7 +2588,13 @@ __webpack_require__.r(__webpack_exports__);
           message: response.data.message,
           offset: 30
         });
-      }).fail(function (error) {}).always(function () {
+      }).fail(function (error) {
+        _this4.$notify.error({
+          title: 'Error',
+          message: error.responseJSON.message,
+          offset: 30
+        });
+      }).always(function () {
         _this4.loading = false;
       });
     },
@@ -2602,6 +2632,11 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _inc_Pagination__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./inc/_Pagination */ "./src/assets/BookingSettings/Components/inc/_Pagination.vue");
 /* harmony import */ var _inc_confirmRemove__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./inc/confirmRemove */ "./src/assets/BookingSettings/Components/inc/confirmRemove.vue");
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2859,17 +2894,22 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       this.loading = true;
-      jQuery.get(window.ff_booking_settings.ajaxUrl, {
+      var data = {
         action: 'handle_booking_ajax_endpoint',
         route: 'get_services',
         page: this.pagination.current_page,
         per_page: this.pagination.per_page
-      }).then(function (response) {
+      };
+      this.$get(data).then(function (response) {
         _this.items = response.data.service.data;
         _this.pagination.total = response.data.service.total;
         _this.available_forms = response.data.available_forms;
       }).fail(function (error) {
-        _this.$notify.error(error.responseJSON.message);
+        _this.$notify.error({
+          title: 'Error',
+          message: error.responseJSON.message,
+          offset: 30
+        });
       }).always(function () {
         _this.loading = false;
       });
@@ -2899,11 +2939,12 @@ __webpack_require__.r(__webpack_exports__);
       this.saving = true;
       this.errors = false;
       this.editing_item.allowed_future_days = this.formatFutureDays;
-      jQuery.post(window.ff_booking_settings.ajaxUrl, {
+      var data = {
         action: 'handle_booking_ajax_endpoint',
         route: 'save_service',
         service: this.editing_item
-      }).then(function (response) {
+      };
+      this.$post(data).then(function (response) {
         _this2.getItems();
 
         _this2.show_modal = false;
@@ -2942,7 +2983,7 @@ __webpack_require__.r(__webpack_exports__);
       var _this4 = this;
 
       this.loading = true;
-      jQuery.post(window.ff_booking_settings.ajaxUrl, {
+      this.$post({
         action: 'handle_booking_ajax_endpoint',
         route: 'delete_service',
         service_id: service.id
@@ -2955,7 +2996,11 @@ __webpack_require__.r(__webpack_exports__);
           offset: 30
         });
       }).fail(function (error) {
-        console.log(error);
+        _this4.$notify.error({
+          title: 'Error',
+          message: error.responseJSON.message,
+          offset: 30
+        });
       }).always(function () {
         _this4.loading = false;
       });
@@ -65254,7 +65299,8 @@ var render = function() {
                                                   _vm._v(
                                                     _vm._s(
                                                       props.row.booking_status
-                                                    )
+                                                    ) +
+                                                      "\n                                "
                                                   )
                                                 ]
                                               )
@@ -65271,7 +65317,8 @@ var render = function() {
                                                   _vm._v(
                                                     _vm._s(
                                                       props.row.booking_status
-                                                    )
+                                                    ) +
+                                                      "\n                                "
                                                   )
                                                 ]
                                               )
@@ -65286,7 +65333,8 @@ var render = function() {
                                                   _vm._v(
                                                     _vm._s(
                                                       props.row.booking_status
-                                                    )
+                                                    ) +
+                                                      "\n                                "
                                                   )
                                                 ]
                                               )
@@ -65299,7 +65347,7 @@ var render = function() {
                               ],
                               null,
                               false,
-                              4118640176
+                              4278496617
                             )
                           }),
                           _vm._v(" "),
@@ -65509,7 +65557,9 @@ var render = function() {
                           "template",
                           { slot: "label" },
                           [
-                            _vm._v("\n            Status\n            "),
+                            _vm._v(
+                              "\n                        Status\n                        "
+                            ),
                             _c(
                               "el-tooltip",
                               {
@@ -65531,7 +65581,7 @@ var render = function() {
                                     _vm._v(" "),
                                     _c("p", [
                                       _vm._v(
-                                        "\n                  Disable Booking\n                "
+                                        "\n                                    Disable Booking\n                                "
                                       )
                                     ])
                                   ]
@@ -65559,7 +65609,11 @@ var render = function() {
                               expression: "general_settings.is_setup"
                             }
                           },
-                          [_vm._v("Enable Booking Module\n          ")]
+                          [
+                            _vm._v(
+                              "Enable Booking Module\n                    "
+                            )
+                          ]
                         )
                       ],
                       2
@@ -65697,9 +65751,9 @@ var render = function() {
                         fn: function(scope) {
                           return [
                             _vm._v(
-                              "\n          " +
+                              "\n                    " +
                                 _vm._s(_vm.getUser(scope.row.assigned_user)) +
-                                "\n        "
+                                "\n                "
                             )
                           ]
                         }
@@ -65715,11 +65769,11 @@ var render = function() {
                         fn: function(scope) {
                           return [
                             _vm._v(
-                              "\n          " +
+                              "\n                    " +
                                 _vm._s(
                                   _vm.getServices(scope.row.assigned_services)
                                 ) +
-                                "\n        "
+                                "\n                "
                             )
                           ]
                         }
@@ -66296,7 +66350,7 @@ var render = function() {
                           }
                         }
                       },
-                      [_vm._v("Add New ")]
+                      [_vm._v("Add New")]
                     )
                   ],
                   1
@@ -83142,6 +83196,16 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.mixin({
   methods: {
     $t: function $t(str) {
       return str;
+    },
+    $get: function $get(data) {
+      var url = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+      url = url || window.ff_booking_settings.ajaxUrl;
+      return jQuery.get(url, data);
+    },
+    $post: function $post(data) {
+      var url = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+      url = url || window.ff_booking_settings.ajaxUrl;
+      return jQuery.post(url, data);
     }
   },
   filters: {

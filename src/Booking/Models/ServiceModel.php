@@ -61,6 +61,20 @@ class ServiceModel
             ->delete();
     }
 
+    public function getService($serviceId)
+    {
+        $query = wpFluent()->table($this->table);
+        $query->where('id',$serviceId);
+        $query->where('status','active');
+        $service = $query->first();
+        if($service->allowed_form_ids == ''){
+            $service->allowed_form_ids= [];
+        }
+        $service->allowed_form_ids = maybe_unserialize($service->allowed_form_ids);
+        return $service;
+    }
+
+
     public function migrate()
     {
         global $wpdb;
@@ -97,17 +111,5 @@ class ServiceModel
         }
     }
 
-    public function getService($serviceId)
-    {
-        $query = wpFluent()->table($this->table);
-        $query->where('id',$serviceId);
-        $query->where('status','active');
-        $service = $query->first();
-            if($service->allowed_form_ids == ''){
-            $service->allowed_form_ids= [];
-        }
-        $service->allowed_form_ids = maybe_unserialize($service->allowed_form_ids);
-        return $service;
-    }
 
 }

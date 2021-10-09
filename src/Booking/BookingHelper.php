@@ -56,4 +56,18 @@ class BookingHelper
         }
         return $formattedForms;
     }
+
+    public static function verifyRequest($key = 'ff_booking_admin_nonce')
+    {
+        if (!wp_doing_ajax()) {
+            return;
+        }
+        $nonce = ArrayHelper::get($_REQUEST, $key);
+        if (!wp_verify_nonce($nonce, $key)) {
+            $message = 'Nonce verification failed, please try again.';
+            wp_send_json([
+                'message' => $message
+            ], 422);
+        }
+    }
 }

@@ -85,6 +85,14 @@ Vue.mixin({
     methods: {
         $t(str) {
             return str;
+        },
+        $get(data, url=''){
+            url = url || window.ff_booking_settings.ajaxUrl;
+            return jQuery.get(url, data);
+        },
+        $post(data, url=''){
+            url = url || window.ff_booking_settings.ajaxUrl;
+            return jQuery.post(url, data);
         }
     },
     filters: {

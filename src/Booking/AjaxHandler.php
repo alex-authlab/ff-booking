@@ -21,9 +21,12 @@ class AjaxHandler
     public function init()
     {
         $route = sanitize_text_field($_REQUEST['route']);
-        //nonce verify : todo
+        BookingHelper::verifyRequest();
+
         $this->handleEndpoint($route);
     }
+
+
 
     public function handleEndpoint($route)
     {

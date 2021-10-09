@@ -58,8 +58,7 @@ if (!class_exists('FFBooking')) {
             $this->ajaxHooks($fluentForm);
             $this->adminHooks($fluentForm);
             $this->publicHooks($fluentForm);
-
-            (new \FF_Booking\Booking\BookingHandler)->init($fluentForm);
+            (new FF_Booking\Booking\BookingHandler)->init($fluentForm);
         }
 
         /**
@@ -69,16 +68,14 @@ if (!class_exists('FFBooking')) {
         {
             add_action('admin_notices', function () {
                 $pluginInfo = $this->getFluentFormInstallationDetails();
-
                 $class = 'notice notice-error';
-
                 $install_url_text = 'Click Here to Install the Plugin';
 
                 if ($pluginInfo->action == 'activate') {
                     $install_url_text = 'Click Here to Activate the Plugin';
                 }
 
-                $message = 'FluentForm PRO Add-On Requires FluentForm Base Plugin, <b><a href="' . $pluginInfo->url
+                $message = 'FF Booking Requires FluentForm Base Plugin, <b><a href="' . $pluginInfo->url
                     . '">' . $install_url_text . '</a></b>';
 
                 printf('<div class="%1$s"><p>%2$s</p></div>', esc_attr($class), $message);
@@ -96,9 +93,7 @@ if (!class_exists('FFBooking')) {
                 'action' => 'install',
                 'url' => ''
             ];
-
             $allPlugins = get_plugins();
-
             if (isset($allPlugins['fluentform/fluentform.php'])) {
                 $url = wp_nonce_url(
                     self_admin_url('plugins.php?action=activate&plugin=fluentform/fluentform.php'),
@@ -118,7 +113,6 @@ if (!class_exists('FFBooking')) {
             }
 
             $activation->url = $url;
-
             return $activation;
         }
 
@@ -128,12 +122,9 @@ if (!class_exists('FFBooking')) {
          */
         public function adminHooks($app)
         {
+
         }
 
-        /**
-         * Register public/frontend hooks
-         * @return void
-         */
         public function publicHooks($app)
         {
             $ajax = new FrontEndAjaxHandler();
@@ -153,10 +144,7 @@ if (!class_exists('FFBooking')) {
 
     }
 
-    /**
-     * Plugin init hook
-     * @return void
-     */
+
     add_action('init', function () {
         (new FFBooking)->boot();
     });

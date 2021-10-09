@@ -129,39 +129,7 @@ class BookingModel
         $query->where('booking_date', '<=', $maxRange);
         return $query->get();
     }
-
-    public function migrate()
-    {
-        global $wpdb;
-
-        $charsetCollate = $wpdb->get_charset_collate();
-
-        $table = $wpdb->prefix . $this->table;
-
-        if ($wpdb->get_var("SHOW TABLES LIKE '$table'") != $table) {
-            $sql = "CREATE TABLE $table (
-				id BIGINT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-				form_id INT(11) NULL,
-				entry_id INT(11) NULL,
-				user_id INT(11) NULL,
-				service_id INT(11) NULL,
-				provider_id INT(11) NULL,
-				booking_date date NULL,
-				booking_time time NULL,
-				booking_type varchar(255) NULL,
-				booking_status varchar(255) NULL,
-				notes text NULL,
-				created_at timestamp NULL,
-				updated_at timestamp NULL,
-				PRIMARY  KEY  (id)
-			  ) $charsetCollate;";
-
-            require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-
-            dbDelta($sql);
-        }
-    }
-    // to do ignore some status to allow booking ??
+    // to do ignore some draft status to allow booking
     public function bookedSlotGroupByDate($serviceId, $providerId, $formId, $min, $max)
     {
         $minRange = date('Y-m-d', strtotime($min));
@@ -209,6 +177,39 @@ class BookingModel
         });
         return $query->first();
     }
+
+    public function migrate()
+    {
+        global $wpdb;
+
+        $charsetCollate = $wpdb->get_charset_collate();
+
+        $table = $wpdb->prefix . $this->table;
+
+        if ($wpdb->get_var("SHOW TABLES LIKE '$table'") != $table) {
+            $sql = "CREATE TABLE $table (
+				id BIGINT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+				form_id INT(11) NULL,
+				entry_id INT(11) NULL,
+				user_id INT(11) NULL,
+				service_id INT(11) NULL,
+				provider_id INT(11) NULL,
+				booking_date date NULL,
+				booking_time time NULL,
+				booking_type varchar(255) NULL,
+				booking_status varchar(255) NULL,
+				notes text NULL,
+				created_at timestamp NULL,
+				updated_at timestamp NULL,
+				PRIMARY  KEY  (id)
+			  ) $charsetCollate;";
+
+            require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+
+            dbDelta($sql);
+        }
+    }
+
 
 
 }
