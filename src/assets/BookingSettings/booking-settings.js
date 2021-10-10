@@ -87,10 +87,12 @@ Vue.mixin({
             return str;
         },
         $get(data, url=''){
+            data.ff_booking_admin_nonce = ff_booking_settings.ff_booking_admin_nonce;
             url = url || window.ff_booking_settings.ajaxUrl;
             return jQuery.get(url, data);
         },
         $post(data, url=''){
+            data.ff_booking_admin_nonce = ff_booking_settings.ff_booking_admin_nonce;
             url = url || window.ff_booking_settings.ajaxUrl;
             return jQuery.post(url, data);
         }

@@ -83199,11 +83199,13 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.mixin({
     },
     $get: function $get(data) {
       var url = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+      data.ff_booking_admin_nonce = ff_booking_settings.ff_booking_admin_nonce;
       url = url || window.ff_booking_settings.ajaxUrl;
       return jQuery.get(url, data);
     },
     $post: function $post(data) {
       var url = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+      data.ff_booking_admin_nonce = ff_booking_settings.ff_booking_admin_nonce;
       url = url || window.ff_booking_settings.ajaxUrl;
       return jQuery.post(url, data);
     }
