@@ -77,13 +77,13 @@ class BookingHandler
 
     public function renderSettings()
     {
-        wp_enqueue_style(
-            'fluentform_settings_global',
-            $this->app->publicUrl("css/settings_global.css"),
-            [],
-            FLUENTFORM_VERSION,
-            'all'
-        );
+//        wp_enqueue_style(
+//            'fluentform_settings_global',
+//            $this->app->publicUrl("css/settings_global.css"),
+//            [],
+//            FLUENTFORM_VERSION,
+//            'all'
+//        );
         wp_enqueue_style(
             'ff_booking_settings_css',
             FF_BOOKING_DIR_URL . 'public/js/booking-settings.css',

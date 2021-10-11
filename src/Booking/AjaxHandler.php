@@ -27,7 +27,6 @@ class AjaxHandler
     }
 
 
-
     public function handleEndpoint($route)
     {
         $validRoutes = [
@@ -43,10 +42,12 @@ class AjaxHandler
             'save_form_settings' => 'saveFormSettings',
             'update_transaction' => 'updateTransaction',
             'get_bookings' => 'getBookings',
+            'get_booking_info' => 'getBookingInfo',
+            'update_booking' => 'updateBooking',
             'get_providers' => 'getProviders',
             'save_providers' => 'saveProviders',
             'delete_provider' => 'deleteProvider',
-            'change_status_booking'=>'changeStatusBooking'
+            'change_status_booking' => 'changeStatusBooking'
 
         ];
 
@@ -156,7 +157,6 @@ class AjaxHandler
 
     public function getServices()
     {
-
         $data['available_forms'] = BookingHelper::getAvailableForms();
         $data['service'] = (new ServiceModel())->getServices(true);
         wp_send_json_success($data);
@@ -187,7 +187,6 @@ class AjaxHandler
         ];
 
         if (isset($_REQUEST['page']) && $_REQUEST['page'] == 1) {
-
             $forms = wpFluent()->table('fluentform_forms')
                 ->select(['id', 'title'])
                 ->get();
@@ -218,13 +217,13 @@ class AjaxHandler
     public function saveProviders()
     {
         $provider = wp_unslash($_REQUEST['provider']);
-        $validator = fluentValidator($provider,[
-            'title'=>'required',
-            'assigned_user'=>'required',
-            'assigned_services'=>'required',
-            'weekend_days'=>'required',
-            'status'=>'required',
-            'start_time'=>'required',
+        $validator = fluentValidator($provider, [
+            'title' => 'required',
+            'assigned_user' => 'required',
+            'assigned_services' => 'required',
+            'weekend_days' => 'required',
+            'status' => 'required',
+            'start_time' => 'required',
         ]);
 
         if ($validator->validate()->fails()) {
@@ -251,36 +250,115 @@ class AjaxHandler
             'message' => 'Provider has been updated successfully',
             'provider_id' => $providerId
         ], 200);
-
     }
 
+    public function getBookingInfo()
+    {
+        $booking_id = intval($_REQUEST['booking_id']);
+        $booking_info = (new BookingModel())->getBookings(false, ['id' => $booking_id]);
+        if (!is_array($booking_info) || count($booking_info) != 1) {
+            wp_send_json_error([
+                'message' => 'No Data Found',
+            ], 200);
+
+            return;
+        }
+        $booking_info = (array)array_shift($booking_info);
+        $booking_info['booking_time'] = BookingHelper::convertTime(
+            '12',
+            ArrayHelper::get($booking_info, 'booking_time')
+        );
+
+        $providers = (new ProviderModel())->getProviders();
+        $formattedProviders = [];
+        foreach ($providers as $provider) {
+            $formattedProviders[$provider->id] = $provider->title;
+        }
+        $services = (new ServiceModel())->getServices();
+        $formattedService = [];
+        foreach ($services as $service) {
+            $formattedService[$service->id] = $service->title;
+        }
+        $data['provider_list'] = $formattedProviders;
+        $data['service_list'] = $formattedService;
+        $data['booking_info'] = $booking_info;
+        wp_send_json_success($data, 200);
+    }
+
+    public function updateBooking()
+    {
+        $info = fluentFormSanitizer($_REQUEST['booking_info']);
+        $bookingId = ArrayHelper::get($info, 'id');
+        $serviceId = ArrayHelper::get($info, 'service_id');
+        $providerId = ArrayHelper::get($info, 'provider_id');
+        $bookingDate = ArrayHelper::get($info, 'booking_date');
+        $bookingTime = ArrayHelper::get($info, 'booking_time');
+        $info['booking_time'] = $bookingTime = BookingHelper::convertTime('24', $bookingTime);
+        $formId = ArrayHelper::get($info, 'form_id');
+
+        $validator = fluentValidator($info, [
+            'id' => 'required',
+            'service_id' => 'required',
+            'provider_id' => 'required',
+            'booking_date' => 'required',
+            'booking_time' => 'required',
+            'form_id' => 'required',
+        ]);
+        if ($validator->validate()->fails()) {
+            $errors = $validator->errors();
+            wp_send_json([
+                'errors' => $errors,
+                'message' => 'Please fill up all the required fields'
+            ], 423);
+        }
+        //validate date time slot
+        $response = (new DateTimeHandler($serviceId, $providerId, $formId, $bookingDate))->isValidData(
+            $bookingTime,
+            $bookingId
+        );
+        if ($response['status'] != true) {
+            wp_send_json([
+                'message' => $response['message']
+            ], 423);
+            return;
+        }
+        $bookingId = (new BookingModel())->update($bookingId, $info);
+
+        wp_send_json_success([
+            'message' => 'Booking info has been updated successfully',
+            'booking_id' => $bookingId
+        ], 200);
+    }
+
+    // to do validate
     public function changeStatusBooking()
     {
         $bookingId = intval($_REQUEST['booking_id']);
         $bookingStatus = sanitize_text_field($_REQUEST['booking_Status']);
-        do_action('ff_booking_status_changing',$bookingId,$bookingStatus);
+        do_action('ff_booking_status_changing', $bookingId, $bookingStatus);
         $data['booking_status'] = $bookingStatus;
-        (new BookingModel())->changeStatus($bookingId,$data);
+        (new BookingModel())->changeStatus($bookingId, $data);
         wp_send_json_success([
-            'message'   => 'Booking Status has been updated succesfully',
+            'message' => 'Booking Status has been updated succesfully',
         ], 200);
-
     }
+
     public function deleteService()
     {
         $serviceId = intval($_REQUEST['service_id']);
         (new ServiceModel())->delete($serviceId);
         wp_send_json_success([
-            'message'   => 'Service has been successfully deleted',
+            'message' => 'Service has been successfully deleted',
             'coupon_id' => $serviceId
         ], 200);
     }
+
     public function deleteProvider()
     {
         $providerId = intval($_REQUEST['provider_id']);
         (new ProviderModel())->delete($providerId);
         wp_send_json_success([
-            'message'   => 'Provider has been successfully deleted',
+            'message' => 'Provider has been successfully deleted',
             'coupon_id' => $providerId
         ], 200);
     }

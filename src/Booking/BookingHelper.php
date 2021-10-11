@@ -30,20 +30,6 @@ class BookingHelper
         }
         return 'd/m/y';
     }
-    public static function getService($id = '')
-    {
-        $serviceData = [];
-        if (!empty($id)) {
-            $serviceData = wpFluent()->table('_alex_booking_services')
-                ->where('id', $id)
-                ->first();
-        } else {
-            $serviceData = wpFluent()->table('_alex_booking_services')
-                ->get();
-        }
-        return $serviceData;
-    }
-
 
     public static function getAvailableForms()
     {

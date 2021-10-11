@@ -16,7 +16,7 @@ export const routes = [
                 component: BookingInfo,
                 props: true,
                 meta: {
-                    showModal: true
+                    show_modal: true
                 }
             }
         ]

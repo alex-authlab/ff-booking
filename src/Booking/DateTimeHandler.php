@@ -285,8 +285,16 @@ class DateTimeHandler
         $show_end_time = ArrayHelper::get($service, 'show_end_time') == 'show';
         return $this->generateTimeSlot($duration, $startTime, $endTime, $gapTime, $show_end_time);
     }
+    /**
+     * Validate slot
+     * Save time as 24 hour in backend
+     * When bookinID passed ingnore current slot for updating pupose
+     * @param $provider
+     * @param $service
+     * @return array
+     */
 
-    public function isValidData($time)
+    public function isValidData($time ,$bookingId = false)
     {
         $provider = $this->getProviderData();
         $service = $this->getServiceData();
@@ -352,13 +360,14 @@ class DateTimeHandler
                 'message' => 'Invalid Time slot selected'
             ];
         }
-
+        //ignore current booking time slot when updating
         $bookedSlotsByTime = (new BookingModel())->getBookingsOfSingleDay(
             $this->serviceId,
             $this->providerId,
             $this->formId,
             $this->date,
-            $time
+            $time,
+            $bookingId
         );
         //total slot capacity on a single timeslot
         if ($bookedSlotsByTime->total >= intval($service['slot_capacity'])) {

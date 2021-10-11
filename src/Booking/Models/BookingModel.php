@@ -8,12 +8,13 @@ use FluentForm\Framework\Helpers\ArrayHelper;
 class BookingModel
 {
     private $table = 'ff_booking_entries';
+    private $fields;
 
     public function getBookings($paginate = false, $atts = [])
     {
-        $startDate = date('Y-m-d H:i:s', strtotime('+30 days'));
-        $endDate = date('Y-m-d H:i:s', strtotime('-30 days'));
-        $ranges = $_REQUEST['date_range'];
+        $endDate = date('Y-m-d H:i:s', strtotime('+30 days'));
+        $startDate= date('Y-m-d H:i:s', strtotime('-30 days'));
+        $ranges = ArrayHelper::get($_REQUEST,'date_range');
         if (!empty($ranges[0])) {
             $startDate = date('Y-m-d H:i:s', strtotime($ranges[0]));
         }
@@ -23,6 +24,7 @@ class BookingModel
         }
 
         $defaultAtts = [
+            'id'=> NULL,
             'search' => '',
             'status' => 'all',
             'sort_column' => 'id',
@@ -33,25 +35,31 @@ class BookingModel
 
         $search = ArrayHelper::get($atts, 'search', '');
         $booking_status = ArrayHelper::get($atts, 'booking_status', 'all');
+        $booking_id = ArrayHelper::get($atts, 'id', false);
 
         global $wpdb;
 
         $query = wpFluent()->table($this->table);
-        $query->select([
+        $this->fields = [
             $this->table . '.id',
             $this->table . '.form_id',
             $this->table . '.booking_date',
             $this->table . '.booking_time',
             $this->table . '.booking_status',
+            $this->table . '.notes',
             $this->table . '.created_at',
             $this->table . '.user_id',
+            $this->table . '.entry_id',
             wpFluent()->raw($wpdb->prefix . 'ff_booking_providers.title AS provider'),
             wpFluent()->raw($wpdb->prefix . 'ff_booking_providers.id AS provider_id'),
             wpFluent()->raw($wpdb->prefix . 'ff_booking_services.title AS service'),
             wpFluent()->raw($wpdb->prefix . 'ff_booking_services.id AS service_id'),
             wpFluent()->raw($wpdb->prefix . 'fluentform_forms.title AS form_title'),
-        ]);
-
+        ];
+        $query->select($this->fields);
+        if($booking_id){
+            $query->where($this->table . '.id', '=', $booking_id);
+        }
         $query->leftJoin('fluentform_forms', 'fluentform_forms.id', '=', $this->table . '.form_id');
         $query->join('ff_booking_providers', 'ff_booking_providers.id', '=', $this->table . '.provider_id');
         $query->join('ff_booking_services', 'ff_booking_services.id', '=', $this->table . '.service_id');
@@ -70,21 +78,7 @@ class BookingModel
         $query->orderBy('id', 'DESC');
 
         if ($paginate) {
-            $bookings = $query->paginate(null, [
-                $this->table . '.id',
-                $this->table . '.form_id',
-                $this->table . '.booking_date',
-                $this->table . '.booking_time',
-                $this->table . '.booking_status',
-                $this->table . '.created_at',
-                $this->table . '.entry_id',
-                $this->table . '.user_id',
-                wpFluent()->raw($wpdb->prefix . 'ff_booking_providers.title AS provider'),
-                wpFluent()->raw($wpdb->prefix . 'ff_booking_providers.id AS provider_id'),
-                wpFluent()->raw($wpdb->prefix . 'ff_booking_services.title AS service'),
-                wpFluent()->raw($wpdb->prefix . 'ff_booking_services.id AS service_id'),
-                wpFluent()->raw($wpdb->prefix . 'fluentform_forms.title AS form_title'),
-            ]);
+            $bookings = $query->paginate(null, $this->fields);
             foreach ($bookings['data'] as $index => $datum) {
                 $bookings['data'][$index]->submission_url = admin_url(
                     'admin.php?page=fluent_forms&route=entries&form_id=' . $datum->form_id . '#/entries/' . $datum->entry_id
@@ -142,6 +136,7 @@ class BookingModel
         $query->where('service_id', $serviceId);
         $query->where('provider_id', $providerId);
         $query->where('booking_status', '!=', 'draft');
+        $query->where('booking_status', '!=', 'declined');
         $query->whereBetween('booking_date', $minRange, $maxRange);
         return $query->get();
     }
@@ -153,7 +148,7 @@ class BookingModel
             ->update($data);
     }
 
-    public function getBookingsOfSingleDay($serviceId, $providerId, $formId,$date, $time='' )
+    public function getBookingsOfSingleDay($serviceId, $providerId, $formId,$date, $time='' ,$bookingId = false )
     {
         global $wpdb;
 
@@ -168,6 +163,9 @@ class BookingModel
         if($time!=''){
             $time = $time .':00';
             $query->where('booking_time', '=', $time);
+        }
+        if($bookingId){
+            $query->where('id', '!=', $bookingId);
         }
         $query->where(function ($q) {
             $q->where('booking_status', '=', 'booked');
@@ -199,6 +197,7 @@ class BookingModel
 				booking_type varchar(255) NULL,
 				booking_status varchar(255) NULL,
 				notes text NULL,
+				send_notification TINYINT(1) DEFAULT 1,
 				created_at timestamp NULL,
 				updated_at timestamp NULL,
 				PRIMARY  KEY  (id)
@@ -210,6 +209,13 @@ class BookingModel
         }
     }
 
+    public function update($id, $data)
+    {
+        $data['updated_at'] = current_time('mysql');
+        return wpFluent()->table($this->table)
+            ->where('id', $id)
+            ->update($data);
+    }
 
 
 }

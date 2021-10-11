@@ -236,10 +236,11 @@
         },
         watch: {
             $route(newVal, oldVal) {
-                this.showModal = newVal.meta && newVal.meta.showModal;
+                this.show_modal = newVal.meta && newVal.meta.show_modal;
             }
         },
         methods: {
+
             getBookings() {
                 this.loading = true;
                 let data = {
@@ -299,6 +300,7 @@
                 this.$router.push({
                     name: 'Bookings',
                 });
+                this.getBookings();
             }
 
         },

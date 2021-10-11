@@ -166,7 +166,7 @@ class ProviderModel
 				holiday_dates varchar(255) NULL,
 				start_time varchar(10) NULL,
 				end_time varchar(10) NULL,
-				status varchar(192) DEFAULT 'active',
+				status varchar(10) DEFAULT 'active',
 				created_by INT(11) NULL,
 				created_at timestamp NULL,
 				updated_at timestamp NULL,
