@@ -1,5 +1,6 @@
 .idea/
 .DS_Store
 /node_modules
-public/*
+public/
 package-lock.json
+.idea/ff-booking.iml
