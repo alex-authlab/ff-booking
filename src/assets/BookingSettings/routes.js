@@ -35,8 +35,8 @@ export const routes = [
 
     },
     {
-        path: '/general',
-        name: "General",
+        path: '/settings',
+        name: "Settings",
         component: GeneralSettings,
 
     },

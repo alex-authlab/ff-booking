@@ -1,5 +1,5 @@
 <template>
-    <div v-loading="loading" class="ff_method_settings">
+    <div v-loading="loading" class="ff_booking_settings_container">
         <div class="ff_pre_settings_wrapper" v-if="!coupon_status">
             <h2>Booking Provider</h2>
         </div>

@@ -147,13 +147,18 @@ class DateTimeHandler
         $timeZone = $this->getTimeZone();
         $timeFormat = $this->getTimeFormat();
 
-
-        $gapTime = $this->formatTimeDuration($gapTime, $timeZone);
-        $addTime = $this->formatTimeDuration($interval, $timeZone);
-        $start = new \DateTime($start_time, new \DateTimeZone($timeZone));
-        $end = new \DateTime($end_time, new \DateTimeZone($timeZone));
+        $gapTime = $this->timeDurationLength($gapTime, $timeZone);
+        $addTime = $this->timeDurationLength($interval, $timeZone);
+        $start = new \DateTime($start_time);
+        $end = new \DateTime($end_time);
 
         $startTime = $start->format($timeFormat);
+//        create datetime with timezone
+//        $now = new \DateTime();
+//        $now->setTimezone(new \DateTimeZone( $timeZone));
+//        vd($now->format('d-m-Y h:i'));
+
+
         $endTime = $end->format($timeFormat);
         $i = 0;
         $time = [];
@@ -177,7 +182,12 @@ class DateTimeHandler
 
     function getTimeZone()
     {
-        $timezone = get_option('timezone_string');
+        $settings = get_option('__ff_booking_general_settings');
+        $timezone = ArrayHelper::get($settings, 'time_zone');
+        if (!$timezone) {
+            $timezone = get_option('timezone_string'); //wp timezone
+        }
+
         if (!in_array($timezone, timezone_identifiers_list())) {
             $timezone = 'America/New_York';
         }
@@ -190,7 +200,7 @@ class DateTimeHandler
      * @return string
      * @throws \Exception
      */
-    private function formatTimeDuration($interval, $timeZone)
+    private function timeDurationLength($interval, $timeZone)
     {
         $addTime = '';
         $fraction = explode(':', $interval);
@@ -262,8 +272,8 @@ class DateTimeHandler
      */
     private function getTimeFormat()
     {
-        $timeFormat = '12';
-        if ($timeFormat = '12') {
+        $settings = get_option('__ff_booking_general_settings');
+        if (ArrayHelper::get($settings, 'time_format') == '12') {
             $timeFormat = 'h:i a';
         } else {
             $timeFormat = 'H:i';
@@ -285,6 +295,7 @@ class DateTimeHandler
         $show_end_time = ArrayHelper::get($service, 'show_end_time') == 'show';
         return $this->generateTimeSlot($duration, $startTime, $endTime, $gapTime, $show_end_time);
     }
+
     /**
      * Validate slot
      * Save time as 24 hour in backend
@@ -294,7 +305,7 @@ class DateTimeHandler
      * @return array
      */
 
-    public function isValidData($time ,$bookingId = false)
+    public function isValidData($time, $bookingId = false)
     {
         $provider = $this->getProviderData();
         $service = $this->getServiceData();
@@ -342,8 +353,8 @@ class DateTimeHandler
             ];
         }
         $weekOffDays = ArrayHelper::get($provider, 'weekend_days');
-        $selectedWeekDat = date('l', strtotime($this->date));
-        if (in_array($selectedWeekDat, $weekOffDays)) {
+        $selectedWeekDay = date('l', strtotime($this->date));
+        if (in_array($selectedWeekDay, $weekOffDays)) {
             return [
                 'status' => false,
                 'message' => 'Invalid Day of week selected'
@@ -351,7 +362,8 @@ class DateTimeHandler
         }
         $validSlots = $this->getRegularSlots($provider, $service);
         $validSlots = array_column($validSlots, 'value');
-        $format = '12'; // get from general settings
+
+        $format = $this->getTimeFormat();
         $selectedTime = BookingHelper::convertTime($format, $time);
 
         if (!in_array($selectedTime, $validSlots)) {

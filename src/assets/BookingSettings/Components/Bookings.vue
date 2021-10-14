@@ -1,5 +1,5 @@
 <template>
-    <div v-loading="loading" class="ff_booking_general_settings">
+    <div v-loading="loading" class="ff_booking_settings_container">
         <el-form label-position="left" :model="settings" label-width="220px">
             <div class="">
 
@@ -13,7 +13,7 @@
 
                     </el-col>
                 </el-row>
-                <div v-if="tableData.length > 0">
+                <div >
                     <el-form label-width="150px" label-position="left">
 
                         <el-form-item label="Select Range">
@@ -38,6 +38,7 @@
 
 
                     <el-table
+                            v-if="tableData.length > 0"
                             :data="tableData"
                             border
                             style="width: 100%">
@@ -120,11 +121,12 @@
                         </el-table-column>
 
                     </el-table>
+                    <div v-else> No Bookings </div>
                     <div style="margin-top: 20px" class="ff_pagination pull-right">
                         <pagination :pagination="pagination" @fetch="getBookings"/>
                     </div>
                 </div>
-                <div v-else> No Bookings yet</div>
+
 
 
             </div>

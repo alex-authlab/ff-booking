@@ -1,5 +1,5 @@
 <template>
-    <div v-loading="loading" class="ff_method_settings">
+    <div v-loading="loading" class="ff_booking_settings_container">
 
         <div>
             <el-row class="setting_header">

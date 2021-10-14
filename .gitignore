@@ -1,9 +1,5 @@
-/.idea
+.idea/
 .DS_Store
 /node_modules
-/storage/logs/error.log
-/vendor
 public/*
 package-lock.json
-public_build
-guten_block

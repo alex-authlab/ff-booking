@@ -47,7 +47,9 @@ class AjaxHandler
             'get_providers' => 'getProviders',
             'save_providers' => 'saveProviders',
             'delete_provider' => 'deleteProvider',
-            'change_status_booking' => 'changeStatusBooking'
+            'change_status_booking' => 'changeStatusBooking',
+            'save_settings' => 'saveSettings',
+            'get_settings' => 'getSettings'
 
         ];
 
@@ -360,6 +362,25 @@ class AjaxHandler
         wp_send_json_success([
             'message' => 'Provider has been successfully deleted',
             'coupon_id' => $providerId
+        ], 200);
+    }
+
+    public function saveSettings()
+    {
+        $settings = wp_unslash($_REQUEST['settings_data']);
+        $settings = json_decode($settings, true);
+        update_option('__ff_booking_general_settings', $settings);
+        wp_send_json_success([
+            'message' => 'Settings has been Updated Succesfully',
+        ], 200);
+    }
+
+
+    public function getSettings()
+    {
+        $settings = get_option('__ff_booking_general_settings');
+        wp_send_json_success([
+            'settings_data' => $settings
         ], 200);
     }
 

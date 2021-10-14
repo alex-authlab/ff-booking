@@ -1,6 +1,49 @@
+@import 'element-variables.scss';
 @import "~element-ui/lib/theme-chalk/menu.css";
 @import "~element-ui/lib/theme-chalk/menu-item.css";
-
+@import "_element_icons.css";
+@import "~element-ui/lib/theme-chalk/input-number.css";
+//@import "~element-ui/lib/theme-chalk/tag.css";
+@import "~element-ui/lib/theme-chalk/message-box.css";
+@import "~element-ui/lib/theme-chalk/rate.css";
+@import "~element-ui/lib/theme-chalk/tooltip.css";
+//@import "~element-ui/lib/theme-chalk/upload.css";
+@import "~element-ui/lib/theme-chalk/card.css";
+@import "~element-ui/lib/theme-chalk/dropdown.css";
+@import "~element-ui/lib/theme-chalk/dropdown-menu.css";
+@import "~element-ui/lib/theme-chalk/dropdown-item.css";
+@import "~element-ui/lib/theme-chalk/row.css";
+@import "~element-ui/lib/theme-chalk/col.css";
+@import "~element-ui/lib/theme-chalk/table.css";
+@import "~element-ui/lib/theme-chalk/table-column.css";
+@import "~element-ui/lib/theme-chalk/pagination.css";
+@import "~element-ui/lib/theme-chalk/radio-group.css";
+@import "~element-ui/lib/theme-chalk/radio-button.css";
+@import "~element-ui/lib/theme-chalk/switch.css";
+@import "~element-ui/lib/theme-chalk/date-picker.css";
+@import "~element-ui/lib/theme-chalk/dialog.css";
+@import "~element-ui/lib/theme-chalk/form.css";
+@import "~element-ui/lib/theme-chalk/form-item.css";
+@import "~element-ui/lib/theme-chalk/radio.css";
+@import "~element-ui/lib/theme-chalk/checkbox-group.css";
+@import "~element-ui/lib/theme-chalk/alert.css";
+@import "~element-ui/lib/theme-chalk/tabs.css";
+@import "~element-ui/lib/theme-chalk/tab-pane.css";
+@import "~element-ui/lib/theme-chalk/color-picker.css";
+@import "~element-ui/lib/theme-chalk/button.css";
+@import "~element-ui/lib/theme-chalk/button-group.css";
+@import "~element-ui/lib/theme-chalk/input.css";
+@import "~element-ui/lib/theme-chalk/checkbox.css";
+@import "~element-ui/lib/theme-chalk/select.css";
+@import "~element-ui/lib/theme-chalk/option-group.css";
+@import "~element-ui/lib/theme-chalk/option.css";
+//@import "~element-ui/lib/theme-chalk/collapse.css";
+//@import "~element-ui/lib/theme-chalk/collapse-item.css";
+@import "~element-ui/lib/theme-chalk/popover.css";
+//@import "~element-ui/lib/theme-chalk/slider.css";
+@import "~element-ui/lib/theme-chalk/loading.css";
+//@import "~element-ui/lib/theme-chalk/message.css";
+@import "~element-ui/lib/theme-chalk/notification.css";
 .ff_booking_settings_wrapper {
   .el-menu-demo{
     margin-bottom: 25px;
@@ -9,7 +52,9 @@
     text-transform: capitalize;
   }
 }
-.ff_booking_general_settings{
+.ff_booking_settings_container{
+  background: #fff;
+  padding: 15px 20px;
   .ff_booking_navigation {
     display: block;
     width: 100%;
@@ -33,6 +78,15 @@
       }
     }
 
+  }
+  .pull-right{
+    float: right;
+  }
+  .pull-left{
+    float: left;
+  }
+  .el-select input{
+    background: transparent;
   }
 }
 

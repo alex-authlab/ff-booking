@@ -55,7 +55,6 @@ if (!class_exists('FFBooking')) {
 
         protected function registerHooks($fluentForm)
         {
-            $this->ajaxHooks($fluentForm);
             $this->adminHooks($fluentForm);
             $this->publicHooks($fluentForm);
             (new FF_Booking\Booking\BookingHandler)->init($fluentForm);
@@ -122,7 +121,12 @@ if (!class_exists('FFBooking')) {
          */
         public function adminHooks($app)
         {
-
+            if ( ! is_admin() ) {
+                return;
+            }
+            $ajax = new AjaxHandler();
+            add_action('wp_ajax_handle_booking_ajax_endpoint', [$ajax, 'init']);
+            add_action('wp_ajax_nopriv_handle_booking_ajax_endpoint', [$ajax, 'init']);
         }
 
         public function publicHooks($app)
@@ -130,16 +134,6 @@ if (!class_exists('FFBooking')) {
             $ajax = new FrontEndAjaxHandler();
             add_action('wp_ajax_handle_booking_frontend_endpoint', [$ajax, 'init']);
             add_action('wp_ajax_nopriv_handle_booking_frontend_endpoint', [$ajax, 'init']);
-        }
-
-        /**
-         * Registers ajax hooks.
-         */
-        public function ajaxHooks($app)
-        {
-            $ajax = new AjaxHandler();
-            add_action('wp_ajax_handle_booking_ajax_endpoint', [$ajax, 'init']);
-            add_action('wp_ajax_nopriv_handle_booking_ajax_endpoint', [$ajax, 'init']);
         }
 
     }
