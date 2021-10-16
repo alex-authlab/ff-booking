@@ -24,6 +24,8 @@ import {
     Radio,
     RadioGroup,
     Switch,
+    Step,
+    Steps,
     Tooltip,
     Loading,
     Message,
@@ -36,7 +38,8 @@ Vue.prototype.$loading = Loading.service;
 Vue.prototype.$message = Message;
 Vue.prototype.$notify = Notification;
 
-
+Vue.use(Step);
+Vue.use(Steps);
 Vue.use(Button);
 Vue.use(ButtonGroup);
 Vue.use(Input);

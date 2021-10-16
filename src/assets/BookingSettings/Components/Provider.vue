@@ -45,7 +45,6 @@
                 top="40px"
                 :title="(editing_item.id) ? 'Edit Provider' : 'Add a new Provider'"
                 :visible.sync="show_modal"
-                :append-to-body="true"
                 width="60%">
             <div v-if="show_modal" class="ff_booking_form">
                 <el-form :data="editing_item" label-position="top">

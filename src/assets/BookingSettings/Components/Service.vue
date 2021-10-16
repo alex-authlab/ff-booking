@@ -33,173 +33,188 @@
                 top="40px"
                 :title="(editing_item.id) ? 'Edit Service' : 'Add a new Service'"
                 :visible.sync="show_modal"
-                :append-to-body="true"
                 width="60%">
             <div v-if="show_modal" class="ff_booking_form">
                 <el-form :data="editing_item" label-position="top">
 
-                    <el-form-item label="Service Title">
-                        <el-input type="text" v-model="editing_item.title" placeholder="Service Title"/>
-                        <p>Name of the Service</p>
-                    </el-form-item>
-                    <el-row :gutter="30">
-                        <el-col :span="12">
-                            <el-form-item label="Booking Type">
+                    <el-tabs  v-model="activeTab"  @tab-click="tabClick">
+                        <el-tab-pane label="Service Details" name="details"></el-tab-pane>
+                        <el-tab-pane label="Schedule & Provider" name="settings"></el-tab-pane>
+                        <el-tab-pane label="Required Fields" name="fields"></el-tab-pane>
+                        <el-tab-pane label="Notification Sequence" name="notification_sequence"></el-tab-pane>
+                        <el-tab-pane label="Email Notification" name="email_notification"></el-tab-pane>
+                    </el-tabs>
 
-                                <el-select placeholer="Select Type" v-model="editing_item.booking_type">
-                                    <el-option v-for="(type,value) in booking_types" :key="value" :label="type"
-                                               :value="value"></el-option>
-                                </el-select>
-                                <p> Booking Slot Type </p>
-                            </el-form-item>
-                        </el-col>
+<!--                    details-->
+                    <div v-show="activeTab=='details'">
+                        <el-form-item label="Service Title">
+                            <el-input type="text" v-model="editing_item.title" placeholder="Service Title"/>
+                            <p>Name of the Service</p>
+                        </el-form-item>
+                    </div>
+                    <div v-show="activeTab=='settings'">
+                        <el-row :gutter="30">
+                            <el-col :span="12">
+                                <el-form-item label="Booking Type">
 
-                        <el-col :span="12">
-                            <el-form-item label="Time Format">
+                                    <el-select placeholer="Select Type" v-model="editing_item.booking_type">
+                                        <el-option v-for="(type,value) in booking_types" :key="value" :label="type"
+                                                   :value="value"></el-option>
+                                    </el-select>
+                                    <p> Booking Slot Type </p>
+                                </el-form-item>
+                            </el-col>
 
-                                <el-radio-group v-model="editing_item.time_format">
-                                    <el-radio label="12">12 Hour</el-radio>
-                                    <el-radio label="24">24 Hour</el-radio>
-                                </el-radio-group>
+                            <el-col :span="12">
+                                <el-form-item label="Time Format">
 
-                                <p>Slot Time format </p>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row :gutter="30">
+                                    <el-radio-group v-model="editing_item.time_format">
+                                        <el-radio label="12">12 Hour</el-radio>
+                                        <el-radio label="24">24 Hour</el-radio>
+                                    </el-radio-group>
+
+                                    <p>Slot Time format </p>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row :gutter="30">
 
 
-                        <el-col :span="12">
-                            <el-form-item label="Duration Hour & Minute">
+                            <el-col :span="12">
+                                <el-form-item label="Duration Hour & Minute">
 
-                                <el-time-picker
-                                        v-model="editing_item.duration"
-                                        value-format="HH:mm"
-                                        format="HH:mm"
-                                        :picker-options="{
+                                    <el-time-picker
+                                            v-model="editing_item.duration"
+                                            value-format="HH:mm"
+                                            format="HH:mm"
+                                            :picker-options="{
                          selectableRange:'00:05:00 - 12:00:00',
                              format: 'HH:mm',
                          }"
-                                        placeholder="Select Hour:Minute">
-                                </el-time-picker>
-                                <span>HH:mm</span>
-                                <p> Booking Slot Duration </p>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="Gap Hour & Minute">
-                                <el-time-picker
-                                        v-model="editing_item.gap_time"
-                                        value-format="HH:mm"
-                                        format="HH:mm"
-                                        :picker-options="{
+                                            placeholder="Select Hour:Minute">
+                                    </el-time-picker>
+                                    <span>HH:mm</span>
+                                    <p> Booking Slot Duration </p>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="Gap Hour & Minute">
+                                    <el-time-picker
+                                            v-model="editing_item.gap_time"
+                                            value-format="HH:mm"
+                                            format="HH:mm"
+                                            :picker-options="{
                          selectableRange:'00:05:00 - 11:55:00',
                              format: 'HH:mm',
                          }"
-                                        placeholder="Select Hour:Minute">
-                                </el-time-picker>
-                                <span>HH:mm</span>
-                                <p> Booking Slot Gap </p>
+                                            placeholder="Select Hour:Minute">
+                                    </el-time-picker>
+                                    <span>HH:mm</span>
+                                    <p> Booking Slot Gap </p>
 
 
-                            </el-form-item>
+                                </el-form-item>
 
-                        </el-col>
+                            </el-col>
 
-                    </el-row>
+                        </el-row>
 
-                    <el-row :gutter="30">
-                        <el-col :span="8">
-                            <el-form-item label="Slot Capacity">
-                                <el-input-number v-model="editing_item.slot_capacity" :min="1"
-                                                 :max="20"></el-input-number>
-                                <p>Single Slot Capacity </p>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-form-item label="Max Booking">
-                                <el-input-number v-model="editing_item.max_bookings" :min="1"
-                                                 :max="20"></el-input-number>
-                                <p>Maximum bookings in a day</p>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-form-item label="Calculation Value">
-                                <el-input-number v-model="editing_item.calc_value" :min="0"
-                                                 :max="999"></el-input-number>
-                                <p>Set calculation Value for calculation </p>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
+                        <el-row :gutter="30">
+                            <el-col :span="8">
+                                <el-form-item label="Slot Capacity">
+                                    <el-input-number v-model="editing_item.slot_capacity" :min="1"
+                                                     :max="20"></el-input-number>
+                                    <p>Single Slot Capacity </p>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="Max Booking">
+                                    <el-input-number v-model="editing_item.max_bookings" :min="1"
+                                                     :max="20"></el-input-number>
+                                    <p>Maximum bookings in a day</p>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="Calculation Value">
+                                    <el-input-number v-model="editing_item.calc_value" :min="0"
+                                                     :max="999"></el-input-number>
+                                    <p>Set calculation Value for calculation </p>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
 
 
-                    <el-row :gutter="30">
-                        <el-col :span="8">
-                            <el-form-item label="Show End Time Slot">
-                                <el-radio-group v-model="editing_item.show_end_time">
-                                    <el-radio label="show">Show</el-radio>
-                                    <el-radio label="hide">Hide</el-radio>
-                                </el-radio-group>
-                                <p>Show Booking End Time Slot</p>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-form-item label="Show Booked Slot">
-                                <el-radio-group v-model="editing_item.show_booked_time">
-                                    <el-radio label="show">Show</el-radio>
-                                    <el-radio label="hide">Hide</el-radio>
-                                </el-radio-group>
-                                <p>Show Booked Time Slot</p>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-form-item label="Status">
+                        <el-row :gutter="30">
+                            <el-col :span="8">
+                                <el-form-item label="Show End Time Slot">
+                                    <el-radio-group v-model="editing_item.show_end_time">
+                                        <el-radio label="show">Show</el-radio>
+                                        <el-radio label="hide">Hide</el-radio>
+                                    </el-radio-group>
+                                    <p>Show Booking End Time Slot</p>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="Show Booked Slot">
+                                    <el-radio-group v-model="editing_item.show_booked_time">
+                                        <el-radio label="show">Show</el-radio>
+                                        <el-radio label="hide">Hide</el-radio>
+                                    </el-radio-group>
+                                    <p>Show Booked Time Slot</p>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="Status">
 
-                                <el-radio-group v-model="editing_item.status">
-                                    <el-radio label="active">Active</el-radio>
-                                    <el-radio label="inactive">Inactive</el-radio>
-                                </el-radio-group>
-                                <p>Status</p>
-                            </el-form-item>
-                        </el-col>
+                                    <el-radio-group v-model="editing_item.status">
+                                        <el-radio label="active">Active</el-radio>
+                                        <el-radio label="inactive">Inactive</el-radio>
+                                    </el-radio-group>
+                                    <p>Status</p>
+                                </el-form-item>
+                            </el-col>
 
-                    </el-row>
-                    <el-row>
+                        </el-row>
+                        <el-row>
 
-                        <el-col :span="12">
-                            <el-form-item label="Advanced Booking Days">
-                                <el-input-number v-model="days_value" :min="1" :max="20"></el-input-number>
-                                <span>
+                            <el-col :span="12">
+                                <el-form-item label="Advanced Booking Days">
+                                    <el-input-number v-model="days_value" :min="1" :max="20"></el-input-number>
+                                    <span>
                    <el-select placeholer="Select Forms" v-model="days_unit">
                      <el-option v-for="unit in days_data" :key="unit" :label="unit" :value="unit"></el-option>
                   </el-select>
                 </span>
-                                <p>Allowed advanced days for booking </p>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="Booking Status">
+                                    <p>Allowed advanced days for booking </p>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="Booking Status">
 
-                                <el-select placeholer="Default Status" v-model="editing_item.default_booking_status">
-                                    <el-option v-for="(name,value) in booking_status" :key="value" :label="name"
-                                               :value="value"></el-option>
-                                </el-select>
-                                <p> Default Booking Status </p>
-                            </el-form-item>
-                        </el-col>
+                                    <el-select placeholer="Default Status" v-model="editing_item.default_booking_status">
+                                        <el-option v-for="(name,value) in booking_status" :key="value" :label="name"
+                                                   :value="value"></el-option>
+                                    </el-select>
+                                    <p> Default Booking Status </p>
+                                </el-form-item>
+                            </el-col>
 
-                        <el-col :span="24">
-                            <el-form-item label="Applicable Forms">
-                                <el-select placeholer="Select Forms" style="width: 100%;" multiple
-                                           v-model="editing_item.allowed_form_ids">
-                                    <el-option v-for="(formName, formId) in available_forms" :key="formId"
-                                               :label="formName" :value="formId"></el-option>
-                                </el-select>
-                                <p>Leave blank for applicable for all forms</p>
-                            </el-form-item>
+                            <el-col :span="24">
+                                <el-form-item label="Applicable Forms">
+                                    <el-select placeholer="Select Forms" style="width: 100%;" multiple
+                                               v-model="editing_item.allowed_form_ids">
+                                        <el-option v-for="(formName, formId) in available_forms" :key="formId"
+                                                   :label="formName" :value="formId"></el-option>
+                                    </el-select>
+                                    <p>Leave blank for applicable for all forms</p>
+                                </el-form-item>
 
-                        </el-col>
-                    </el-row>
+                            </el-col>
+                        </el-row>
+
+                    </div>
+
+
 
 
                 </el-form>
@@ -230,6 +245,7 @@
             return {
                 loading: false,
                 saving: false,
+                activeTab: 'details',
                 items: [],
                 days_data: [
                     'Day',
@@ -352,6 +368,8 @@
                 });
 
             },
+            tabClick(tab, e){
+            },
             deleteItem(service) {
                 this.loading = true;
                 this.$post({
@@ -392,5 +410,10 @@
         }
     }
 </script>
+<style>
+    .el-dialog__body {
+        padding: 10px 20px;
+    }
+</style>
 
 
