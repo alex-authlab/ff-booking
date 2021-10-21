@@ -78,6 +78,11 @@ class FrontEndAjaxHandler
             'provider_id' => 'required',
             'form_id' => 'required',
             'date' => 'required',
+        ],[
+            'service_id.required' => 'Service is required',
+            'provider_id.required' => 'Provider is required',
+            'form_id.required' => 'Form missing',
+            'date.required' => 'Date missing',
         ]);
 
         if ($validator->validate()->fails()) {
@@ -85,17 +90,25 @@ class FrontEndAjaxHandler
             wp_send_json([
                 'errors' => $errors,
                 'message' => 'Please fill up all the required fields'
-            ], 423);
-        }
-
-        $timeSlots = (new DateTimeHandler($serviceId,$providerId,$formId,$date))->getTimeSlots();
-        if(count($timeSlots)>0){
-            wp_send_json_success([
-                'time_slots' => $timeSlots
             ]);
         }
+
+        $returnData = (new DateTimeHandler($serviceId, $providerId, $formId, $date))->getTimeSlots();
+        if ( $returnData['success'] == true) {
+            if ( $returnData['slots'] = 'date') {
+                wp_send_json_success([
+                    'time_slots' => 'date'
+                ]);
+            }
+            else if ( is_array($returnData['slots']) && count($returnData['slots']) > 0 ) {
+                wp_send_json_success([
+                    'time_slots' => $returnData['slots']
+                ]);
+            }
+        }
+        else
         wp_send_json([
             'message' => 'No Slot Found'
-        ], 423);
+        ], 201);
     }
 }

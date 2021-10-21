@@ -118,18 +118,21 @@ class AjaxHandler
     public function saveService()
     {
         $service = wp_unslash($_REQUEST['service']);
-
         $validator = fluentValidator($service, [
             'title' => 'required',
-            'show_booked_time' => 'required',
-            'show_end_time' => 'required',
+            'service_type' => 'required',
+            'booking_type' => 'required',
+            'capacity_type' => 'required',
+            'slot_capacity' => 'required',
+            'default_booking_status' => 'required',
+            'range_type' => 'required',
             'max_bookings' => 'required',
             'duration' => 'required',
-            'gap_time' => 'required',
             'slot_capacity' => 'required',
             'status' => 'required'
+        ], [
+            'title.required' => 'The Service Title field is required.'
         ]);
-
         if ($validator->validate()->fails()) {
             $errors = $validator->errors();
             wp_send_json([

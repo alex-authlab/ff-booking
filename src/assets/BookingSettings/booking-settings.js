@@ -74,7 +74,7 @@ locale.use(lang);
 
 
 Object.defineProperties(Vue.prototype, {
-    $date: {
+        $date: {
         get() {
             return dayjs
         }
@@ -85,6 +85,9 @@ Vue.mixin({
     methods: {
         $t(str) {
             return str;
+        },
+        formatDate(val,format='DD/MM/YYYY'){
+            return this.$date(val).format(format)
         },
         $get(data, url=''){
             data.ff_booking_admin_nonce = ff_booking_settings.ff_booking_admin_nonce;

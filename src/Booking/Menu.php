@@ -118,6 +118,14 @@ class Menu
         }
         wp_enqueue_style('ff_booking_settings_css');
         wp_enqueue_script('ff-booking-settings');
+        if (function_exists('wp_enqueue_editor')) {
+            add_filter('user_can_richedit', function ($status) {
+                return true;
+            });
+
+            wp_enqueue_editor();
+            wp_enqueue_media();
+        }
     }
 
 }

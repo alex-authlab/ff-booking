@@ -244,17 +244,32 @@ class FF_booking_handler {
             .then(response => {
                 if (response.success == true) {
                     this.generateTimeSlots(response)
+                    return;
                 }
+                jQuery('.ff-booking-loader').remove();
+                let $slot = this.$form.find(".ff-time-slot-container")
+                if (!$slot.length) {
+                    jQuery('<div/>', {
+                        class: 'ff-time-slot-container '
+                    }).appendTo(this.$form.find('.ff-booking-container'));
+                    $slot = jQuery('.ff-time-slot-container');
+                }
+                $slot.addClass('error text-danger');
+                $slot.html(response.message)
             })
             .fail((errors) => {
                 console.log(errors)
             })
             .always(() => {
-
+                jQuery('.ff-booking-loader').remove();
             });
     }
 
     generateTimeSlots(res) {
+
+        if(res.data.time_slots == 'date'){
+            return; //full date does not need time slot
+        }
         let $slot = this.$form.find(".ff-time-slot-container")
         if (!$slot.length) {
             jQuery('<div/>', {

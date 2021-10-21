@@ -134,11 +134,22 @@ class DateTimeHandler
         $provider = $this->getProviderData();
         $service = $this->getServiceData();
         if (!$provider || !$service) {
-            $data['success'] = false;
-            $data['message'] = "Provider or Service Not Found";
-            return $data;
+            return [
+                'success'=>false,
+                'message'=> "Provider or Service Not Found"
+            ];
         }
-        return $this->getCalculatedSlots($provider, $service);
+        $slotType = ArrayHelper::get($service, 'booking_type');
+        if($slotType == 'date'){
+            return [
+                'success'=>true,
+                'slots'=> 'date'
+            ];
+        }
+        return [
+            'success'=>true,
+            'slots'=>$this->getCalculatedSlots($provider, $service)
+        ];
     }
 
 //    todo : add time format & zone settings
@@ -241,6 +252,7 @@ class DateTimeHandler
      */
     private function getCalculatedSlots($provider, $service)
     {
+
         $regularSlots = $this->getRegularSlots($provider, $service);
         $showBookedTime = ArrayHelper::get($service, 'show_booked_time') == 'show';
         $slotCapacity = intval($service['slot_capacity']);
@@ -430,4 +442,7 @@ class DateTimeHandler
         return true;
     }
 
+
 }
+
+

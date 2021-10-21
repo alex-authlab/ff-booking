@@ -37,15 +37,17 @@
 @import "~element-ui/lib/theme-chalk/select.css";
 @import "~element-ui/lib/theme-chalk/option-group.css";
 @import "~element-ui/lib/theme-chalk/option.css";
-//@import "~element-ui/lib/theme-chalk/collapse.css";
-//@import "~element-ui/lib/theme-chalk/collapse-item.css";
+@import "~element-ui/lib/theme-chalk/collapse.css";
+@import "~element-ui/lib/theme-chalk/collapse-item.css";
 @import "~element-ui/lib/theme-chalk/popover.css";
-//@import "~element-ui/lib/theme-chalk/slider.css";
+@import "~element-ui/lib/theme-chalk/slider.css";
 @import "~element-ui/lib/theme-chalk/loading.css";
 //@import "~element-ui/lib/theme-chalk/message.css";
 @import "~element-ui/lib/theme-chalk/notification.css";
 @import "~element-ui/lib/theme-chalk/step.css";
 @import "~element-ui/lib/theme-chalk/steps.css";
+@import "~element-ui/lib/theme-chalk/timeline.css";
+@import "~element-ui/lib/theme-chalk/timeline-item.css";
 .ff_booking_settings_wrapper {
   .el-menu-demo{
     margin-bottom: 25px;
@@ -107,10 +109,6 @@
       background-color: transparent;
     }
   }
-
-}
-
-.ff_booking_modal_settings {
   .el-select input{
     background: transparent;
   }
@@ -129,4 +127,20 @@
       font-size: 12px;
     }
   }
+
 }
+
+.el-form-item__content {
+  line-height: 10px;
+}
+
+//.el-dropdown-list-wrapper {
+//  padding: 0;
+//
+//  .group-title {
+//    display: block;
+//    padding: 5px 10px;
+//    background-color: #82848a;
+//    color: #fff;
+//  }
+//}
