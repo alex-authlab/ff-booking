@@ -86,8 +86,21 @@ Vue.mixin({
         $t(str) {
             return str;
         },
-        formatDate(val,format='DD/MM/YYYY'){
+        formatDate(val,format='D MMM YYYY'){
             return this.$date(val).format(format)
+        },
+        formatTime: function (value) {
+            if (value) {
+                const parts = value.split(":");
+                let hour = parts[0];
+                let min = parts[1];
+                let period = 'am';
+                if(hour > 12){
+                    hour -=12;
+                    period = 'pm';
+                }
+                return hour + ":" + min + ' '+period;
+            }
         },
         $get(data, url=''){
             data.ff_booking_admin_nonce = ff_booking_settings.ff_booking_admin_nonce;

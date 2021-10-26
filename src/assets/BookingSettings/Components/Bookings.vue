@@ -56,12 +56,16 @@
                         >
                         </el-table-column>
                         <el-table-column
-                                prop="booking_date"
                                 label="Date">
+                            <template slot-scope="props">
+                                {{ formatDate( props.row.formatDate )}}
+                            </template>
                         </el-table-column>
                         <el-table-column
-                                prop="booking_time"
                                 label="Time">
+                            <template slot-scope="props">
+                                {{ formatTime( props.row.booking_time )}}
+                            </template>
                         </el-table-column>
 
 
@@ -134,18 +138,11 @@
 
         <div class="action_right">
         </div>
+        <!-- Booking Info -->
 
-        <el-dialog
-                top="40px"
-                :title="'Booking Info'"
-                :visible.sync="show_modal"
-                :append-to-body="true"
-                :before-close="handleClose"
-                width="60%">
             <div v-if="show_modal" class="ff_booking_form">
                 <router-view></router-view>
             </div>
-        </el-dialog>
 
 
     </div>
@@ -293,17 +290,11 @@
             },
             showDetails(id) {
                 this.$router.push({
-                    name: 'BookingInfo', params: {bookingId: id},
+                    name: 'BookingInfo', params: {bookingId: id,show_modal : true},
                 });
                 this.show_modal = true;
             },
-            handleClose() {
-                this.show_modal = false;
-                this.$router.push({
-                    name: 'Bookings',
-                });
-                this.getBookings();
-            }
+
 
         },
         computed: {},

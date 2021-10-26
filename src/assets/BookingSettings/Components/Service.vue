@@ -23,7 +23,7 @@
                             {{ scope.row.allowed_future_days }}
                         </span>
                         <span v-else>
-                            {{ formatDate(scope.row.allowed_future_date_range[0], 'D MMM, YYYY') }} - {{ formatDate(scope.row.allowed_future_date_range[1], 'D MMM, YYYY') }}
+                            {{ formatDate(scope.row.allowed_future_date_range[0]) }} - {{ formatDate(scope.row.allowed_future_date_range[1]) }}
                         </span>
 
                     </template>
@@ -242,20 +242,7 @@
                             <el-collapse-item title="Buffer Time" name="time">
                                 <el-row :gutter="30">
                                     <el-col :span="12">
-                                        <el-form-item label="Before">
-                                            <el-time-picker
-                                                    v-model="editing_item.gap_time_before"
-                                                    value-format="HH:mm"
-                                                    format="HH:mm"
-                                                    :picker-options="{
-                                             selectableRange:'00:05:00 - 11:55:00',
-                                                 format: 'HH:mm',
-                                             }"
-                                                    placeholder="Select HH:MM">
-                                            </el-time-picker>
-                                            <p> Before Slot Start Gap </p>
 
-                                        </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
                                         <el-form-item label="After">
