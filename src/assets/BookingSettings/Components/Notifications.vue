@@ -26,8 +26,7 @@
         },
         methods: {
             updateEmail(email) {
-                console.log('here')
-                console.log(email)
+
                 this.notifications[email.key] = email.value;
                 this.$emit('update-notifications', this.notifications);
             },
@@ -38,5 +37,9 @@
                 return {};
             }
         },
+        watch:{
+
+        }
+
     }
 </script>

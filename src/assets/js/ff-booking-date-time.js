@@ -19,6 +19,7 @@ class FF_booking_handler {
         this.serviceElmClass = '.ff_booking_service';
         this.providerElmClass = '.ff_booking_provider';
         this.dateTimeElmClass = '.ff-booking-date-time';
+        this.booking_type ='';
     }
 
     init() {
@@ -163,7 +164,7 @@ class FF_booking_handler {
                 let $maskLoader = that.$form.find(".ff-booking-loading-mask")
                 $maskLoader.remove();
                 if (res.success == true) {
-
+                    that.booking_type = res.data.dates_data.booking_type;
                     // disable fullbooked
                     let disabledDates = res.data.dates_data.disabled_dates
                     if (!disabledDates) {
@@ -207,8 +208,15 @@ class FF_booking_handler {
         let targetFp = document.getElementById(datepickerElm.attr('id'))._flatpickr;
         let that = this;
         targetFp.config.onChange.push(function (selectedDates, dateStr, instance) {
-            let selectedDate = targetFp.formatDate(selectedDates[0], "Y-m-d")
-            that.getTimeSlots(targetFp, selectedDate)
+            if(that.booking_type == 'date_slot'){
+                //set input value date
+                let formattedDate = targetFp.formatDate(targetFp.selectedDates[0], "Y-m-d")
+                datepickerElm.val(formattedDate + ' ' + '00:00:00')
+            }else if(that.booking_type == 'time_slot'){
+                let selectedDate = targetFp.formatDate(selectedDates[0], "Y-m-d")
+                that.getTimeSlots(targetFp, selectedDate)
+            }
+
         });
 
     }
@@ -267,9 +275,6 @@ class FF_booking_handler {
 
     generateTimeSlots(res) {
 
-        if(res.data.time_slots == 'date'){
-            return; //full date does not need time slot
-        }
         let $slot = this.$form.find(".ff-time-slot-container")
         if (!$slot.length) {
             jQuery('<div/>', {
@@ -281,6 +286,10 @@ class FF_booking_handler {
         jQuery.each(res.data.time_slots, function (index, slot) {
             let booked = '';
             let input = '';
+            let remainingSlot = '';
+            if(slot.remaining_slot){
+                remainingSlot = `<div class ='ff-booking-slot-rem'> ${slot.remaining_slot} </div>`;
+            }
             if (slot.booked && slot.booked === true) {
                 booked = ' ff-booked-slot ff-el-booking-tootltip';
             } else {
@@ -288,7 +297,7 @@ class FF_booking_handler {
             }
             slots += '<div data-content="Slot Booked" class=" ff-el-form-check ff-el-form-check-   ' + booked + ' ">' +
                 '<label class="ff-el-form-check-label" for="input_radio_ff_booking_' + index + '">' +
-                '<span>' + slot.label + '</span>' +
+                '<span>' + slot.label + remainingSlot  + '</span>' +
                 input +
                 '</label>' +
                 '</div>';

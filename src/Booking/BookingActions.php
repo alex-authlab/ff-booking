@@ -43,7 +43,6 @@ class BookingActions
         $this->setBookingInputs();
         $this->validate();
         add_action('fluentform_submission_inserted', array($this, 'setBookingInputsValues'), 10, 3);
-        add_action('fluentform_submission_inserted',array($this,''),10,3);
     }
 
     private function setSubmissionData($insertData)
@@ -72,8 +71,10 @@ class BookingActions
         $bookingData = $this->bookingInputValues;
         $bookingData['form_id'] = $form->id;
         $bookingData['entry_id'] = $entryId;
+        $bookingData['booking_hash'] = md5($form->id . '_booking_s_' . $bookingData['service_id'] . '_p_' . $bookingData['provider_id'] . '_' . date('Y-m-d') . '-' . time() . '-' . mt_rand(100, 999));
         $bookingData['booking_status'] = $this->getDefaultStatus($bookingData['service_id']);
         $this->bookingInputValues = $bookingData;
+
         $this->insertBooking($bookingData);
     }
 
@@ -98,13 +99,17 @@ class BookingActions
             $element = ArrayHelper::get($bookingInput, 'element');
             if ($element == 'booking_datetime') {
                 $formattedData = $this->getFormattedDateTime($data[$name], $formattedData);
+                $emailInput = ArrayHelper::get($bookingInput,'settings.target_email');
+                $nameInput = ArrayHelper::get($bookingInput,'settings.target_name');
+                $formattedData['email'] = $data[$emailInput];
+                $formattedData['name'] = maybe_serialize($data[$nameInput]);
+
             } elseif ($element == 'ff_booking_provider') {
                 $formattedData['provider_id'] = $data[$name];
             } elseif ($element == 'ff_booking_service') {
                 $formattedData['service_id'] = $data[$name];
             }
         }
-
         $this->bookingInputValues = $formattedData;
     }
 
@@ -137,9 +142,13 @@ class BookingActions
         return $formattedData;
     }
 
-    private function insertBooking(array $formattedData)
+    private function insertBooking( $bookingData)
     {
-        $this->insertId = (new BookingModel())->insert($formattedData);
+
+        $this->insertId = (new BookingModel())->insert($bookingData);
+        do_action('ff_booking_inserted', $this->insertId ,'new',$bookingData);
+        do_action('ff_booking_status_changing',  $this->insertId, $bookingData['booking_status'],$bookingData);
+
     }
 
     private function validate()
@@ -150,7 +159,7 @@ class BookingActions
         $bookingDate = ArrayHelper::get($values,'booking_date');
         $bookingTime = ArrayHelper::get($values,'booking_time');
         //valid date
-        $response = (new DateTimeHandler($serviceId,$providerId,$this->form->id,$bookingDate))->isValidData($bookingTime);
+        $response = (new DateTimeHandler($serviceId,$providerId,$this->form->id,$bookingDate))->isValidSlot($bookingTime);
         if($response['status'] == false){
             wp_send_json(['errors' => $response['message']], 422);
         }

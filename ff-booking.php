@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: FF Booking
+Plugin Name: FF Simple Booking
 Description: Booking Test
 Version: 1.0
 Author: WP Fluent Forms
@@ -18,6 +18,7 @@ use FF_Booking\Booking\FrontEndAjaxHandler;
 defined('ABSPATH') or die;
 
 define('FF_BOOKING_VER', '1.0');
+define('FF_BOOKING_SLUG', 'ff-simple-booking');
 define('FF_BOOKING_DIR_URL', plugin_dir_url(__FILE__));
 define('FF_BOOKINGDIR_PATH', plugin_dir_path(__FILE__));
 define('FF_BOOKING_DIR_FILE', __FILE__);
@@ -27,12 +28,6 @@ include FF_BOOKINGDIR_PATH . 'autoload.php';
 if (!class_exists('FFBooking')) {
     class FFBooking
     {
-
-        /**
-         * Bootstrap the Plugin
-         * @param FluentForm\Framework\Foundation\Application $app
-         * @return void
-         */
         public function boot()
         {
             if (!defined('FLUENTFORM')) {
@@ -57,6 +52,7 @@ if (!class_exists('FFBooking')) {
         {
             $this->adminHooks($fluentForm);
             $this->publicHooks($fluentForm);
+            $this->loadTextDomain();
             (new FF_Booking\Booking\BookingHandler)->init($fluentForm);
         }
 
@@ -121,7 +117,7 @@ if (!class_exists('FFBooking')) {
          */
         public function adminHooks($app)
         {
-            if ( ! is_admin() ) {
+            if (!is_admin()) {
                 return;
             }
             $ajax = new AjaxHandler();
@@ -134,6 +130,11 @@ if (!class_exists('FFBooking')) {
             $ajax = new FrontEndAjaxHandler();
             add_action('wp_ajax_handle_booking_frontend_endpoint', [$ajax, 'init']);
             add_action('wp_ajax_nopriv_handle_booking_frontend_endpoint', [$ajax, 'init']);
+        }
+
+        private function loadTextDomain()
+        {
+            load_plugin_textdomain(FF_BOOKING_SLUG, false, dirname(plugin_basename(__FILE__)) . '/resources/languages');
         }
 
     }

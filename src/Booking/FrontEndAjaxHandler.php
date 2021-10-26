@@ -95,12 +95,7 @@ class FrontEndAjaxHandler
 
         $returnData = (new DateTimeHandler($serviceId, $providerId, $formId, $date))->getTimeSlots();
         if ( $returnData['success'] == true) {
-            if ( $returnData['slots'] = 'date') {
-                wp_send_json_success([
-                    'time_slots' => 'date'
-                ]);
-            }
-            else if ( is_array($returnData['slots']) && count($returnData['slots']) > 0 ) {
+           if ( is_array($returnData['slots']) && count($returnData['slots']) > 0 ) {
                 wp_send_json_success([
                     'time_slots' => $returnData['slots']
                 ]);
@@ -108,7 +103,7 @@ class FrontEndAjaxHandler
         }
         else
         wp_send_json([
-            'message' => 'No Slot Found'
+            'message' => $returnData['message']
         ], 201);
     }
 }

@@ -13,7 +13,7 @@
                 </el-form-item>
             </el-col>
         </el-row>
-
+        <!--email editor -->
         <el-dialog
                 top="40px"
                 :title="`Edit ${name} Template`"
@@ -23,15 +23,13 @@
                 width="60%">
             <el-form-item class="notification_modal">
                 <!--Subject-->
-                <el-form-item label="Subject" class="is-required">
+                <el-form-item label="Subject" >
 
                     <input-popover fieldType="text"
                                    v-model="email.subject"
                                    :data="editorShortcodes"
                     ></input-popover>
-
                 </el-form-item>
-
                 <!--message-->
                 <el-form-item label="Email Body" class="is-required">
                     <input-popover :rows="10" v-if="email.asPlainText == 'yes'" fieldType="textarea"
@@ -47,10 +45,10 @@
                             :height="300"
                             v-model="email.body">
                     </wp_editor>
-                    <el-checkbox style="margin-bottom: 10px;" true-label="yes" false-label="no"
-                                 v-model="email.asPlainText">
-                        Send Email as RAW HTML Format
-                    </el-checkbox>
+<!--                    <el-checkbox style="margin-bottom: 10px;" true-label="yes" false-label="no"-->
+<!--                                 v-model="email.asPlainText">-->
+<!--                        Send Email as RAW HTML Format-->
+<!--                    </el-checkbox>-->
                 </el-form-item>
                 <el-form-item v-if="time != false" :label="`Send ${time}`">
                     <delay-counter v-model="email.time"></delay-counter>
@@ -67,10 +65,14 @@
     import wpEditor from "./_wp_editor";
     import inputPopover from "./input-popover";
     import delayCounter from "./delayCounter";
-
     export default {
         name: "Notification",
-        props: ['emailData', 'name', 'email_key' , 'time'],
+        props: {
+            name: String,
+            email_key: String,
+            emailData : Object,
+            time: String|Boolean,
+        },
         components: {
             'wp_editor': wpEditor,
             inputPopover,
@@ -80,32 +82,24 @@
             return {
                 componentKey: false,
                 saving: false,
-                editorShortcodes: [
-                    {
-                        "shortcodes": {
-                            "{inputs.names}": "Name",
-                            "{inputs.names.first_name}": "names[First Name]",
-                            "{inputs.names.last_name}": "names[Last Name]",
-                            "{inputs.email}": "Email",
-                            "{inputs.file-upload}": "File Upload",
-                            "{inputs.subject}": "Subject",
-                            "{inputs.message}": "Your Message",
-                            "{inputs.signature}": "Signature"
-                        },
-                        "title": "Input Options"
-                    },
-                ],
-                email_editor_visible: false,
-                email: {
-                    status: 'off',
-                    subject: '',
+                email:{
+                    subject: 'Booking Notification',
                     message: '',
-                    body: '',
+                    body: '{event_data}',
                     time: '',
                     asPlainText: '',
                     time_direction:''
-
-                }
+                },
+                editorShortcodes: [
+                    {
+                        "shortcodes": {
+                            "{inputs.service}": "Service Name",
+                            "{inputs.provider}": "Provider Name",
+                        },
+                        "title": "Booking Shortcodes"
+                    },
+                ],
+                email_editor_visible: false,
             }
         },
         methods: {
@@ -123,13 +117,10 @@
 
         },
         mounted() {
-            if(this.emailData){
+            if(Object.keys(this.emailData).length){
                 this.email = this.emailData
             }
-        }
+
+        },
     }
 </script>
-
-<style scoped>
-
-</style>

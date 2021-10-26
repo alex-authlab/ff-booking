@@ -19,7 +19,7 @@
                 <el-table-column label="Duration" prop="duration"/>
                 <el-table-column label="Range">
                     <template slot-scope="scope">
-                        <span v-if="scope.row.range_type='days'">
+                        <span v-if="scope.row.range_type == 'days'">
                             {{ scope.row.allowed_future_days }}
                         </span>
                         <span v-else>
@@ -589,9 +589,9 @@
 
             },
             editItem(item) {
+                this.errors = false;
                 const editing_item = JSON.parse(JSON.stringify(item));
                 this.$set(this, 'editing_item', editing_item);
-
                 if (!this.editing_item.range_type) {
                     this.editing_item.range_type = 'days';
                 }

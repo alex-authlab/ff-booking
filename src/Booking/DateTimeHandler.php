@@ -55,8 +55,9 @@ class DateTimeHandler
                 $formattedHoliday[] = date($dateFormat, strtotime($day));
             }
         }
-
         $data['disabled_dates'] = array_merge($formattedHoliday, $this->getFullBookedDate());
+
+        $data['booking_type'] = ArrayHelper::get($service, 'booking_type');
         return $data;
     }
 
@@ -66,12 +67,10 @@ class DateTimeHandler
         $provider = $this->getProviderData();
         $service = $this->getServiceData();
         if (!$provider || !$service) {
-            $data['success'] = false;
-            $data['message'] = "Provider or Service Not Found";
-            return $data;
+            return false;
         }
-        $regularSlots = $this->getRegularSlots($provider, $service);
 
+        $regularSlots = $this->getRegularSlots($provider, $service);
         list($minDate, $maxDate) = $this->allowedDateRange($service);
 
         $dateFormat = BookingHelper::getBookingFieldDateFormat($this->formId);
@@ -83,13 +82,15 @@ class DateTimeHandler
             $maxDate
         );
         $fullBookedDate = [];
-        $max = count($regularSlots);
-        $maxBookings = intval($service['max_bookings']);
-        if ($maxBookings > 1) {
-            $max = $maxBookings;
+        if($service['capacity_type'] == 'multiple'){
+            $maxCapacity = intval($service['slot_capacity']) * count($regularSlots);
+        }elseif ($service['capacity_type'] == 'single'){
+            $maxCapacity = count($regularSlots);
         }
+        $maxBookings = intval($service['max_bookings']);
+
         foreach ($bookedDates as $date) {
-            if ($date->total_booked >= $max) {
+            if ($date->total_booked >= $maxBookings || $date->total_booked >= $maxCapacity ) {
                 if ($formatted) {
                     $date = date($dateFormat, strtotime($date->booking_date));
                 } else {
@@ -123,9 +124,21 @@ class DateTimeHandler
      */
     private function allowedDateRange($service)
     {
-        $futureDays = ArrayHelper::get($service, 'allowed_future_days');
-        $startDate = date('Y-m-d', strtotime('+1 days'));
-        $endDate = date('Y-m-d', strtotime('+' . $futureDays));
+        $rangeType = ArrayHelper::get($service, 'range_type');
+        $startDate = date('Y-m-d');
+
+        if ($rangeType == 'days') {
+            $futureDays = ArrayHelper::get($service, 'allowed_future_days');
+            $endDate = date('Y-m-d', strtotime('+' . $futureDays));
+        } elseif ($rangeType == 'date_range') {
+            $ranges = ArrayHelper::get($service, 'allowed_future_date_range');
+            $startDate = $ranges[0];
+            $endDate = $ranges[1];
+        }
+        //check disabled booking before day settings
+        if ($startDate <= date('Y-m-d')) {
+            $startDate = date('Y-m-d', strtotime(ArrayHelper::get($service, 'disable_booking_before')));
+        }
         return array($startDate, $endDate);
     }
 
@@ -135,59 +148,62 @@ class DateTimeHandler
         $service = $this->getServiceData();
         if (!$provider || !$service) {
             return [
-                'success'=>false,
-                'message'=> "Provider or Service Not Found"
+                'success' => false,
+                'message' => "Provider or Service Not Found"
             ];
         }
-        $slotType = ArrayHelper::get($service, 'booking_type');
-        if($slotType == 'date'){
+        $slots = $this->getCalculatedSlots($provider, $service);
+        if (is_array($slots) && (count($slots) > 0)) {
             return [
-                'success'=>true,
-                'slots'=> 'date'
+                'success' => true,
+                'slots' => $slots
             ];
         }
         return [
-            'success'=>true,
-            'slots'=>$this->getCalculatedSlots($provider, $service)
+            'success' => false,
+            'message' => "No Slot Found"
         ];
     }
 
-//    todo : add time format & zone settings
-    public function generateTimeSlot($interval, $start_time, $end_time, $gapTime = '00:00', $with_end_time = false)
-    {
+//    todo : zone settings
+    public function generateTimeSlot(
+        $interval,
+        $start_time,
+        $end_time,
+        $gapTimeBefore = '00:00',
+        $gapTimeAfter = '00:30',
+        $with_end_time = false
+    ) {
         $timeZone = $this->getTimeZone();
         $timeFormat = $this->getTimeFormat();
 
-        $gapTime = $this->timeDurationLength($gapTime, $timeZone);
-        $addTime = $this->timeDurationLength($interval, $timeZone);
+        $gapTime = $this->timeDurationLength($gapTimeBefore);
+        $duration = $this->timeDurationLength($interval);
         $start = new \DateTime($start_time);
-        $end = new \DateTime($end_time);
 
-        $startTime = $start->format($timeFormat);
-//        create datetime with timezone
-//        $now = new \DateTime();
-//        $now->setTimezone(new \DateTimeZone( $timeZone));
-//        vd($now->format('d-m-Y h:i'));
+        $start = new \DateTime($start_time, new \DateTimeZone($timeZone));
+
+        $end = new \DateTime($end_time, new \DateTimeZone($timeZone));
 
 
-        $endTime = $end->format($timeFormat);
         $i = 0;
         $time = [];
-        while (strtotime($startTime) <= strtotime($endTime)) {
-            $start = $startTime;
-            $end = date($timeFormat, strtotime($addTime, strtotime($startTime)));
-            $startTime = date($timeFormat, strtotime($addTime, strtotime($startTime)));
-            $startTime = date($timeFormat, strtotime($gapTime, strtotime($startTime)));
 
-            if (strtotime($startTime) <= strtotime($endTime)) {
-                $time[$i]['label'] = $start;
-                if ($with_end_time) {
-                    $time[$i]['label'] = $start . ' - ' . $end;
-                }
-                $time[$i]['value'] = $start;
+
+        while ($start->format('U') <= $end->format('U')) {
+            $slotStart = $start->format($timeFormat);
+            //add duration
+            $slotEnd = $start->modify($duration)->format($timeFormat);
+            $time[$i]['label'] = $slotStart;
+            if ($with_end_time) {
+                $time[$i]['label'] = $slotStart . ' - ' . $slotEnd;
             }
+            $time[$i]['value'] = $slotStart;
+            //add gap time
+            $start->modify($gapTime);
             $i++;
         }
+
         return $time;
     }
 
@@ -206,14 +222,17 @@ class DateTimeHandler
     }
 
     /**
+     * To modify time : 01:30 => 1 Hour 30 minutes
+     *
      * @param $interval
      * @param $timeZone
      * @return string
      * @throws \Exception
      */
-    private function timeDurationLength($interval, $timeZone)
+    private function timeDurationLength($interval)
     {
         $addTime = '';
+        $timeZone = $this->getTimeZone();
         $fraction = explode(':', $interval);
         $interval = new \DateTime($interval, new \DateTimeZone($timeZone));
 
@@ -221,7 +240,7 @@ class DateTimeHandler
             $addTimeHour = '+' . $interval->format('g') . ' Hour';
             $addTime = $addTimeHour;
         }
-        $addTimeMin = '+' . $interval->format('i') . ' minutes';
+        $addTimeMin = ' +' . $interval->format('i') . ' minutes';
         $addTime .= $addTimeMin;
         return $addTime;
     }
@@ -229,12 +248,12 @@ class DateTimeHandler
     private function getBookedSlots()
     {
         $service = $this->getServiceData();
-        $range = $service['allowed_future_days'];
+        $ranges = $this->allowedDateRange($service);
         $slots = (new BookingModel())->bookedSlots(
             $this->serviceId,
             $this->providerId,
             $this->formId,
-            $range,
+            $ranges,
             $this->date
         );
         $timeFormat = $this->getTimeFormat();
@@ -246,35 +265,52 @@ class DateTimeHandler
     }
 
     /**
+     * Calculate regular slot with booked slot and additional settings
+     * Return formatted values for user
      * @param $provider
      * @param $service
      * @return array
      */
     private function getCalculatedSlots($provider, $service)
     {
-
         $regularSlots = $this->getRegularSlots($provider, $service);
-        $showBookedTime = ArrayHelper::get($service, 'show_booked_time') == 'show';
-        $slotCapacity = intval($service['slot_capacity']);
         $bookedSlots = $this->getBookedSlots();
+        $showBookedTime = ArrayHelper::get($service, 'show_booked_time') == 'show';
+        $showRemainingSlot = ArrayHelper::get($service, 'show_remaining_slot') == 'show';
 
         $formattedSlots = [];
         foreach ($regularSlots as $slot) {
             if (in_array($slot['value'], $bookedSlots)) {
-                $booked = $this->checkSlotCapacity($slot, $bookedSlots, $slotCapacity);
+                $booked = $this->isBooked($service, $slot, $bookedSlots);
                 if ($showBookedTime) {
-                    $formattedSlots[] = [
+                    $data = [
                         'label' => $slot['label'],
                         'value' => $slot['value'],
                         'booked' => $booked,
                     ];
+                    if ($showRemainingSlot) {
+                        $remainingSlot = $this->getRemainingSlot($service, $slot, $bookedSlots);
+                        $data['remaining_slot'] = sprintf(
+                            __('%d slot remaining', FF_BOOKING_SLUG),
+                            $remainingSlot
+                        );
+                    }
+                    $formattedSlots[] = $data;
                 }
                 continue;
             }
-            $formattedSlots[] = [
+            $data = [
                 'label' => $slot['label'],
                 'value' => $slot['value'],
             ];
+            if ($showRemainingSlot && ArrayHelper::get($service, 'capacity_type') == 'multiple') {
+                $remainingSlot = ArrayHelper::get($service, 'slot_capacity');
+                $data['remaining_slot'] = sprintf(
+                    __('%d slot remaining', FF_BOOKING_SLUG),
+                    $remainingSlot
+                );
+            }
+            $formattedSlots[] = $data;
         }
         return $formattedSlots;
     }
@@ -303,24 +339,33 @@ class DateTimeHandler
         $startTime = ArrayHelper::get($provider, 'start_time');
         $endTime = ArrayHelper::get($provider, 'end_time');
         $duration = ArrayHelper::get($service, 'duration');
-        $gapTime = ArrayHelper::get($service, 'gap_time');
+        $gapTimeBefore = ArrayHelper::get($service, 'gap_time_before');
+        $gapTimeAfter = ArrayHelper::get($service, 'gap_time_after');
         $show_end_time = ArrayHelper::get($service, 'show_end_time') == 'show';
-        return $this->generateTimeSlot($duration, $startTime, $endTime, $gapTime, $show_end_time);
+        return $this->generateTimeSlot($duration, $startTime, $endTime, $gapTimeBefore, $gapTimeAfter, $show_end_time);
     }
 
     /**
      * Validate slot
      * Save time as 24 hour in backend
-     * When bookinID passed ingnore current slot for updating pupose
+     * When bookinID passed ignnore current slot for updating pupose
      * @param $provider
      * @param $service
      * @return array
      */
 
-    public function isValidData($time, $bookingId = false)
+//    @todo 1. disbale before time, timezone, adjust booking entry & validation ,emails
+    public function isValidSlot($time, $bookingId = false)
     {
         $provider = $this->getProviderData();
         $service = $this->getServiceData();
+
+        if(!$provider || !$service){
+            return [
+                'status' => false,
+                'message' => 'Invalid Data, try again'
+            ];
+        }
 
         if (!in_array($this->serviceId, $provider['assigned_services'])) {
             return [
@@ -376,7 +421,7 @@ class DateTimeHandler
         $validSlots = array_column($validSlots, 'value');
 
         $format = $this->getTimeFormat();
-        $selectedTime = BookingHelper::convertTime($format, $time);
+        $selectedTime = date($format, strtotime($time)) ;
 
         if (!in_array($selectedTime, $validSlots)) {
             return [
@@ -393,13 +438,7 @@ class DateTimeHandler
             $time,
             $bookingId
         );
-        //total slot capacity on a single timeslot
-        if ($bookedSlotsByTime->total >= intval($service['slot_capacity'])) {
-            return [
-                'status' => false,
-                'message' => 'This Slot is Booked'
-            ];
-        }
+
         $bookedSlotsByDate = (new BookingModel())->getBookingsOfSingleDay(
             $this->serviceId,
             $this->providerId,
@@ -407,11 +446,52 @@ class DateTimeHandler
             $this->date,
             $time = null
         );
+
+        //booking type timeslot
+        if ($service['booking_type'] == 'time_slot') {
+            //single booking validation
+            if ($bookedSlotsByTime->total >= 1 && $service['capacity_type'] == 'single') {
+                return [
+                    'status' => false,
+                    'message' => __('This Slot is Booked', FF_BOOKING_SLUG)
+                ];
+            } //multiple booking
+            else {
+                if ($bookedSlotsByTime->total >= intval($service['slot_capacity']) && $service['capacity_type'] == 'multiple') {
+                    return [
+                        'status' => false,
+                        'message' => __('No more Slot is left on this time', FF_BOOKING_SLUG)
+                    ];
+                }
+            }
+        } else {
+            //booking type dateslot
+            if ($service['booking_type'] == 'date_slot') {
+                //if slot type is single
+                if ($service['capacity_type'] == 'single' && $bookedSlotsByDate->total >= 1) {
+                    return [
+                        'status' => false,
+                        'message' => __('This date is already booked', FF_BOOKING_SLUG)
+                    ];
+                }
+                //if slot type is multiple
+                else {
+                    if ($service['capacity_type'] == 'multiple' && $bookedSlotsByDate->total >= intval($service['slot_capacity'])) {
+                        return [
+                            'status' => false,
+                            'message' => __('No more Slot is left on this date', FF_BOOKING_SLUG)
+                        ];
+                    }
+                }
+            }
+        }
+
+
         //total slot capacity on a single a day
         if ($bookedSlotsByDate->total >= intval($service['max_bookings'])) {
             return [
                 'status' => false,
-                'message' => 'No more Slots on this date'
+                'message' => 'No more slot remaining on this date'
             ];
         }
         $d = \DateTime::createFromFormat('Y-m-d', $this->date);
@@ -428,18 +508,70 @@ class DateTimeHandler
         ];
     }
 
-    /*
-     * Check slot capacity if capacity is 1 then its booked or check with bookedslot count
-     */
-    private function checkSlotCapacity($slot, $bookedSlots, $slotCapacity)
-    {
-        $bookedSlotCount = array_count_values($bookedSlots);
-        $time = $slot['value'];
 
-        if ($slotCapacity > 1 && $bookedSlotCount[$time] < $slotCapacity) {
+    /**
+     * @param $service
+     * @param $slot
+     * @param $bookedSlots
+     * @return bool
+     */
+    private function isBooked($service, $slot, $bookedSlots)
+    {
+        $capacityType = ArrayHelper::get($service, 'capacity_type');
+        $capacityValue = ArrayHelper::get($service, 'slot_capacity');
+        if ($capacityType == 'single') {
+            return true;
+        } else {
+            if ($capacityType == 'multiple') {
+                $bookedSlotCount = array_count_values($bookedSlots);
+                $slotVal = $slot['value'];
+
+                if ($bookedSlotCount[$slotVal] < $capacityValue) {
+                    return false;
+                }
+                return true;
+            }
+        }
+    }
+
+    private function getRemainingSlot($service, $slot, $bookedSlots)
+    {
+        $capacityValue = ArrayHelper::get($service, 'slot_capacity');
+        $bookedSlotCount = array_count_values($bookedSlots);
+        $slotVal = $slot['value'];
+        return abs($capacityValue - $bookedSlotCount[$slotVal]);
+    }
+
+
+
+    /**
+     * Apply Disable booking before min & hour settings here
+     * Skip If date is not today to apply only for time variables
+     * @param $slot
+     * @param $service
+     * @return array
+     */
+    private function inDisabledTimeRange($time, $service)
+    {
+        if (date('Y-m-d') != $this->date) {
             return false;
         }
-        return true;
+        return false;
+        $disableBefore = ArrayHelper::get($service, 'disable_booking_before');
+
+        $now = new \DateTime();
+        $now->setTimezone(new \DateTimeZone($this->getTimeZone()));
+        $endTime = $now->modify('+' . $disableBefore)->format('U');
+
+        $currentTime = new \DateTime("now", new \DateTimeZone($this->getTimeZone()));
+        $currentTime = $currentTime->format('U');
+
+        $slotTime = strtotime($time);
+
+        if ($currentTime >= $slotTime && $slotTime <= $endTime) {
+            return true;
+        }
+        return false;
     }
 
 

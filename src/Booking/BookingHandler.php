@@ -39,6 +39,8 @@ class BookingHandler
         new BookingDateTime();
         new Service();
         new Provider();
+        (new BookingNotification())->init();
+
         add_action('fluentform_before_insert_submission', array($this, 'maybeProccessBooking'), 10, 3);
         add_filter('fluentform_form_class', [$this, 'checkBookingForm'], 10, 2);
     }
@@ -49,6 +51,7 @@ class BookingHandler
             return;
         }
         new BookingActions($form, $insertData, $data);
+
     }
 
 

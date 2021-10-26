@@ -43,6 +43,9 @@ class BookingModel
         $this->fields = [
             $this->table . '.id',
             $this->table . '.form_id',
+            $this->table . '.booking_hash',
+            $this->table . '.name',
+            $this->table . '.email',
             $this->table . '.booking_date',
             $this->table . '.booking_time',
             $this->table . '.booking_status',
@@ -53,6 +56,10 @@ class BookingModel
             wpFluent()->raw($wpdb->prefix . 'ff_booking_providers.title AS provider'),
             wpFluent()->raw($wpdb->prefix . 'ff_booking_providers.id AS provider_id'),
             wpFluent()->raw($wpdb->prefix . 'ff_booking_services.title AS service'),
+            wpFluent()->raw($wpdb->prefix . 'ff_booking_services.notifications'),
+            wpFluent()->raw($wpdb->prefix . 'ff_booking_services.duration'),
+            wpFluent()->raw($wpdb->prefix . 'ff_booking_services.policy'),
+            wpFluent()->raw($wpdb->prefix . 'ff_booking_services.description'),
             wpFluent()->raw($wpdb->prefix . 'ff_booking_services.id AS service_id'),
             wpFluent()->raw($wpdb->prefix . 'fluentform_forms.title AS form_title'),
         ];
@@ -110,7 +117,7 @@ class BookingModel
 
     public function bookedSlots($serviceId, $providerId, $formId, $range, $date = '')
     {
-        $maxRange = date('Y-m-d', strtotime($range));
+        $maxRange = date('Y-m-d', strtotime($range[1]));
         $query = wpFluent()->table($this->table);
         $query->where('service_id', $serviceId);
         $query->where('provider_id', $providerId);
@@ -188,6 +195,8 @@ class BookingModel
             $sql = "CREATE TABLE $table (
 				id BIGINT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 				form_id INT(11) NULL,
+				name varchar (255) NULL,
+				email varchar (255) NULL,
 				entry_id INT(11) NULL,
 				user_id INT(11) NULL,
 				service_id INT(11) NULL,
@@ -197,6 +206,7 @@ class BookingModel
 				booking_type varchar(255) NULL,
 				booking_status varchar(255) NULL,
 				notes text NULL,
+				booking_hash varchar(255) NULL, 
 				send_notification TINYINT(1) DEFAULT 1,
 				created_at timestamp NULL,
 				updated_at timestamp NULL,

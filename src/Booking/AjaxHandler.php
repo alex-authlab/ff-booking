@@ -317,7 +317,7 @@ class AjaxHandler
             ], 423);
         }
         //validate date time slot
-        $response = (new DateTimeHandler($serviceId, $providerId, $formId, $bookingDate))->isValidData(
+        $response = (new DateTimeHandler($serviceId, $providerId, $formId, $bookingDate))->isValidSlot(
             $bookingTime,
             $bookingId
         );
