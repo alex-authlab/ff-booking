@@ -370,6 +370,13 @@
                             </el-col>
 
                         </el-row>
+                        <el-form-item label="Show Booking Info">
+                            <el-radio-group v-model="editing_item.append_info">
+                                <el-radio label="yes">Active</el-radio>
+                                <el-radio label="no">Inactive</el-radio>
+                            </el-radio-group>
+                            <p>Append Booking Info after submission </p>
+                        </el-form-item>
                     </div>
 
                 </el-form>
@@ -527,6 +534,7 @@
                     max_bookings: '30',
                     default_booking_status: 'booked',
                     calc_value: '',
+                    append_info:'no',
                     required_fields: [],
                     show_end_time: 'show',
                     show_booked_time: 'hide',

@@ -13,8 +13,8 @@ class BookingModel
     public function getBookings($paginate = false, $atts = [])
     {
         $endDate = date('Y-m-d H:i:s', strtotime('+30 days'));
-        $startDate= date('Y-m-d H:i:s', strtotime('-30 days'));
-        $ranges = ArrayHelper::get($_REQUEST,'date_range');
+        $startDate = date('Y-m-d H:i:s', strtotime('-30 days'));
+        $ranges = ArrayHelper::get($_REQUEST, 'date_range');
         if (!empty($ranges[0])) {
             $startDate = date('Y-m-d H:i:s', strtotime($ranges[0]));
         }
@@ -24,7 +24,8 @@ class BookingModel
         }
 
         $defaultAtts = [
-            'id'=> NULL,
+            'id' => null,
+            'entry_id' => null,
             'search' => '',
             'status' => 'all',
             'sort_column' => 'id',
@@ -36,6 +37,7 @@ class BookingModel
         $search = ArrayHelper::get($atts, 'search', '');
         $booking_status = ArrayHelper::get($atts, 'booking_status', 'all');
         $booking_id = ArrayHelper::get($atts, 'id', false);
+        $entry_id = ArrayHelper::get($atts, 'entry_id', false);
 
         global $wpdb;
 
@@ -60,12 +62,16 @@ class BookingModel
             wpFluent()->raw($wpdb->prefix . 'ff_booking_services.duration'),
             wpFluent()->raw($wpdb->prefix . 'ff_booking_services.policy'),
             wpFluent()->raw($wpdb->prefix . 'ff_booking_services.description'),
+            wpFluent()->raw($wpdb->prefix . 'ff_booking_services.append_info'),
             wpFluent()->raw($wpdb->prefix . 'ff_booking_services.id AS service_id'),
             wpFluent()->raw($wpdb->prefix . 'fluentform_forms.title AS form_title'),
         ];
         $query->select($this->fields);
-        if($booking_id){
+        if ($booking_id) {
             $query->where($this->table . '.id', '=', $booking_id);
+        }
+        if ($entry_id) {
+            $query->where($this->table . '.entry_id', '=', $entry_id);
         }
         $query->leftJoin('fluentform_forms', 'fluentform_forms.id', '=', $this->table . '.form_id');
         $query->join('ff_booking_providers', 'ff_booking_providers.id', '=', $this->table . '.provider_id');
@@ -90,8 +96,10 @@ class BookingModel
                 $bookings['data'][$index]->submission_url = admin_url(
                     'admin.php?page=fluent_forms&route=entries&form_id=' . $datum->form_id . '#/entries/' . $datum->entry_id
                 );
-                $bookings['data'][$index]->human_date = human_time_diff(strtotime($datum->created_at), strtotime(current_time('mysql')));
-
+                $bookings['data'][$index]->human_date = human_time_diff(
+                    strtotime($datum->created_at),
+                    strtotime(current_time('mysql'))
+                );
             }
 
             return $bookings;
@@ -101,8 +109,10 @@ class BookingModel
             $bookings[$index]->submission_url = admin_url(
                 'admin.php?page=fluent_forms&route=entries&form_id=' . $datum->form_id . '#/entries/' . $datum->entry_id
             );
-            $bookings[$index]->human_date = human_time_diff(strtotime($datum->created_at), strtotime(current_time('mysql')));
-
+            $bookings[$index]->human_date = human_time_diff(
+                strtotime($datum->created_at),
+                strtotime(current_time('mysql'))
+            );
         }
         return $bookings;
     }
@@ -130,6 +140,7 @@ class BookingModel
         $query->where('booking_date', '<=', $maxRange);
         return $query->get();
     }
+
     // to do ignore some draft status to allow booking
     public function bookedSlotGroupByDate($serviceId, $providerId, $formId, $min, $max)
     {
@@ -155,23 +166,23 @@ class BookingModel
             ->update($data);
     }
 
-    public function getBookingsOfSingleDay($serviceId, $providerId, $formId,$date, $time='' ,$bookingId = false )
+    public function getBookingsOfSingleDay($serviceId, $providerId, $formId, $date, $time = '', $bookingId = false)
     {
         global $wpdb;
 
         $query = wpFluent()->table($this->table);
         $query->select([
-            wpFluent()->raw('count(' . $wpdb->prefix . $this->table.'.id) as total'),
+            wpFluent()->raw('count(' . $wpdb->prefix . $this->table . '.id) as total'),
         ]);
         $query->where('form_id', $formId);
         $query->where('service_id', $serviceId);
         $query->where('provider_id', $providerId);
         $query->where('booking_date', $date);
-        if($time!=''){
-            $time = $time .':00';
+        if ($time != '') {
+            $time = $time . ':00';
             $query->where('booking_time', '=', $time);
         }
-        if($bookingId){
+        if ($bookingId) {
             $query->where('id', '!=', $bookingId);
         }
         $query->where(function ($q) {
@@ -181,6 +192,15 @@ class BookingModel
             $q->orWhere('booking_status', '=', 'canceled');
         });
         return $query->first();
+    }
+
+    public function getBooking($atts){
+        $data = $this->getBookings(false ,$atts);
+        if($data){
+            $data = array_shift($data);
+            return (array)$data;
+        }
+        return  false;
     }
 
     public function migrate()

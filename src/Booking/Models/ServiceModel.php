@@ -128,7 +128,7 @@ class ServiceModel
                       slot_capacity int(11) DEFAULT NULL,
                       max_bookings int(11) DEFAULT NULL,
                       duration varchar (100) DEFAULT NULL,
-                      gap_time_before varchar(255) DEFAULT NULL,
+                      append_info varchar(10) DEFAULT NULL,
                       gap_time_after varchar(255) DEFAULT NULL,
                       show_end_time varchar(10) DEFAULT NULL,
                       show_remaining_slot varchar(10) DEFAULT NULL,

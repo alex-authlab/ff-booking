@@ -36,7 +36,6 @@ class AjaxHandler
             'save_service' => 'saveService',
             'delete_service' => 'deleteService',
             'get_services' => 'getServices',
-            'delete_service' => 'deleteService',
             'save_payment_method_settings' => 'savePaymentMethodSettings',
             'get_form_settings' => 'getFormSettings',
             'save_form_settings' => 'saveFormSettings',
@@ -131,7 +130,8 @@ class AjaxHandler
             'slot_capacity' => 'required',
             'status' => 'required'
         ], [
-            'title.required' => 'The Service Title field is required.'
+            'title.required' => 'The Service Title field is required.',
+            'service_type.required' => 'The Service Type field is required.'
         ]);
         if ($validator->validate()->fails()) {
             $errors = $validator->errors();

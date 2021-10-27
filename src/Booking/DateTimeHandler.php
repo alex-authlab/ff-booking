@@ -170,14 +170,12 @@ class DateTimeHandler
         $interval,
         $start_time,
         $end_time,
-        $gapTimeBefore = '00:00',
         $gapTimeAfter = '00:30',
         $with_end_time = false
     ) {
         $timeZone = $this->getTimeZone();
         $timeFormat = $this->getTimeFormat();
-
-        $gapTime = $this->timeDurationLength($gapTimeBefore);
+        $gapTime = $this->timeDurationLength($gapTimeAfter);
         $duration = $this->timeDurationLength($interval);
         $start = new \DateTime($start_time);
 
@@ -231,10 +229,10 @@ class DateTimeHandler
      */
     private function timeDurationLength($interval)
     {
+
         $addTime = '';
-        $timeZone = $this->getTimeZone();
         $fraction = explode(':', $interval);
-        $interval = new \DateTime($interval, new \DateTimeZone($timeZone));
+        $interval = new \DateTime($interval);
 
         if ($fraction[0] != '00') {
             $addTimeHour = '+' . $interval->format('g') . ' Hour';
@@ -339,10 +337,9 @@ class DateTimeHandler
         $startTime = ArrayHelper::get($provider, 'start_time');
         $endTime = ArrayHelper::get($provider, 'end_time');
         $duration = ArrayHelper::get($service, 'duration');
-        $gapTimeBefore = ArrayHelper::get($service, 'gap_time_before');
         $gapTimeAfter = ArrayHelper::get($service, 'gap_time_after');
         $show_end_time = ArrayHelper::get($service, 'show_end_time') == 'show';
-        return $this->generateTimeSlot($duration, $startTime, $endTime, $gapTimeBefore, $gapTimeAfter, $show_end_time);
+        return $this->generateTimeSlot($duration, $startTime, $endTime, $gapTimeAfter, $show_end_time);
     }
 
     /**

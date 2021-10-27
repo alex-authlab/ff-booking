@@ -40,9 +40,10 @@ class BookingActions
         $this->data = $data;
         $this->setSubmissionData($insertData);
         $this->setupData();
+        $this->afterSubmissionInfo();
         $this->setBookingInputs();
         $this->validate();
-        add_action('fluentform_submission_inserted', array($this, 'setBookingInputsValues'), 10, 3);
+        add_action('fluentform_before_form_actions_processing', array($this, 'setBookingInputsValues'), 10, 3);
     }
 
     private function setSubmissionData($insertData)
@@ -71,7 +72,7 @@ class BookingActions
         $bookingData = $this->bookingInputValues;
         $bookingData['form_id'] = $form->id;
         $bookingData['entry_id'] = $entryId;
-        $bookingData['booking_hash'] = md5($form->id . '_booking_s_' . $bookingData['service_id'] . '_p_' . $bookingData['provider_id'] . '_' . date('Y-m-d') . '-' . time() . '-' . mt_rand(100, 999));
+        $bookingData['booking_hash'] = md5($form->id . '_booking_s_' . $bookingData['service_id'] . '_p_' . $bookingData['provider_id'] . '_' .$bookingData['booking_date'] . date('Y-m-d') . '-' . time() . '-' . mt_rand(100, 999));
         $bookingData['booking_status'] = $this->getDefaultStatus($bookingData['service_id']);
         $this->bookingInputValues = $bookingData;
 
@@ -249,6 +250,18 @@ class BookingActions
         ]);
 
         return true;
+    }
+
+    private function afterSubmissionInfo()
+    {
+        // booking info after submission
+        add_filter('fluentform_submission_message_parse', function ($messageToShow, $insertId, $formData, $form) {
+            $html = (new BookingInfo($insertId))->getInfoHtml();
+            if($html){
+                $messageToShow.= $html;
+            }
+            return $messageToShow;
+        }, 10, 4);
     }
 
 }

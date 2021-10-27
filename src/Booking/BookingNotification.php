@@ -99,7 +99,7 @@ class BookingNotification
                     $value = '<a href="#">Link</a>';
                 }
                 elseif ($key == 'booking_date'){
-                    $value = date('l F j, Y',strtotime($value));
+                    $value = date('l F j Y',strtotime($value));
                 }
                 elseif ($key == 'booking_time'){
                     $value = date('h:i a',strtotime($value));
