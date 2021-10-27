@@ -7,56 +7,161 @@ use FF_Booking\Booking\Models\BookingModel;
 
 class BookingInfo
 {
-    private $info;
+    private $data;
+    private $notifications;
+    private $submissionInfoEnabled;
 
     /**
      * @param $insertId
      */
     public function __construct($insertId)
     {
-        $this->setInfo($insertId);
+        $this->setupData($insertId);
     }
 
-    public function setInfo($insertId)
+    /**
+     * @param $insertId
+     * @return array|false
+     */
+    private function setupData($insertId)
     {
-        $this->info = (new BookingModel())->getBooking(['entry_id' => $insertId]);
+        $data = (new BookingModel())->getBooking(['entry_id' => $insertId]);
+        if(!$data){
+            return ;
+        }
+        $this->data = [
+            'bookingData' => $this->getBookingData($data),
+            'userData' => ArrayHelper::only($data, ['name', 'email']),
+            'providerData' => $this->getProvider($data)
+        ];
+        $this->submissionInfoEnabled = ArrayHelper::get($data, 'append_info') == 'yes';
+        $this->notifications = json_decode($data['notifications'], true);
     }
 
-    public function getInfoHtml()
+    public function getConfirmationHtml()
     {
-        $data = $this->info;
-        $enabled = ArrayHelper::get($data,'append_info') =='yes';
-
-        if(!is_array($data) || !$enabled){
+        if (!$this->submissionInfoEnabled) {
             return false;
         }
-        $status = ucfirst( ArrayHelper::get($data,'booking_status'));
-        $service = ArrayHelper::get($data,'service');
-        $provider = ArrayHelper::get($data,'provider');
-        $date = ArrayHelper::get($data,'booking_date');
-        $date = date('l F j Y',strtotime($date));
-        $time = ArrayHelper::get($data,'booking_time');
-        $time = date(BookingHelper::getTimeFormat(),strtotime($time));
+        $data = $this->data;
+        $description = ucfirst(ArrayHelper::get($data, 'bookingData.description'));
+        $descriptionHtml = '';
+        if ($description) {
+            $descriptionHtml = '<tr><td> ' . $description . '</td></tr> ';
+        }
+        $bookingDate = ArrayHelper::get($data, 'bookingData.booking_date');
+        $bookingTime = ArrayHelper::get($data, 'bookingData.booking_time');
+        $status = ucfirst(ArrayHelper::get($data, 'bookingData.booking_status'));
+        $service = ArrayHelper::get($data, 'bookingData.service');
+        $provider = ArrayHelper::get($data, 'providerData.provider');
+
         $html = '<table class="ff_all_data" style="margin: 10px 0;" width="600" cellpadding="0" cellspacing="0">
                     <tbody>
                       <tr>
                         <th style="text-align: left;" >
-                          Appoinement '.$status.'
+                          Appoinement ' . $status . '
                         </th>          
                       </tr>
                       <tr>
                          <td>
-                        Your Appointment for '.$service.' by '.$provider.'
+                        Your Appointment for <b>' . $service . '</b> by <b>' . $provider . '</b>
                         </td>  
                       </tr>  
                       <tr>
-                        <td><b>Time</b> : '.$time.'</td>  
+                        <td><b>Time</b> : ' . $bookingTime . '</td>  
                       </tr>
                       <tr>
-                         <td><b>Date</b> : '.$date.'</td>  
+                         <td><b>Date</b> : ' . $bookingDate . '</td>  
                       </tr> 
+                      ' . $descriptionHtml . '
                     </tbody>
                   </table>';
+        //add filter
+        return $html;
+    }
+
+
+    /**
+     * Booking Providers
+     *
+     * @param array $data
+     * @todo action bttns
+     */
+    private function getProvider(array $data)
+    {
+        $providerData = ArrayHelper::only($data, ['provider_id', 'provider']);
+        if ($provider = get_user_by('id', $providerData['provider_id'])) {
+            $providerData['email'] = $provider->user_email;
+        }
+        return $providerData;
+    }
+
+    /**
+     * Booking Information
+     *
+     * @param array $data
+     * @return mixed
+     */
+    private function getBookingData($data)
+    {
+        $bookingData = ArrayHelper::only($data, [
+            'service',
+            'provider',
+            'booking_date',
+            'booking_time',
+            'booking_status',
+            'duration',
+//            'booking_hash',
+            'policy',
+            'description',
+        ]);
+
+        if ($form->id != $targetFormIds) {
+            return $error;
+        }
+        $time = ArrayHelper::get($data, 'booking_time');
+        $bookingData['time'] = date(BookingHelper::getTimeFormat(), strtotime($time));
+
+        $date = ArrayHelper::get($data, 'booking_date');
+        $bookingData['booking_date'] = date('l F j Y', strtotime($date)); //@todo add date format option
+        return $bookingData;
+    }
+
+    public function getNotifications()
+    {
+        $notifications = $this->notifications;
+        if(is_array($notifications) && count($notifications)> 0){
+            return $notifications;
+        }
+        return false;
+    }
+
+    public function getBookingInfoData()
+    {
+        return $this->data;
+    }
+
+    public function bookingInfo()
+    {
+        $bookingInfo = ArrayHelper::get($this->data,'bookingData');
+        if(!$bookingInfo){
+            return ;
+        }
+        $html = '<table class="ff_all_data" width="600" cellpadding="0" cellspacing="0"><tbody>';
+        $html .= '<tr><td style="padding: 6px 12px 12px 12px;"> Hello,    </td></tr>';
+        $html .= '<tr><td style="padding: 6px 12px 12px 12px;">Here is your Booking Update   </td></tr>';
+
+        foreach ($bookingInfo as $key => $value) {
+            if (empty($value)) {
+                continue;
+            }
+            $label = str_replace(' ', '_', $key);
+            $html .= sprintf(
+                "<tr class=\"field-label\"><th style=\"padding: 6px 12px; background-color: #f8f8f8; text-align: left;\"><strong>%s</strong></th></tr><tr class=\"field-value\"><td style=\"padding: 6px 12px 12px 12px;\">%s</td></tr>",
+                ucwords($label), $value
+            );
+        }
+        $html .= '</tbody></table>';
         return $html;
     }
 

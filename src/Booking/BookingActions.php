@@ -21,17 +21,12 @@ class BookingActions
     private $form;
     public $data;
     private $submissionData;
-    public $insertData;
-    private $submissionId = null;
     private $bookingInputs;
     /**
      * @var array
      */
     private $bookingInputValues;
-    /**
-     * @var array|string
-     */
-    private $insertId;
+
 
 
     public function __construct($form, $insertData, $data)
@@ -41,6 +36,7 @@ class BookingActions
         $this->setSubmissionData($insertData);
         $this->setupData();
         $this->afterSubmissionInfo();
+        $this->addShortCodes();
         $this->setBookingInputs();
         $this->validate();
         add_action('fluentform_before_form_actions_processing', array($this, 'setBookingInputsValues'), 10, 3);
@@ -67,16 +63,15 @@ class BookingActions
         $this->bookingInputs = $bookingInputs;
     }
 
-    public function setBookingInputsValues($entryId, $formData, $form)
+    public function setBookingInputsValues($insertId, $formData, $form)
     {
         $bookingData = $this->bookingInputValues;
         $bookingData['form_id'] = $form->id;
-        $bookingData['entry_id'] = $entryId;
+        $bookingData['entry_id'] = $insertId;
         $bookingData['booking_hash'] = md5($form->id . '_booking_s_' . $bookingData['service_id'] . '_p_' . $bookingData['provider_id'] . '_' .$bookingData['booking_date'] . date('Y-m-d') . '-' . time() . '-' . mt_rand(100, 999));
         $bookingData['booking_status'] = $this->getDefaultStatus($bookingData['service_id']);
         $this->bookingInputValues = $bookingData;
-
-        $this->insertBooking($bookingData);
+        $this->insertBooking($bookingData,$insertId, $formData, $form);
     }
 
     public function setBookingInputs()
@@ -143,12 +138,11 @@ class BookingActions
         return $formattedData;
     }
 
-    private function insertBooking( $bookingData)
+    private function insertBooking( $bookingData,$insertId, $formData, $form )
     {
 
-        $this->insertId = (new BookingModel())->insert($bookingData);
-        do_action('ff_booking_inserted', $this->insertId ,'new',$bookingData);
-        do_action('ff_booking_status_changing',  $this->insertId, $bookingData['booking_status'],$bookingData);
+        $bookinEntryId = (new BookingModel())->insert($bookingData);
+        do_action('ff_booking_inserted',$bookingData, $bookinEntryId,$insertId, $formData, $form);
 
     }
 
@@ -256,12 +250,24 @@ class BookingActions
     {
         // booking info after submission
         add_filter('fluentform_submission_message_parse', function ($messageToShow, $insertId, $formData, $form) {
-            $html = (new BookingInfo($insertId))->getInfoHtml();
+            $html = (new BookingInfo($insertId))->getConfirmationHtml();
             if($html){
                 $messageToShow.= $html;
             }
             return $messageToShow;
         }, 10, 4);
     }
+
+    private function addShortCodes()
+    {
+        //{ff_booking_info}
+        add_filter('fluentform_shortcode_parser_callback_ff_booking_info', function ($value, $parser) {
+
+            $entry = $parser::getEntry();
+            return (new BookingInfo($entry->id))->bookingInfo();
+
+        }, 10, 2);
+    }
+
 
 }

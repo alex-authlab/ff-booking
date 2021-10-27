@@ -85,7 +85,7 @@
                 email:{
                     subject: 'Booking Notification',
                     message: '',
-                    body: '{event_data}',
+                    body: '{ff_booking_info}',
                     time: '',
                     asPlainText: '',
                     time_direction:''
@@ -93,8 +93,7 @@
                 editorShortcodes: [
                     {
                         "shortcodes": {
-                            "{inputs.service}": "Service Name",
-                            "{inputs.provider}": "Provider Name",
+                            "{ff_booking_info}": "Booking Info",
                         },
                         "title": "Booking Shortcodes"
                     },
