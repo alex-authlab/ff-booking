@@ -146,23 +146,26 @@ class BookingDateTime extends \FluentForm\App\Services\FormBuilder\BaseFieldMana
             'datetime_element_id' => $data['attributes']['id'],
             'current_form_title' => $form->title,
             'has_pro' => defined('FLUENTFORMPRO'),
+            'first_week_day' => BookingHelper::firstWeekDay(),
 
         ], $form);
 
         wp_localize_script('ff_booking_test_js', 'ff_booking_date_time_vars', $ffBookingVars);
         add_filter('fluentform/frontend_date_format', function ($config, $settings, $form) {
+            if(!ArrayHelper::exists($settings,'target_email')){
+                return $config; //not booking date picker field
+            }
             $config['inline'] = true;
             $config['minDate'] = "today";
+            $config['locale'] = array(
+                "firstDayOfWeek"=> BookingHelper::firstWeekDay()
+            );
             return $config;
         }, 10, 3);
     }
 
     public function validate($errorMessage, $field, $formData, $fields, $form)
     {
-        //todo
-        // insert ip to prevent booking from same user
-        //myb a new component to store user email name phone
-        //check if allowed booking per slot >1
 
         $name = \FluentForm\Framework\Helpers\ArrayHelper::get($field, 'name');
         $value = \FluentForm\Framework\Helpers\ArrayHelper::get($formData, $name);

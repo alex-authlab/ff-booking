@@ -26,7 +26,7 @@ class BookingInfo
     {
         $data = $this->info;
         $enabled = ArrayHelper::get($data,'append_info') =='yes';
-        
+
         if(!is_array($data) || !$enabled){
             return false;
         }
@@ -36,7 +36,7 @@ class BookingInfo
         $date = ArrayHelper::get($data,'booking_date');
         $date = date('l F j Y',strtotime($date));
         $time = ArrayHelper::get($data,'booking_time');
-        $time = date('h:i a',strtotime($time));
+        $time = date(BookingHelper::getTimeFormat(),strtotime($time));
         $html = '<table class="ff_all_data" style="margin: 10px 0;" width="600" cellpadding="0" cellspacing="0">
                     <tbody>
                       <tr>

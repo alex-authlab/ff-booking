@@ -174,7 +174,7 @@ class DateTimeHandler
         $with_end_time = false
     ) {
         $timeZone = $this->getTimeZone();
-        $timeFormat = $this->getTimeFormat();
+        $timeFormat = BookingHelper::getTimeFormat();
         $gapTime = $this->timeDurationLength($gapTimeAfter);
         $duration = $this->timeDurationLength($interval);
         $start = new \DateTime($start_time);
@@ -254,7 +254,7 @@ class DateTimeHandler
             $ranges,
             $this->date
         );
-        $timeFormat = $this->getTimeFormat();
+        $timeFormat = BookingHelper::getTimeFormat();
         $formattedSlots = [];
         foreach ($slots as $slot) {
             $formattedSlots[] = date($timeFormat, strtotime($slot->booking_time));
@@ -313,19 +313,7 @@ class DateTimeHandler
         return $formattedSlots;
     }
 
-    /**
-     * @return string
-     */
-    private function getTimeFormat()
-    {
-        $settings = get_option('__ff_booking_general_settings');
-        if (ArrayHelper::get($settings, 'time_format') == '12') {
-            $timeFormat = 'h:i a';
-        } else {
-            $timeFormat = 'H:i';
-        }
-        return $timeFormat;
-    }
+
 
     /**
      * @param $provider
@@ -417,7 +405,7 @@ class DateTimeHandler
         $validSlots = $this->getRegularSlots($provider, $service);
         $validSlots = array_column($validSlots, 'value');
 
-        $format = $this->getTimeFormat();
+        $format = BookingHelper::getTimeFormat();
         $selectedTime = date($format, strtotime($time)) ;
 
         if (!in_array($selectedTime, $validSlots)) {

@@ -19,6 +19,30 @@ class BookingHelper
             return  date("h:i a", strtotime($time));
         }
     }
+
+    /**
+     * @return string time format
+     */
+    public static function getTimeFormat()
+    {
+        $settings = get_option('__ff_booking_general_settings');
+        if (ArrayHelper::get($settings, 'time_format') == '12') {
+            $timeFormat = 'h:i a';
+        } else {
+            $timeFormat = 'H:i';
+        }
+        return $timeFormat;
+    }
+    /**
+     * @return string first day of week
+     */
+    public static function firstWeekDay()
+    {
+        $settings = get_option('__ff_booking_general_settings');
+        $weekDay = ArrayHelper::get($settings, 'week_start',0);
+        return date('N', strtotime($weekDay));
+    }
+
     public static function getBookingFieldDateFormat($formId)
     {
         $form = wpFluent()->table('fluentform_forms')->find($formId);
