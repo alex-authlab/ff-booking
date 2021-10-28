@@ -177,31 +177,27 @@ class DateTimeHandler
         $timeFormat = BookingHelper::getTimeFormat();
         $gapTime = $this->timeDurationLength($gapTimeAfter);
         $duration = $this->timeDurationLength($interval);
-        $start = new \DateTime($start_time);
 
         $start = new \DateTime($start_time, new \DateTimeZone($timeZone));
-
         $end = new \DateTime($end_time, new \DateTimeZone($timeZone));
-
 
         $i = 0;
         $time = [];
-
-
         while ($start->format('U') <= $end->format('U')) {
             $slotStart = $start->format($timeFormat);
             //add duration
             $slotEnd = $start->modify($duration)->format($timeFormat);
-            $time[$i]['label'] = $slotStart;
+
+            $time[$i]['label'] = date($timeFormat,strtotime($slotStart));
             if ($with_end_time) {
-                $time[$i]['label'] = $slotStart . ' - ' . $slotEnd;
+                $time[$i]['label'] .= ' - ' . date('h:i a',strtotime($slotEnd));
             }
             $time[$i]['value'] = $slotStart;
+
             //add gap time
             $start->modify($gapTime);
             $i++;
         }
-
         return $time;
     }
 
@@ -212,9 +208,8 @@ class DateTimeHandler
         if (!$timezone) {
             $timezone = get_option('timezone_string'); //wp timezone
         }
-
         if (!in_array($timezone, timezone_identifiers_list())) {
-            $timezone = 'America/New_York';
+            $timezone = 'America/New_York'; //add filter
         }
         return $timezone;
     }
@@ -396,7 +391,7 @@ class DateTimeHandler
         }
         $weekOffDays = ArrayHelper::get($provider, 'weekend_days');
         $selectedWeekDay = date('l', strtotime($this->date));
-        if (in_array($selectedWeekDay, $weekOffDays)) {
+        if (is_array($weekOffDays) && in_array($selectedWeekDay, $weekOffDays)) {
             return [
                 'status' => false,
                 'message' => 'Invalid Day of week selected'

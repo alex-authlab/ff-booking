@@ -25,7 +25,8 @@ class BookingHelper
      */
     public static function getTimeFormat()
     {
-        $settings = get_option('__ff_booking_general_settings');
+        $settings = json_decode(get_option('__ff_booking_general_settings'),true);
+        $timeFormat = 'h:i a';
         if (ArrayHelper::get($settings, 'time_format') == '12') {
             $timeFormat = 'h:i a';
         } else {

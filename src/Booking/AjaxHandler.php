@@ -62,13 +62,10 @@ class AjaxHandler
     public function enableBookingModule()
     {
         $this->enable();
-        // Update settings
-        $settings = '';
-        // send response to reload the page
 
         wp_send_json_success([
-            'message' => __('Booking Module successfully enabled!', 'fluentformpro'),
-            'settings' => $settings,
+            'message' => __('Booking Module successfully enabled!', FF_BOOKING_SLUG),
+            'settings' => '',
             'reload' => 'yes'
         ]);
     }
@@ -87,13 +84,9 @@ class AjaxHandler
     {
         update_option('_ff_booking_status', '0', false);
 
-        // Update settings
-        $settings = '';
-        // send response to reload the page
-
         wp_send_json_success([
-            'message' => 'Booking Module successfully disabled!',
-            'settings' => $settings,
+            'message' => __('Booking Module successfully disabled!', FF_BOOKING_SLUG),
+            'settings' => '',
             'reload' => 'yes'
         ]);
     }
@@ -162,8 +155,18 @@ class AjaxHandler
 
     public function getServices()
     {
+        $serviceModel = new ServiceModel();
+        ob_start();
+        $services = $serviceModel->getServices(true);
+        $errors = ob_get_clean();
+
+        if ($errors) {
+            $serviceModel->migrate();
+            $services = $serviceModel->getServices(true);
+        }
         $data['available_forms'] = BookingHelper::getAvailableForms();
-        $data['service'] = (new ServiceModel())->getServices(true);
+        $data['service'] = $services;
+
         wp_send_json_success($data);
     }
 
@@ -177,13 +180,12 @@ class AjaxHandler
     public function getProviders()
     {
         $providerModel = new ProviderModel();
-
         ob_start();
         $providers = $providerModel->getProviders(true);
         $errors = ob_get_clean();
 
         if ($errors) {
-            ProviderMode::migrate();
+            $providerModel->migrate();
             $providers = $providerModel->getProviders(true);
         }
 
@@ -192,14 +194,7 @@ class AjaxHandler
         ];
 
         if (isset($_REQUEST['page']) && $_REQUEST['page'] == 1) {
-            $forms = wpFluent()->table('fluentform_forms')
-                ->select(['id', 'title'])
-                ->get();
-            $formattedForms = [];
-            foreach ($forms as $form) {
-                $formattedForms[$form->id] = $form->title;
-            }
-            $data['available_forms'] = $formattedForms;
+            $data['available_forms'] = BookingHelper::getAvailableForms();
 
             $users = get_users(array('fields' => array('ID', 'display_name')));
             $formattedUsers = [];
@@ -226,7 +221,6 @@ class AjaxHandler
             'title' => 'required',
             'assigned_user' => 'required',
             'assigned_services' => 'required',
-            'weekend_days' => 'required',
             'status' => 'required',
             'start_time' => 'required',
         ]);
@@ -371,8 +365,7 @@ class AjaxHandler
     public function saveSettings()
     {
         $settings = wp_unslash($_REQUEST['settings_data']);
-        $settings = json_decode($settings, true);
-        update_option('__ff_booking_general_settings', $settings);
+        update_option('__ff_booking_general_settings', wp_unslash($settings));
         wp_send_json_success([
             'message' => 'Settings has been Updated Succesfully',
         ], 200);
@@ -383,7 +376,7 @@ class AjaxHandler
     {
         $settings = get_option('__ff_booking_general_settings');
         wp_send_json_success([
-            'settings_data' => $settings
+            'settings_data' => $settings? json_decode($settings) : false
         ], 200);
     }
 

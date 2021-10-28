@@ -22,9 +22,6 @@ class BookingActions
     public $data;
     private $submissionData;
     private $bookingInputs;
-    /**
-     * @var array
-     */
     private $bookingInputValues;
 
 
@@ -68,7 +65,7 @@ class BookingActions
         $bookingData = $this->bookingInputValues;
         $bookingData['form_id'] = $form->id;
         $bookingData['entry_id'] = $insertId;
-        $bookingData['booking_hash'] = md5($form->id . '_booking_s_' . $bookingData['service_id'] . '_p_' . $bookingData['provider_id'] . '_' .$bookingData['booking_date'] . date('Y-m-d') . '-' . time() . '-' . mt_rand(100, 999));
+        $bookingData['booking_hash'] = wp_generate_uuid4();
         $bookingData['booking_status'] = $this->getDefaultStatus($bookingData['service_id']);
         $this->bookingInputValues = $bookingData;
         $this->insertBooking($bookingData,$insertId, $formData, $form);

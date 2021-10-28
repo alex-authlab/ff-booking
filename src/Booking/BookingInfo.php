@@ -38,6 +38,48 @@ class BookingInfo
         $this->notifications = json_decode($data['notifications'], true);
     }
 
+    /**
+     * Booking Providers
+     *
+     * @param array $data
+     * @todo action bttns
+     */
+    private function getProvider(array $data)
+    {
+        $providerData = ArrayHelper::only($data, ['provider_id', 'provider']);
+        if ($provider = get_user_by('id', $providerData['provider_id'])) {
+            $providerData['email'] = $provider->user_email;
+        }
+        return $providerData;
+    }
+
+    /**
+     * Booking Information
+     *
+     * @param array $data
+     * @return mixed
+     */
+    private function getBookingData($data)
+    {
+        $bookingData = ArrayHelper::only($data, [
+            'service',
+            'provider',
+            'booking_date',
+            'booking_time',
+            'booking_status',
+            'duration',
+//            'booking_hash', // to do create view page
+            'policy',
+            'description',
+        ]);
+
+        $time = ArrayHelper::get($data, 'booking_time');
+        $bookingData['booking_time'] = date(BookingHelper::getTimeFormat(), strtotime($time));
+
+        $date = ArrayHelper::get($data, 'booking_date');
+        $bookingData['booking_date'] = date('l F j Y', strtotime($date)); //@todo add date format option
+        return $bookingData;
+    }
     public function getConfirmationHtml()
     {
         if (!$this->submissionInfoEnabled) {
@@ -80,53 +122,6 @@ class BookingInfo
         return $html;
     }
 
-
-    /**
-     * Booking Providers
-     *
-     * @param array $data
-     * @todo action bttns
-     */
-    private function getProvider(array $data)
-    {
-        $providerData = ArrayHelper::only($data, ['provider_id', 'provider']);
-        if ($provider = get_user_by('id', $providerData['provider_id'])) {
-            $providerData['email'] = $provider->user_email;
-        }
-        return $providerData;
-    }
-
-    /**
-     * Booking Information
-     *
-     * @param array $data
-     * @return mixed
-     */
-    private function getBookingData($data)
-    {
-        $bookingData = ArrayHelper::only($data, [
-            'service',
-            'provider',
-            'booking_date',
-            'booking_time',
-            'booking_status',
-            'duration',
-//            'booking_hash',
-            'policy',
-            'description',
-        ]);
-
-        if ($form->id != $targetFormIds) {
-            return $error;
-        }
-        $time = ArrayHelper::get($data, 'booking_time');
-        $bookingData['time'] = date(BookingHelper::getTimeFormat(), strtotime($time));
-
-        $date = ArrayHelper::get($data, 'booking_date');
-        $bookingData['booking_date'] = date('l F j Y', strtotime($date)); //@todo add date format option
-        return $bookingData;
-    }
-
     public function getNotifications()
     {
         $notifications = $this->notifications;
@@ -147,7 +142,7 @@ class BookingInfo
         if(!$bookingInfo){
             return ;
         }
-        $html = '<table class="ff_all_data" width="600" cellpadding="0" cellspacing="0"><tbody>';
+        $html = '<table width="600" cellpadding="0" cellspacing="0"><tbody>';
         $html .= '<tr><td style="padding: 6px 12px 12px 12px;"> Hello,    </td></tr>';
         $html .= '<tr><td style="padding: 6px 12px 12px 12px;">Here is your Booking Update   </td></tr>';
 

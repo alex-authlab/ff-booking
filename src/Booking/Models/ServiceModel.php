@@ -145,11 +145,12 @@ class ServiceModel
                       allow_user_reschedule varchar(255)  DEFAULT NULL,
                       allow_user_cancel varchar(255)  DEFAULT NULL,
                       required_fields varchar(255)  DEFAULT NULL,
-                      notificatoins LONGTEXT  DEFAULT NULL,
+                      notifications LONGTEXT  DEFAULT NULL,
+                      policy  TEXT  DEFAULT NULL,
                       created_by int DEFAULT NULL,
                       calc_value int DEFAULT NULL,
-                      created_at timestamp DEFAULT NULL,
-                      updated_at timestamp DEFAULT NULL,
+                      created_at timestamp NULL,
+                      updated_at timestamp NULL,
 				      PRIMARY  KEY  (id)
 			  ) $charsetCollate;";
 

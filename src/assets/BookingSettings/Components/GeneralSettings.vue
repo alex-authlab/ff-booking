@@ -102,7 +102,10 @@
         data() {
             return {
                 general_settings: window.ff_booking_settings,
-                settings_data: {},
+                settings_data: {
+                    time_format: 12,
+                    week_start: 'Monday',
+                },
                 weekdays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
                 current_page: 'general'
             }
@@ -137,6 +140,9 @@
                     .then(response => {
                         if (response.success == true) {
                             this.settings_data = response.data.settings_data
+                            if(!this.settings_data){
+                               this.settings_data = {};
+                            }
                         }
                     })
                     .fail((error) => {
@@ -151,10 +157,11 @@
                     route: 'toggle_booking'
                 })
                     .then(response => {
-                        this.$notify.success(response.data.message);
-                        if (response.data.reload) {
-                            location.reload();
-                        }
+                        this.$notify.success({
+                            title: 'Success',
+                            message: response.data.message,
+                            offset: 30
+                        });
                     });
             },
         },

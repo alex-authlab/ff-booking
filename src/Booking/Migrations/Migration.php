@@ -36,6 +36,7 @@ class Migration
 
     public function migrate()
     {
+        update_option('_ff_booking_status', 'yes');
         (new ServiceModel())->migrate();
         (new ProviderModel())->migrate();
         (new BookingModel())->migrate();

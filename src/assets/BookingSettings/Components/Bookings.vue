@@ -170,11 +170,7 @@
                     'complete': 'Booking Complete',
                     'draft': 'Draft Booking',
                 },
-                tableData: [{
-                    date: '2016-05-01',
-                    name: 'Tom',
-                    address: 'No. 189, Grove St, Los Angeles'
-                }],
+                tableData: [],
                 settings: {},
                 date_range: [],
                 pagination: {
@@ -195,39 +191,15 @@
                             }
                         },
                         {
-                            text: 'Yesterday',
-                            onClick(picker) {
-                                const start = new Date();
-                                start.setTime(start.getTime() - 3600 * 1000 * 24 * 1);
-                                picker.$emit('pick', [start, start]);
-                            }
-                        },
-                        {
-                            text: 'Last week',
+                            text: 'Next week',
                             onClick(picker) {
                                 const end = new Date();
                                 const start = new Date();
-                                start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                                end.setTime(end.getTime() + 3600 * 1000 * 24 * 7);
                                 picker.$emit('pick', [start, end]);
                             }
                         },
-                        {
-                            text: 'Last 15 Days',
-                            onClick(picker) {
-                                const end = new Date();
-                                const start = new Date();
-                                start.setTime(start.getTime() - 3600 * 1000 * 24 * 15);
-                                picker.$emit('pick', [start, end]);
-                            }
-                        }, {
-                            text: 'Last month',
-                            onClick(picker) {
-                                const end = new Date();
-                                const start = new Date();
-                                start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-                                picker.$emit('pick', [start, end]);
-                            }
-                        }
+
                     ]
                 },
             }

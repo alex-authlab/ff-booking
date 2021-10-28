@@ -49,15 +49,10 @@
         </div>
         <el-dialog
                 top="40px"
-                :title="(editing_item.id) ? 'Edit Service' : 'Add a new Service'"
+                :title="(editing_item.id) ? 'Edit '+ editing_item.title : 'Add a new Service'"
                 :visible.sync="show_modal"
                 width="60%">
             <div v-if="show_modal" class="ff_booking_form">
-                <el-alert
-                        title="Please set a Provider for Date & Schedule"
-                        type="info"
-                        show-icon>
-                </el-alert>
                 <el-form :data="editing_item" label-position="top">
 
                     <el-tabs v-model="activeTab">
@@ -73,7 +68,7 @@
                             <el-col :span="9">
                                 <!--details-->
                                 <el-form-item label="Service Title">
-                                    <el-input type="text" v-model="editing_item.title" placeholder="Service Title"/>
+                                    <el-input type="text"  v-model="editing_item.title" placeholder="Service Title"/>
                                     <p>Name of the Service</p>
                                 </el-form-item>
                             </el-col>
@@ -539,7 +534,6 @@
                     show_end_time: 'show',
                     show_booked_time: 'hide',
                     duration: '01:00',
-                    gap_time_before: '',
                     gap_time_after: '00:30',
                     disable_booking_before: '1 Day',
                     allowed_future_days: '7 Day',
@@ -607,7 +601,11 @@
 
             },
             updateNotifications(data) {
-                this.editing_item.notifications = data;
+                console.log('ok2')
+
+                console.log(data)
+                this.$set(this.editing_item, 'notifications', data);
+                console.log(this.editing_item)
             },
             deleteItem(service) {
                 this.loading = true;

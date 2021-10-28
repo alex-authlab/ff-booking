@@ -3,7 +3,8 @@
         <el-row :gutter="30">
             <el-col :span="6">
                 <el-form-item :label="`${name}`">
-                    <el-switch active-value="yes" @change="saveEmail" inactive-value="no" v-model="email.status"></el-switch>
+                    <el-switch active-value="yes" @change="saveEmail" inactive-value="no"
+                               v-model="email.status"></el-switch>
                 </el-form-item>
             </el-col>
             <el-col :span="16">
@@ -23,7 +24,7 @@
                 width="60%">
             <el-form-item class="notification_modal">
                 <!--Subject-->
-                <el-form-item label="Subject" >
+                <el-form-item label="Subject">
 
                     <input-popover fieldType="text"
                                    v-model="email.subject"
@@ -45,10 +46,10 @@
                             :height="300"
                             v-model="email.body">
                     </wp_editor>
-<!--                    <el-checkbox style="margin-bottom: 10px;" true-label="yes" false-label="no"-->
-<!--                                 v-model="email.asPlainText">-->
-<!--                        Send Email as RAW HTML Format-->
-<!--                    </el-checkbox>-->
+                    <!--                    <el-checkbox style="margin-bottom: 10px;" true-label="yes" false-label="no"-->
+                    <!--                                 v-model="email.asPlainText">-->
+                    <!--                        Send Email as RAW HTML Format-->
+                    <!--                    </el-checkbox>-->
                 </el-form-item>
                 <el-form-item v-if="time != false" :label="`Send ${time}`">
                     <delay-counter v-model="email.time"></delay-counter>
@@ -65,13 +66,14 @@
     import wpEditor from "./_wp_editor";
     import inputPopover from "./input-popover";
     import delayCounter from "./delayCounter";
+
     export default {
         name: "Notification",
         props: {
             name: String,
             email_key: String,
-            emailData : Object,
-            time: String|Boolean,
+            emailData: Object,
+            time: String | Boolean,
         },
         components: {
             'wp_editor': wpEditor,
@@ -82,13 +84,14 @@
             return {
                 componentKey: false,
                 saving: false,
-                email:{
+                email: {
                     subject: 'Booking Notification',
                     message: '',
                     body: '{ff_booking_info}',
                     time: '',
                     asPlainText: '',
-                    time_direction:''
+                    status: '',
+                    time_direction: ''
                 },
                 editorShortcodes: [
                     {
@@ -115,11 +118,13 @@
             }
 
         },
-        mounted() {
-            if(Object.keys(this.emailData).length){
-                this.email = this.emailData
+        watch: {
+            emailData: {
+                handler(newval, oldval) {
+                    this.email = newval
+                },
+                deep: true
             }
-
-        },
+        }
     }
 </script>
