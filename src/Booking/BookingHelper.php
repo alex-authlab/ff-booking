@@ -35,6 +35,33 @@ class BookingHelper
         return $timeFormat;
     }
     /**
+     * @return string time period
+     */
+    public static function getTimePeriod()
+    {
+        $settings = json_decode(get_option('__ff_booking_general_settings'),true);
+        $timePeriod = '12';
+        if ($value = ArrayHelper::get($settings, 'time_format')) {
+            $timePeriod = $value;
+        }
+        return $timePeriod;
+    }
+    /**
+     * @return string time zone
+     */
+        public static function getTimeZone()
+    {
+        $settings = json_decode(get_option('__ff_booking_general_settings'),true);
+        $timezone = ArrayHelper::get($settings, 'time_zone');
+        if (!$timezone) {
+            $timezone = get_option('timezone_string'); //wp timezone
+        }
+        if (!in_array($timezone, timezone_identifiers_list())) {
+            $timezone = 'America/New_York'; //add filter
+        }
+        return $timezone;
+    }
+    /**
      * @return string first day of week
      */
     public static function firstWeekDay()

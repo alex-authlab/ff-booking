@@ -9,7 +9,6 @@ use \FluentForm\Framework\Helpers\ArrayHelper;
 use \FluentForm\App\Modules\Entries\Entries;
 
 
-
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
@@ -25,7 +24,6 @@ class BookingActions
     private $bookingInputValues;
 
 
-
     public function __construct($form, $insertData, $data)
     {
         $this->form = $form;
@@ -33,7 +31,6 @@ class BookingActions
         $this->setSubmissionData($insertData);
         $this->setupData();
         $this->afterSubmissionInfo();
-        $this->addShortCodes();
         $this->setBookingInputs();
         $this->validate();
         add_action('fluentform_before_form_actions_processing', array($this, 'setBookingInputsValues'), 10, 3);
@@ -68,7 +65,7 @@ class BookingActions
         $bookingData['booking_hash'] = wp_generate_uuid4();
         $bookingData['booking_status'] = $this->getDefaultStatus($bookingData['service_id']);
         $this->bookingInputValues = $bookingData;
-        $this->insertBooking($bookingData,$insertId, $formData, $form);
+        $this->insertBooking($bookingData, $insertId, $formData, $form);
     }
 
     public function setBookingInputs()
@@ -92,11 +89,10 @@ class BookingActions
             $element = ArrayHelper::get($bookingInput, 'element');
             if ($element == 'booking_datetime') {
                 $formattedData = $this->getFormattedDateTime($data[$name], $formattedData);
-                $emailInput = ArrayHelper::get($bookingInput,'settings.target_email');
-                $nameInput = ArrayHelper::get($bookingInput,'settings.target_name');
+                $emailInput = ArrayHelper::get($bookingInput, 'settings.target_email');
+                $nameInput = ArrayHelper::get($bookingInput, 'settings.target_name');
                 $formattedData['email'] = $data[$emailInput];
                 $formattedData['name'] = maybe_serialize($data[$nameInput]);
-
             } elseif ($element == 'ff_booking_provider') {
                 $formattedData['provider_id'] = $data[$name];
             } elseif ($element == 'ff_booking_service') {
@@ -109,7 +105,7 @@ class BookingActions
     private function getDefaultStatus($service_id)
     {
         $service = (new ServiceModel())->getService($service_id);
-        if( !$service->default_booking_status){
+        if (!$service->default_booking_status) {
             return 'booked';
         }
         return $service->default_booking_status;
@@ -120,13 +116,13 @@ class BookingActions
      * @param array $formattedData
      * @return array
      */
-    private function getFormattedDateTime($inputDateTime, array $formattedData)
+    public static function getFormattedDateTime($inputDateTime, array $formattedData)
     {
         $bookingDatetime = explode(" ", $inputDateTime);
         $formattedData['booking_date'] = $bookingDatetime[0];
-        $timeFormat = '12';
+        $timeFormat = BookingHelper::getTimePeriod();
         //if time format 12 hour append am/pm
-        if ($timeFormat) {
+        if ($timeFormat == '12') {
             $formattedData['booking_time'] = $bookingDatetime[1] . ' ' . $bookingDatetime[2];
             $formattedData['booking_time'] = BookingHelper::convertTime('24', $formattedData['booking_time']);
         } else {
@@ -135,32 +131,30 @@ class BookingActions
         return $formattedData;
     }
 
-    private function insertBooking( $bookingData,$insertId, $formData, $form )
+    private function insertBooking($bookingData, $insertId, $formData, $form)
     {
-
         $bookinEntryId = (new BookingModel())->insert($bookingData);
-        do_action('ff_booking_inserted',$bookingData, $bookinEntryId,$insertId, $formData, $form);
-
+        do_action('ff_booking_inserted', $bookinEntryId, $insertId, $bookingData);
     }
 
     private function validate()
     {
         $values = $this->bookingInputValues;
-        $serviceId = ArrayHelper::get($values,'service_id');
-        $providerId = ArrayHelper::get($values,'provider_id');
-        $bookingDate = ArrayHelper::get($values,'booking_date');
-        $bookingTime = ArrayHelper::get($values,'booking_time');
+        $serviceId = ArrayHelper::get($values, 'service_id');
+        $providerId = ArrayHelper::get($values, 'provider_id');
+        $bookingDate = ArrayHelper::get($values, 'booking_date');
+        $bookingTime = ArrayHelper::get($values, 'booking_time');
         //valid date
-        $response = (new DateTimeHandler($serviceId,$providerId,$this->form->id,$bookingDate))->isValidSlot($bookingTime);
-        if($response['status'] == false){
+        $response = (new DateTimeHandler($serviceId, $providerId, $this->form->id, $bookingDate))->isValidSlot(
+            $bookingTime
+        );
+        if ($response['status'] == false) {
             wp_send_json(['errors' => $response['message']], 422);
         }
-
     }
 
-    public function modifyBookingInput( $insertId, $formData, $form)
+    public function modifyBookingInput($insertId, $formData, $form)
     {
-
         $response = $formData;
         // Find the database Entry First
         $entry = wpFluent()->table('fluentform_submissions')
@@ -168,7 +162,7 @@ class BookingActions
             ->first();
 
         if (!$entry) {
-            return ;
+            return;
         }
 
         $bookingInputs = $this->bookingInputs;
@@ -194,13 +188,13 @@ class BookingActions
                 $bookingInputName = $name;
             }
         }
-        if(empty($bookingInputValue)){
-           return;
+        if (empty($bookingInputValue)) {
+            return;
         }
         $origianlResponse = json_decode($entry->response, true);
         $valueWithBookingEntryID = [
-            'value'=>$bookingInputValue,
-            'booking_id'=>$this->insertId
+            'value' => $bookingInputValue,
+            'booking_id' => $this->insertId
         ];
         $response[$bookingInputName] = serialize($valueWithBookingEntryID);
 
@@ -248,22 +242,21 @@ class BookingActions
         // booking info after submission
         add_filter('fluentform_submission_message_parse', function ($messageToShow, $insertId, $formData, $form) {
             $html = (new BookingInfo($insertId))->getConfirmationHtml();
-            if($html){
-                $messageToShow.= $html;
+            if ($html) {
+                $messageToShow .= $html;
             }
             return $messageToShow;
         }, 10, 4);
     }
 
-    private function addShortCodes()
+    private function getTimeFormat()
     {
-        //{ff_booking_info}
-        add_filter('fluentform_shortcode_parser_callback_ff_booking_info', function ($value, $parser) {
+        $settings = json_decode(get_option('__ff_booking_general_settings'),true);
 
-            $entry = $parser::getEntry();
-            return (new BookingInfo($entry->id))->bookingInfo();
-
-        }, 10, 2);
+        if($value = ArrayHelper::get($settings, 'time_format')){
+            return $value;
+        }
+        return '12';
     }
 
 

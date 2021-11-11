@@ -35,6 +35,8 @@ class BookingHandler
         if (!$this->isEnabled()) {
             return;
         }
+        $this->addShortCodes();
+
         //components
         new BookingDateTime();
         new Service();
@@ -163,6 +165,25 @@ class BookingHandler
             ],
         ];
     }
+
+
+    private function addShortCodes()
+    {
+        //{ff_booking_info}
+        add_filter('fluentform_shortcode_parser_callback_ff_booking_info', function ($value, $parser) {
+            $entry = $parser::getEntry();
+            return (new BookingInfo($entry->id))->bookingInfoHtml();
+        }, 10, 2);
+        //{ff_booking_info_page_link}
+//        add_filter('fluentform_shortcode_parser_callback_ff_booking_info_page_link', function ($value, $parser) {
+//            $entry = $parser::getEntry();
+//            $data = (new BookingInfo($entry->id))->getBookingInfoData();
+//            $hash = ArrayHelper::get($data,'bookingData.booking_hash');
+//            $html = '';
+//
+//        }, 10, 2);
+    }
+
 
 
 }

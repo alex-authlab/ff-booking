@@ -31,7 +31,7 @@ class BookingInfo
         }
         $this->data = [
             'bookingData' => $this->getBookingData($data),
-            'userData' => ArrayHelper::only($data, ['name', 'email']),
+            'userData' => ArrayHelper::only($data, ['name', 'email','allow_user_cancel','allow_user_reschedule']),
             'providerData' => $this->getProvider($data)
         ];
         $this->submissionInfoEnabled = ArrayHelper::get($data, 'append_info') == 'yes';
@@ -68,7 +68,7 @@ class BookingInfo
             'booking_time',
             'booking_status',
             'duration',
-//            'booking_hash', // to do create view page
+            'booking_hash',
             'policy',
             'description',
         ]);
@@ -136,7 +136,7 @@ class BookingInfo
         return $this->data;
     }
 
-    public function bookingInfo()
+    public function bookingInfoHtml()
     {
         $bookingInfo = ArrayHelper::get($this->data,'bookingData');
         if(!$bookingInfo){
@@ -147,7 +147,7 @@ class BookingInfo
         $html .= '<tr><td style="padding: 6px 12px 12px 12px;">Here is your Booking Update   </td></tr>';
 
         foreach ($bookingInfo as $key => $value) {
-            if (empty($value)) {
+            if (empty($value) || $key == 'booking_hash') {
                 continue;
             }
             $label = str_replace(' ', '_', $key);
@@ -158,6 +158,11 @@ class BookingInfo
         }
         $html .= '</tbody></table>';
         return $html;
+    }
+
+    public function infoPageLinkHtml ()
+    {
+        
     }
 
 

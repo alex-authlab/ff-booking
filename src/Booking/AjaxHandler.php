@@ -39,7 +39,6 @@ class AjaxHandler
             'save_payment_method_settings' => 'savePaymentMethodSettings',
             'get_form_settings' => 'getFormSettings',
             'save_form_settings' => 'saveFormSettings',
-            'update_transaction' => 'updateTransaction',
             'get_bookings' => 'getBookings',
             'get_booking_info' => 'getBookingInfo',
             'update_booking' => 'updateBooking',
@@ -47,8 +46,9 @@ class AjaxHandler
             'save_providers' => 'saveProviders',
             'delete_provider' => 'deleteProvider',
             'change_status_booking' => 'changeStatusBooking',
+            'update_user_notify_stat' => 'updateUserNotifyStat',
             'save_settings' => 'saveSettings',
-            'get_settings' => 'getSettings'
+            'get_settings' => 'getSettings',
 
         ];
 
@@ -103,7 +103,7 @@ class AjaxHandler
             // check db version
 
         } else {
-            (new Migration())->run();;
+             Migration::run();
         }
     }
 
@@ -332,13 +332,28 @@ class AjaxHandler
     // to do validate
     public function changeStatusBooking()
     {
-        $bookingId = intval($_REQUEST['booking_id']);
+        $bookinEntryId = intval($_REQUEST['booking_id']);
+        $insertId = intval($_REQUEST['entry_id']);
         $bookingStatus = sanitize_text_field($_REQUEST['booking_Status']);
-        do_action('ff_booking_status_changing', $bookingId, $bookingStatus);
+        do_action('ff_booking_status_changing', $bookinEntryId, $insertId, $bookingStatus);
         $data['booking_status'] = $bookingStatus;
-        (new BookingModel())->changeStatus($bookingId, $data);
+        (new BookingModel())->update($bookinEntryId, $data);
         wp_send_json_success([
             'message' => 'Booking Status has been updated succesfully',
+        ], 200);
+    }
+
+    public function updateUserNotifyStat()
+    {
+        $data = wp_unslash($_REQUEST['data']);
+        $data = json_decode($data,true);
+        $bookingId = intval($data['booking_id']);
+        $bookingStatus = sanitize_text_field($data['send_notification']);
+        $updateData['send_notification'] = $bookingStatus;
+
+        (new BookingModel())->update($bookingId, $updateData);
+        wp_send_json_success([
+            'message' => __('Send User notification status has been updated successfully', FF_BOOKING_SLUG)
         ], 200);
     }
 
@@ -376,8 +391,9 @@ class AjaxHandler
     {
         $settings = get_option('__ff_booking_general_settings');
         wp_send_json_success([
-            'settings_data' => $settings? json_decode($settings) : false
+            'settings_data' => $settings ? json_decode($settings) : false
         ], 200);
     }
+
 
 }

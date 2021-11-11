@@ -118,7 +118,7 @@ class FF_booking_handler {
                 }).appendTo(providerElm);
             });
             providerElm.find("option:first").attr('selected', 'selected');
-            this.getDateTime();
+            this.getDatesData();
         } else {
             providerElm.html(jQuery('<option>', {
                 value: '',
@@ -134,11 +134,11 @@ class FF_booking_handler {
             if (!!serviceElm.val() === false) {
                 return;
             }
-            this.getDateTime();
+            this.getDatesData();
         });
     }
 
-    getDateTime() {
+    getDatesData() {
         let datepickerElm = jQuery(this.$form.find(this.dateTimeElmClass));
         let targetFp = document.getElementById(datepickerElm.attr('id'))._flatpickr;
 
@@ -228,15 +228,16 @@ class FF_booking_handler {
                 //todo nonce
             },
             beforeSend: function () {
-                let $slot = that.$form.find(".ff-time-slot-container")
+                let $slot = that.$form.find(".ff-time-slot-container");
+                let loader = '<div class="ff-booking-loader"></div>';
                 if (!$slot.length) {
                     jQuery('<div/>', {
                         class: 'ff-time-slot-container'
                     }).appendTo(that.$form.find('.ff-booking-container'));
                     $slot = jQuery('.ff-time-slot-container');
-                    let loader = '<div class="ff-booking-loader"></div>'
-                    $slot.html(loader);
+
                 }
+                $slot.html(loader); //test
             },
         });
         let providerElm = jQuery(this.$form.find(this.providerElmClass));

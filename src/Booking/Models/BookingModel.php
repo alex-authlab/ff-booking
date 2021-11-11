@@ -37,6 +37,7 @@ class BookingModel
         $search = ArrayHelper::get($atts, 'search', '');
         $booking_status = ArrayHelper::get($atts, 'booking_status', 'all');
         $booking_id = ArrayHelper::get($atts, 'id', false);
+        $booking_hash = ArrayHelper::get($atts, 'booking_hash', false);
         $entry_id = ArrayHelper::get($atts, 'entry_id', false);
 
         global $wpdb;
@@ -55,6 +56,7 @@ class BookingModel
             $this->table . '.created_at',
             $this->table . '.user_id',
             $this->table . '.entry_id',
+            $this->table . '.send_notification',
             wpFluent()->raw($wpdb->prefix . 'ff_booking_providers.title AS provider'),
             wpFluent()->raw($wpdb->prefix . 'ff_booking_providers.id AS provider_id'),
             wpFluent()->raw($wpdb->prefix . 'ff_booking_services.title AS service'),
@@ -63,12 +65,18 @@ class BookingModel
             wpFluent()->raw($wpdb->prefix . 'ff_booking_services.policy'),
             wpFluent()->raw($wpdb->prefix . 'ff_booking_services.description'),
             wpFluent()->raw($wpdb->prefix . 'ff_booking_services.append_info'),
+            wpFluent()->raw($wpdb->prefix . 'ff_booking_services.allow_user_reschedule'),
+            wpFluent()->raw($wpdb->prefix . 'ff_booking_services.allow_user_cancel'),
+            wpFluent()->raw($wpdb->prefix . 'ff_booking_services.booking_type'),
             wpFluent()->raw($wpdb->prefix . 'ff_booking_services.id AS service_id'),
             wpFluent()->raw($wpdb->prefix . 'fluentform_forms.title AS form_title'),
         ];
         $query->select($this->fields);
         if ($booking_id) {
             $query->where($this->table . '.id', '=', $booking_id);
+        }
+        if ($booking_hash) {
+            $query->where($this->table . '.booking_hash', '=', $booking_hash);
         }
         if ($entry_id) {
             $query->where($this->table . '.entry_id', '=', $entry_id);
@@ -227,7 +235,7 @@ class BookingModel
 				booking_status varchar(255) NULL,
 				notes text NULL,
 				booking_hash varchar(255) NULL, 
-				send_notification TINYINT(1) DEFAULT 1,
+				send_notification varchar (10) DEFAULT 'yes',
 				created_at timestamp NULL,
 				updated_at timestamp NULL,
 				PRIMARY  KEY  (id)
@@ -242,9 +250,12 @@ class BookingModel
     public function update($id, $data)
     {
         $data['updated_at'] = current_time('mysql');
+//        vd($id);
+//        vdd($data);
         return wpFluent()->table($this->table)
             ->where('id', $id)
             ->update($data);
+
     }
 
 

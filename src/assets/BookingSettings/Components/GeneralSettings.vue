@@ -15,7 +15,6 @@
                             Status
                             <el-tooltip class="item" placement="bottom-start" effect="light">
                                 <div slot="content">
-                                    <h3>Status</h3>
                                     <p>
                                         Disable Booking
                                     </p>

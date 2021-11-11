@@ -53,52 +53,25 @@
                         <p>Name of the provider</p>
                     </el-form-item>
 
-                    <el-row :gutter="30">
-                        <el-col :span="12">
-                            <el-form-item label="Assigned User">
-                                <el-select placeholer="Select User" style="width: 100%;"
-                                           v-model="editing_item.assigned_user">
-                                    <el-option v-for="(user,userId) in users" :key="userId" :label="user"
-                                               :value="userId"></el-option>
-                                </el-select>
-                                <p>Assign user to this provider</p>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="Assigned Services">
-                                <el-select placeholer="Select Service" style="width: 100%;" multiple
-                                           v-model="editing_item.assigned_services">
-                                    <el-option v-for="(serviceName, serviceId) in services" :key="serviceId"
-                                               :label="serviceName"
-                                               :value="serviceId"></el-option>
-                                </el-select>
-                                <p>Add services under this provider</p>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="Weekly Off Days">
-                                <el-checkbox-group v-model="editing_item.weekend_days">
+                    <el-form-item label="Assigned Services">
+                        <el-select placeholer="Select Service" style="width: 100%;" multiple
+                                   v-model="editing_item.assigned_services">
+                            <el-option v-for="(serviceName, serviceId) in services" :key="serviceId"
+                                       :label="serviceName"
+                                       :value="serviceId"></el-option>
+                        </el-select>
+                        <p>Add services under this provider</p>
+                    </el-form-item>
 
-                                    <el-checkbox v-for="weekday in weekdays" :key="weekday"
-                                                 :label="weekday"></el-checkbox>
+                    <el-form-item label="Week Off Days">
+                        <el-checkbox-group v-model="editing_item.weekend_days">
 
-                                </el-checkbox-group>
-                                <p>Select Weekly off Days</p>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="Holidays">
-                                <el-date-picker
-                                        v-model="editing_item.holiday_dates"
-                                        type="dates"
-                                        format="dd-MM-yyyy"
-                                        value-format="yyyy-MM-dd"
-                                        placeholder="Pick a Holidays">
-                                </el-date-picker>
-                                <p>Select Holiday Dates</p>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
+                            <el-checkbox v-for="weekday in weekdays" :key="weekday"
+                                         :label="weekday"></el-checkbox>
+
+                        </el-checkbox-group>
+                        <p>Select Week off Days</p>
+                    </el-form-item>
 
                     <el-row :gutter="30">
                         <el-col :span="12">
@@ -127,6 +100,31 @@
                                         placeholder="Select time">
                                 </el-time-picker>
                                 <p>Select End Time</p>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+
+                    <el-row :gutter="30">
+                        <el-col :span="12">
+                            <el-form-item label="Assigned User">
+                                <el-select placeholer="Select User" style="width: 100%;"
+                                           v-model="editing_item.assigned_user">
+                                    <el-option v-for="(user,userId) in users" :key="userId" :label="user"
+                                               :value="userId"></el-option>
+                                </el-select>
+                                <p>Assign user to this provider</p>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="Holidays">
+                                <el-date-picker
+                                        v-model="editing_item.holiday_dates"
+                                        type="dates"
+                                        format="dd-MM-yyyy"
+                                        value-format="yyyy-MM-dd"
+                                        placeholder="Pick a Holidays">
+                                </el-date-picker>
+                                <p>Select Holiday Dates</p>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -184,7 +182,7 @@
                 available_forms: {},
                 users: {},
                 services: {},
-                weekdays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                weekdays: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
                 errors: false
             }
         },
@@ -221,7 +219,7 @@
                     title: '',
                     assigned_user: '',
                     assigned_services: [],
-                    weekend_days: [],
+                    weekend_days: ['Saturday', 'Sunday'],
                     holiday_dates: [],
                     status: 'active',
                     allowed_form_ids: [],

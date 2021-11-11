@@ -95,8 +95,8 @@ class ServiceModel
         $query->where('id',$serviceId);
         $query->where('status','active');
         $service = $query->first();
-        if($service->allowed_form_ids == ''){
-            $service->allowed_form_ids= [];
+        if(!$service){
+            return false;
         }
         $service->allowed_form_ids = maybe_unserialize($service->allowed_form_ids);
         $service->allowed_future_date_range = maybe_unserialize($service->allowed_future_date_range);

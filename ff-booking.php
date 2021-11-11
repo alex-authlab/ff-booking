@@ -12,8 +12,6 @@ Domain Path: /resources/languages
 */
 
 
-use FF_Booking\Booking\AjaxHandler;
-use FF_Booking\Booking\FrontEndAjaxHandler;
 
 defined('ABSPATH') or die;
 
@@ -120,16 +118,18 @@ if (!class_exists('FFBooking')) {
             if (!is_admin()) {
                 return;
             }
-            $ajax = new AjaxHandler();
+            $ajax = new  FF_Booking\Booking\AjaxHandler();
             add_action('wp_ajax_handle_booking_ajax_endpoint', [$ajax, 'init']);
             add_action('wp_ajax_nopriv_handle_booking_ajax_endpoint', [$ajax, 'init']);
         }
 
         public function publicHooks($app)
         {
-            $ajax = new FrontEndAjaxHandler();
+            $ajax = new FF_Booking\Booking\FrontEndAjaxHandler();
             add_action('wp_ajax_handle_booking_frontend_endpoint', [$ajax, 'init']);
             add_action('wp_ajax_nopriv_handle_booking_frontend_endpoint', [$ajax, 'init']);
+
+            new \FF_Booking\Booking\BookingUserPage();
         }
 
         private function loadTextDomain()
@@ -145,6 +145,6 @@ if (!class_exists('FFBooking')) {
     });
 
     register_activation_hook(__FILE__, function ($siteWide) {
-        (new \FF_Booking\Booking\Migrations\Migration())->run();
+        \FF_Booking\Booking\Migrations\Migration::run();
     });
 }

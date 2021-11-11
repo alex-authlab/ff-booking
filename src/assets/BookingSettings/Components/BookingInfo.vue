@@ -200,6 +200,7 @@
                     action: 'handle_booking_ajax_endpoint',
                     route: 'change_status_booking',
                     booking_id: id,
+                    entry_id: id,
                     booking_Status: status
                 })
                     .then(response => {

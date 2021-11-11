@@ -3,6 +3,8 @@
 namespace FF_Booking\Booking;
 
 use FF_Booking\Booking\Models\BookingModel;
+use FluentForm\App\Modules\Form\FormDataParser;
+use FluentForm\App\Modules\Form\FormFieldsParser;
 use FluentForm\App\Services\FormBuilder\ShortCodeParser;
 use FluentForm\Framework\Helpers\ArrayHelper;
 
@@ -10,75 +12,86 @@ use FluentForm\Framework\Helpers\ArrayHelper;
 class BookingNotification
 {
 
+    private $form;
+    /**
+     * @var mixed
+     */
+    private $formData;
+    private $insertId;
+    private $bookingData;
+    /**
+     * @var array
+     */
+    private $notifications;
+
     public function init()
     {
-        add_action('ff_booking_inserted', array($this, 'sendInstantEmail'), 99, 5);
-//        add_action('ff_booking_status_changing', array($this, 'emailAction'), 99, 3);
+        add_action('ff_booking_inserted', array($this, 'sendInstantEmail'), 99, 3);
+        add_action('ff_booking_status_changing', array($this, 'sendConfirmEmail'), 99, 3);
     }
 
-    public function sendInstantEmail($bookingData, $bookinEntryId,$insertId, $formData, $form)
+    public function sendInstantEmail($bookinEntryId, $insertId, $bookingData)
     {
-        $this->insertId = $insertId;
-        $this->formData = $formData;
-        $this->form = $form;
-        $emailData = (new BookingInfo($insertId))->getBookingInfoData();
-        $notifications = (new BookingInfo($insertId))->getNotifications();
-        if (!$notifications) {
+        $this->setupData($insertId);
+        $instantEmail = ArrayHelper::get($this->notifications, 'instant_email');
+        $this->processEmail($instantEmail);
+
+//        instant_email
+//        confirm_email
+//        send email on  booked status action
+//        query_email
+//        insert to db with a scheduled date calculated from number of days booking id after completed
+//        reminder_email
+//        same but before event date
+//        add logs
+
+    }
+
+    public function sendConfirmEmail($bookinEntryId, $insertId, $bookingStatus)
+    {
+        if ($bookingStatus != 'booked') {
             return;
         }
-        $instantEmail = ArrayHelper::get($notifications, 'instant_email');
-        $this->processEmail($instantEmail, $emailData );
-//        foreach ($notifications as $key => $notification) {
-//            if (ArrayHelper::get($notification, 'status') != 'yes') {
-//                continue;
-//            }
-//            if ($key == 'instant_email') {
-//            }
-//            if ($key == 'confirm_email') {
-//                //send email on  bookied satus action
-//            }
-//            if ($key == 'query_email') {
-//                //insert ot db with booking id
-//            }
-//            if ($key == 'reminder_email') {
-//                //insert ot db with booking id
-//            }
-//        }
+        $bookingData = (new BookingModel())->getBooking(['entry_id' => $insertId]);
+        if (ArrayHelper::get($bookingData, 'send_notification') != 'yes') {
+            return;
+        }
+        $this->setupData($insertId);
+
+        $confirmEmail = ArrayHelper::get($this->notifications, 'confirm_email');
+        $this->processEmail($confirmEmail);
     }
 
-    private function parse($data,$emailData)
-    {
-        $output = ShortCodeParser::parse(
-            $data,
-            $this->insertId,
-            $this->formData,
-            $this->form
-        );
-        return $output;
 
-    }
-
-    private function processEmail($notification, $emailData)
+    private function processEmail($notification)
     {
         if (ArrayHelper::get($notification, 'status') != 'yes') {
             return;
         }
-        $this->sendEmail($notification, $emailData, 'user');
-        $this->sendEmail($notification, $emailData, 'provider');
+        $this->sendEmail($notification, 'user');
+        $this->sendEmail($notification, 'provider');
     }
 
-    public function sendEmail($notificationData, $emailData, $receiver)
+    public function sendEmail($notificationData, $receiver)
     {
+        $bookingData = $this->bookingData;
+        $links = '';
         if ($receiver == 'user') {
-            $email = ArrayHelper::get($emailData, 'userData.email');
+            $email = ArrayHelper::get($bookingData, 'userData.email');
+            $links = $this->userEmailLinks($bookingData);
+
         } else {
-            $email = ArrayHelper::get($emailData, 'providerData.email');
+            $email = ArrayHelper::get($bookingData, 'providerData.email');
+            $links = $this->providerEmailLinks($bookingData);
         }
         if (!is_email($email)) {
-            return ;
+            return;
         }
-        //@todo add & parse shortcode with fluent parser
-        $emailBody = $this->parse($notificationData['body'],$emailData );
+        //@todo add filters
+        $emailBody = $this->parse($notificationData['body']);
+        $emailBody = apply_filters('ffb_email_body', $emailBody);
+        $emailBody .= $links;
+        $email = $this->parse($email);
         $headers = [
             'Content-Type: text/html; charset=utf-8'
         ];
@@ -91,5 +104,56 @@ class BookingNotification
         );
     }
 
+    private function setupData($insertId)
+    {
+        $submission = wpFluent()->table('fluentform_submissions')->find($insertId);
+        $formData = json_decode($submission->response, true);
+        $form = wpFluent()->table('fluentform_forms')->find($submission->form_id);
+        $bookingData = (new BookingInfo($insertId))->getBookingInfoData();
+        $notifications = (new BookingInfo($insertId))->getNotifications();
+
+        $this->insertId = $insertId;
+        $this->formData = $formData;
+        $this->form = $form;
+        $this->bookingData = $bookingData;
+        $this->notifications = $notifications ?: array();
+    }
+
+    private function parse($data)
+    {
+        $output = ShortCodeParser::parse(
+            $data,
+            $this->insertId,
+            $this->formData,
+            $this->form
+        );
+        return $output;
+    }
+
+    private function userEmailLinks($bookingData)
+    {
+        $hash = ArrayHelper::get($bookingData,'bookingData.booking_hash');
+        $pageLink = get_site_url() . '?ff_simple_booking=' . $hash;
+        $cancelLink = ArrayHelper::get($bookingData,'userData.allow_user_cancel') =='yes';
+        $reschedulelLink = ArrayHelper::get($bookingData,'userData.allow_user_reschedule') =='yes';
+        if ($cancelLink || $reschedulelLink) {
+            $html = '<p>Visit this link to make changes</p>
+            <a style="color: #ffffff;
+            background-color: #409EFF;
+            font-size: 16px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 0.5rem 1rem;
+            border-color: #0072ff;" target="_blank" href="' . $pageLink . '">View Details</a>';
+            return $html;
+        }
+        return '';
+    }
+
+    private function providerEmailLinks($bookingData)
+    {
+        return '';
+    }
 
 }

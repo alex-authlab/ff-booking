@@ -259,13 +259,17 @@
                             </el-collapse-item>
                             <el-collapse-item title="Cancelation" name="cancelation">
                                 <el-form-item label="Allow user Cancel">
+
                                     <el-switch active-value="yes" inactive-value="no"
                                                v-model="editing_item.allow_user_cancel"></el-switch>
                                 </el-form-item>
                                 <el-form-item label="Allow user ReSchedule">
+
                                     <el-switch active-value="yes" inactive-value="no"
                                                v-model="editing_item.allow_user_reschedule"></el-switch>
                                 </el-form-item>
+                                <p>Links will be added in email to cancel or ReSchedule in Booking Info Page </p>
+
                                 <el-form-item label="Policy">
                                     <el-input type="textarea" v-model="editing_item.policy"></el-input>
                                     <p>This will be added to all email </p>

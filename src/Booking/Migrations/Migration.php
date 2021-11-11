@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 
 class Migration
 {
-    public function run($network_wide = false)
+    public static function run($network_wide = false)
     {
         global $wpdb;
         if ($network_wide) {
@@ -26,15 +26,15 @@ class Migration
             // Install the plugin for all these sites.
             foreach ($site_ids as $site_id) {
                 switch_to_blog($site_id);
-                $this->migrate();
+                self::migrate();
                 restore_current_blog();
             }
         } else {
-            $this->migrate();
+            self::migrate();
         }
     }
 
-    public function migrate()
+    public static function migrate()
     {
         update_option('_ff_booking_status', 'yes');
         (new ServiceModel())->migrate();

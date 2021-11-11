@@ -31,6 +31,7 @@ class BookingDateTime extends \FluentForm\App\Services\FormBuilder\BaseFieldMana
             $url = admin_url('admin.php?page=fluent_forms_settings&component=booking_settings_global#/bookings/'.$bookingId);
             return "<span> <a href='{$url}'>{$date} {$time}</a> </span>";
         }, 10, 4);
+
     }
 
     function getComponent()
@@ -60,13 +61,13 @@ class BookingDateTime extends \FluentForm\App\Services\FormBuilder\BaseFieldMana
                 'validation_rules' => [
                     'required' => [
                         'value' => false,
-                        'message' => __('This field is required', 'fluentformpro'),
+                        'message' => __('This field is required', FF_BOOKING_SLUG),
                     ]
                 ],
                 'conditional_logics' => []
             ],
             'editor_options' => [
-                'title' => __('Booking Time & Date', 'fluentformpro'),
+                'title' => __('Booking Time & Date', FF_BOOKING_SLUG),
                 'icon_class' => 'ff-edit-date',
                 'template' => 'inputText'
             ],

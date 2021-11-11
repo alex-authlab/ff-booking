@@ -108,6 +108,14 @@ class Menu
             FF_BOOKING_VER,
             true
         );
+
+        wp_register_script(
+            'ff-booking-public-view',
+            FF_BOOKING_DIR_URL . 'public/js/ff-booking-public-view.js',
+            ['jquery'],
+            FF_BOOKING_VER,
+            true
+        );
     }
 
     public function enqueScipts()

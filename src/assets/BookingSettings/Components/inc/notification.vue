@@ -22,38 +22,45 @@
                 @open="handleOpen"
                 append-to-body
                 width="60%">
-            <el-form-item class="notification_modal">
-                <!--Subject-->
-                <el-form-item label="Subject">
+            <!--Subject-->
+            <el-form-item label="Subject">
 
-                    <input-popover fieldType="text"
-                                   v-model="email.subject"
-                                   :data="editorShortcodes"
-                    ></input-popover>
-                </el-form-item>
-                <!--message-->
-                <el-form-item label="Email Body" class="is-required">
-                    <input-popover :rows="10" v-if="email.asPlainText == 'yes'" fieldType="textarea"
-                                   v-model="email.message"
-                                   placeholder="Email Body HTML"
-                                   :data="editorShortcodes"
-                    ></input-popover>
-                    <wp_editor
-                            ref="emailEditor"
-                            :key="componentKey"
-                            v-else
-                            :editorShortcodes="editorShortcodes"
-                            :height="300"
-                            v-model="email.body">
-                    </wp_editor>
-                    <!--                    <el-checkbox style="margin-bottom: 10px;" true-label="yes" false-label="no"-->
-                    <!--                                 v-model="email.asPlainText">-->
-                    <!--                        Send Email as RAW HTML Format-->
-                    <!--                    </el-checkbox>-->
-                </el-form-item>
-                <el-form-item v-if="time != false" :label="`Send ${time}`">
-                    <delay-counter v-model="email.time"></delay-counter>
-                </el-form-item>
+                <input-popover fieldType="text"
+                               v-model="email.subject"
+                               :data="editorShortcodes"
+                ></input-popover>
+            </el-form-item>
+            <!--message-->
+            <el-form-item label="Email Body" class="is-required">
+                <input-popover :rows="10" v-if="email.asPlainText == 'yes'" fieldType="textarea"
+                               v-model="email.message"
+                               placeholder="Email Body HTML"
+                               :data="editorShortcodes"
+                ></input-popover>
+
+                <wp_editor
+                        ref="emailEditor"
+                        :key="componentKey"
+                        v-else
+                        :editorShortcodes="editorShortcodes"
+                        :height="300"
+                        v-model="email.body">
+                </wp_editor>
+            </el-form-item>
+
+
+            <el-checkbox v-if="showButtons" style="margin-bottom: 10px;" true-label="yes" false-label="no"
+                         v-model="email.reschedule_link">
+                Add Reschedule Link
+            </el-checkbox>
+            <el-checkbox v-if="showButtons" style="margin-bottom: 10px;" true-label="yes" false-label="no"
+                         v-model="email.cancel_link">
+                Add Cancel Link
+            </el-checkbox>
+
+
+            <el-form-item v-if="time != false" :label="`Send ${time}`">
+                <delay-counter v-model="email.time"></delay-counter>
             </el-form-item>
             <span slot="footer" class="dialog-footer">
               <el-button type="primary" v-loading="saving" @click="saveEmail()">Save</el-button>
@@ -124,6 +131,15 @@
                     this.email = newval
                 },
                 deep: true
+            }
+        },
+        computed: {
+            showButtons() {
+                if (this.email_key != 'query_email') {
+                    return true;
+                }
+                return false;
+
             }
         }
     }

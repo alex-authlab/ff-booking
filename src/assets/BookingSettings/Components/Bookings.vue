@@ -78,10 +78,6 @@
                             </template>
                         </el-table-column>
                         <el-table-column
-                                prop="human_date"
-                                label="Created">
-                        </el-table-column>
-                        <el-table-column
                                 label="Status">
                             <template slot-scope="props">
                                 <div>
@@ -100,10 +96,19 @@
                         </el-table-column>
 
                         <el-table-column
+                                label="Send Notification"
+                                width="200">
+                            <template slot-scope="props">
+                                <el-switch active-value="yes" inactive-value="no" active-color="#13ce66" @change="toggleNotifyStat(props.row)" v-model="props.row.send_notification"></el-switch>
+                                <span> {{props.row.send_notification == 'yes' ? 'Yes' : 'No'}}</span>
+                            </template>
+                        </el-table-column>
+
+                        <el-table-column
                                 label="Action"
                                 width="200">
                             <template slot-scope="props">
-                                <el-select size="small" @change="changeStatus(props.row.id,props.row.booking_status)"
+                                <el-select size="small" @change="changeStatus(props.row.id,props.row.booking_status,props.row.entry_id)"
                                            v-model="props.row.booking_status" placeholder="Select">
                                     <el-option
                                             v-for="(value,key) in booking_status"
@@ -112,6 +117,7 @@
                                             :value="key">
                                     </el-option>
                                 </el-select>
+
 
                             </template>
                         </el-table-column>
@@ -231,15 +237,16 @@
                         this.loading = false;
                     });
             },
-            changeStatus(id, status) {
+            changeStatus(id, status, entryId) {
                 this.$post({
                     action: 'handle_booking_ajax_endpoint',
                     route: 'change_status_booking',
                     booking_id: id,
-                    booking_Status: status
+                    booking_Status: status,
+                    entry_id: entryId,
                 })
                     .then(response => {
-                        this.getBookings();
+                        console.log(response)
                         this.$notify.success({
                             title: 'Success',
                             message: response.data.message,
@@ -247,10 +254,10 @@
                         });
                     })
                     .fail(error => {
-                        this.$notify.error(error.responseJSON.message);
+                        console.log(error)
+                        // this.$notify.error(error.responseJSON.message);
                     })
                     .always(() => {
-                        this.getBookings();
                     });
 
             },
@@ -266,6 +273,30 @@
                 });
                 this.show_modal = true;
             },
+            toggleNotifyStat(entry){
+                this.$post({
+                    action: 'handle_booking_ajax_endpoint',
+                    route: 'update_user_notify_stat',
+                    data: JSON.stringify({
+                        booking_id :entry.id,
+                        send_notification: entry.send_notification
+                    }),
+
+                })
+                    .then(response => {
+                        this.$notify.success({
+                            title: 'Success',
+                            message: response.data.message,
+                            offset: 30
+                        });
+                    })
+                    .fail(error => {
+                        this.$notify.error(error.responseJSON.message);
+                    })
+                    .always(() => {
+
+                    });
+            }
 
 
         },
