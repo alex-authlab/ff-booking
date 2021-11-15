@@ -105,7 +105,7 @@
                         </el-table-column>
 
                         <el-table-column
-                                label="Action"
+                                label="Status"
                                 width="200">
                             <template slot-scope="props">
                                 <el-select size="small" @change="changeStatus(props.row.id,props.row.booking_status,props.row.entry_id)"
@@ -168,14 +168,7 @@
                 logs: [],
                 loading: false,
                 show_modal: false,
-                booking_status: {
-                    'booked': 'Confirm Booking',
-                    'pending': 'Pending Booking',
-                    'canceled': 'Cancel Booking',
-                    'declined': 'Decline Booking',
-                    'complete': 'Booking Complete',
-                    'draft': 'Draft Booking',
-                },
+                booking_status: window.ff_booking_settings.booking_status,
                 tableData: [],
                 settings: {},
                 date_range: [],

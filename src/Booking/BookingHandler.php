@@ -85,6 +85,7 @@ class BookingHandler
             'ff_booking_admin_nonce' => wp_create_nonce('ff_booking_admin_nonce'),
             'active_nav' => 'Bookings',
             'ajaxUrl' => admin_url('admin-ajax.php'),
+            'booking_status' => BookingHelper::bookingStatuses(),
         ];
 
         wp_localize_script('ff-booking-settings', 'ff_booking_settings', $data);

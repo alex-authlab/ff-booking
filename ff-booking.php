@@ -21,6 +21,7 @@ define('FF_BOOKING_DIR_URL', plugin_dir_url(__FILE__));
 define('FF_BOOKINGDIR_PATH', plugin_dir_path(__FILE__));
 define('FF_BOOKING_DIR_FILE', __FILE__);
 
+
 include FF_BOOKINGDIR_PATH . 'autoload.php';
 
 if (!class_exists('FFBooking')) {
@@ -130,6 +131,7 @@ if (!class_exists('FFBooking')) {
             add_action('wp_ajax_nopriv_handle_booking_frontend_endpoint', [$ajax, 'init']);
 
             new \FF_Booking\Booking\BookingUserPage();
+            (new  \FF_Booking\Booking\ProviderPage())->init();
         }
 
         private function loadTextDomain()

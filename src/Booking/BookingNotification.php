@@ -32,7 +32,9 @@ class BookingNotification
 
     public function sendInstantEmail($bookinEntryId, $insertId, $bookingData)
     {
-        $this->setupData($insertId);
+        $bookingData = (new BookingModel())->getBooking(['id' => $bookinEntryId]);
+        $this->setupData($bookingData['entry_id']);
+
         $instantEmail = ArrayHelper::get($this->notifications, 'instant_email');
         $this->processEmail($instantEmail);
 
@@ -47,16 +49,16 @@ class BookingNotification
 
     }
 
-    public function sendConfirmEmail($bookinEntryId, $insertId, $bookingStatus)
+    public function sendConfirmEmail($bookinEntryId, $bookingStatus)
     {
         if ($bookingStatus != 'booked') {
             return;
         }
-        $bookingData = (new BookingModel())->getBooking(['entry_id' => $insertId]);
+        $bookingData = (new BookingModel())->getBooking(['id' => $bookinEntryId]);
         if (ArrayHelper::get($bookingData, 'send_notification') != 'yes') {
             return;
         }
-        $this->setupData($insertId);
+        $this->setupData($bookingData['entry_id']);
 
         $confirmEmail = ArrayHelper::get($this->notifications, 'confirm_email');
         $this->processEmail($confirmEmail);

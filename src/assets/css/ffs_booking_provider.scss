@@ -1,0 +1,177 @@
+.ff_bookings_container {
+  .ff_booking_filters {
+    padding: 15px 0px;
+  }
+
+  .ffs_booking_date_grp {
+    padding: 15px 20px;
+    border: 2px solid #e3e8ee;
+    border-bottom: none;
+    background: #f0f8ff;
+    font-weight: 500;
+  }
+
+  .ffs_booking_details_text {
+    display: flex;
+    padding: 15px 0;
+    flex-direction: row;
+    border-top: 1px solid #efefef;
+
+    @media only screen and (max-width: 768px) {
+      flex-direction: column;
+
+      .ffs_booking_btns{
+        text-align: left!important;
+        width: 100%;
+        box-sizing: border-box;
+        .ffs_link{
+          display: block!important;
+        }
+      }
+    }
+
+    .ffs_details_info {
+      width: 300px;
+      position: relative;
+    }
+    .ffs_details_info_actions {
+      flex: 1 1 auto;
+      text-align: right;
+      min-width: 400px;
+    }
+  }
+
+  .ffs_booking_btns {
+    .ffs_link {
+      display: inline-block;
+      line-height: 1;
+      white-space: nowrap;
+      cursor: pointer;
+      border: 1px solid #dcdfe6;
+      color: #606266;
+      -webkit-appearance: none;
+      text-align: center;
+      box-sizing: border-box;
+      outline: 0;
+      margin: 0;
+      margin-right: 5px;
+      transition: .1s;
+      font-weight: 500;
+      -moz-user-select: none;
+      -webkit-user-select: none;
+      -ms-user-select: none;
+      text-decoration: none;
+      padding: 6px 20px;
+      font-size: 14px;
+      border-radius: 4px;
+
+      &.ffs_active {
+        background: #3182ce;
+        color: #fff;
+      }
+
+      &:not(select) {
+        background: #fff;
+      }
+    }
+  }
+
+  .ff_booking {
+    background-color: white;
+    border: 2px solid #e3e8ee;
+    border-bottom: none;
+    padding: 15px 20px;
+    color: rgb(58, 79, 102);
+
+    .ff_booking_info {
+      position: relative;
+
+      .ffs_service_badge {
+        width: 15px;
+        height: 15px;
+        display: block;
+        top:5px;
+        border: 1px solid #aba8a8;
+        position: absolute;
+      }
+      .ffs_service_name{
+        padding-left: 20px;
+      }
+    }
+
+    .ff_booking_header {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      width: 100%;
+      margin-bottom: 15px;
+
+      .ffs-pull-right {
+        text-align: right;
+      }
+
+      @media only screen and (max-width: 768px) {
+        flex-direction: column;
+        > div {
+          display: flex;
+          flex-direction: column;
+          flex-basis: 100%;
+          flex: 1;
+        }
+      }
+
+      > div {
+        display: flex;
+        flex-direction: column;
+        flex-basis: 100%;
+        flex: 1;
+      }
+
+
+      .ff_booking_status_badge {
+        background-color: #d6ecff;
+        border-radius: 20px;
+        padding: 2px 8px;
+        color: #3d4eac;
+        font-weight: 500;
+        font-size: 90%;
+        text-transform: capitalize;
+
+        &.ff_booking_status_canceled {
+          background: #ff623e;
+          color: white;
+        }
+
+        &.ff_booking_status_booked {
+          background: #67C23A;
+          color: white;
+        }
+      }
+
+    }
+
+
+  }
+
+  .ff_booking:last-child {
+    border-bottom: 2px solid #e3e8ee;
+  }
+
+  .ffs_booking_details {
+    margin: 10px -20px -20px;
+    padding: 20px;
+    overflow: hidden;
+    position: relative;
+
+    &.ffs_booking_action_confirmation {
+      background: #fff7f5;
+      text-align: center;
+
+    }
+
+    button.ffs_confirm_cancel {
+      background: #cf3917;
+      color: white;
+    }
+  }
+}

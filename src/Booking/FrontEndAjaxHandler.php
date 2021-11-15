@@ -24,7 +24,8 @@ class FrontEndAjaxHandler
             'get_time_slots' => 'getTimeSlots',
             'get_time_slots_booking_page' => 'getTimeSlotsBookingPage',
             'reschedule_booking' => 'rescheduleBooking',
-            'cancel_booking' => 'cancelBooking'
+            'cancel_booking' => 'cancelBooking',
+            'update_provider_booking'=>'updateProviderBooking'
 
         ];
         if (isset($validRoutes[$route])) {
@@ -174,6 +175,19 @@ class FrontEndAjaxHandler
         ]);
     }
 
+    public function updateProviderBooking()
+    {
+        $bookingId = sanitize_text_field($_REQUEST['booking_id']);
+        $status = sanitize_text_field($_REQUEST['status']);
+
+        do_action('ff_booking_status_changing', $bookingId, $status);
+        $data['booking_status'] = $status;
+        (new BookingModel())->update($bookingId, $data);
+        wp_send_json_success([
+            'message' => __('Booking has been updated succefully', FF_BOOKING_SLUG)
+        ]);
+
+    }
 
     /**
      * @param $bookingHash

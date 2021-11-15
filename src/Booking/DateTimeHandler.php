@@ -174,8 +174,8 @@ class DateTimeHandler
     ) {
         $timeZone = BookingHelper::getTimeZone();
         $timeFormat = BookingHelper::getTimeFormat();
-        $gapTime = $this->timeDurationLength($gapTimeAfter);
-        $duration = $this->timeDurationLength($interval);
+        $gapTime = BookingHelper::timeDurationLength($gapTimeAfter);
+        $duration = BookingHelper::timeDurationLength($interval);
 
         $start = new \DateTime($start_time, new \DateTimeZone($timeZone));
         $end = new \DateTime($end_time, new \DateTimeZone($timeZone));
@@ -200,28 +200,7 @@ class DateTimeHandler
         return $time;
     }
 
-    /**
-     * To modify time : 01:30 => 1 Hour 30 minutes
-     *
-     * @param $interval
-     * @param $timeZone
-     * @return string
-     * @throws \Exception
-     */
-    private function timeDurationLength($interval)
-    {
-        $addTime = '';
-        $fraction = explode(':', $interval);
-        $interval = new \DateTime($interval);
 
-        if ($fraction[0] != '00') {
-            $addTimeHour = '+' . $interval->format('g') . ' Hour';
-            $addTime = $addTimeHour;
-        }
-        $addTimeMin = ' +' . $interval->format('i') . ' minutes';
-        $addTime .= $addTimeMin;
-        return $addTime;
-    }
 
     private function getBookedSlots()
     {

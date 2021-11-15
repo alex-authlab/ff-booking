@@ -13,10 +13,10 @@ class BookingHelper
 {
     public static function convertTime($convertTo = '24', $time)
     {
-        if($convertTo == '24'){
+        if ($convertTo == '24') {
             return date("H:i", strtotime($time));
-        }elseif($convertTo == '12'){
-            return  date("h:i a", strtotime($time));
+        } elseif ($convertTo == '12') {
+            return date("h:i a", strtotime($time));
         }
     }
 
@@ -25,7 +25,7 @@ class BookingHelper
      */
     public static function getTimeFormat()
     {
-        $settings = json_decode(get_option('__ff_booking_general_settings'),true);
+        $settings = json_decode(get_option('__ff_booking_general_settings'), true);
         $timeFormat = 'h:i a';
         if (ArrayHelper::get($settings, 'time_format') == '12') {
             $timeFormat = 'h:i a';
@@ -34,24 +34,26 @@ class BookingHelper
         }
         return $timeFormat;
     }
+
     /**
      * @return string time period
      */
     public static function getTimePeriod()
     {
-        $settings = json_decode(get_option('__ff_booking_general_settings'),true);
+        $settings = json_decode(get_option('__ff_booking_general_settings'), true);
         $timePeriod = '12';
         if ($value = ArrayHelper::get($settings, 'time_format')) {
             $timePeriod = $value;
         }
         return $timePeriod;
     }
+
     /**
      * @return string time zone
      */
-        public static function getTimeZone()
+    public static function getTimeZone()
     {
-        $settings = json_decode(get_option('__ff_booking_general_settings'),true);
+        $settings = json_decode(get_option('__ff_booking_general_settings'), true);
         $timezone = ArrayHelper::get($settings, 'time_zone');
         if (!$timezone) {
             $timezone = get_option('timezone_string'); //wp timezone
@@ -61,13 +63,14 @@ class BookingHelper
         }
         return $timezone;
     }
+
     /**
      * @return string first day of week
      */
     public static function firstWeekDay()
     {
         $settings = get_option('__ff_booking_general_settings');
-        $weekDay = ArrayHelper::get($settings, 'week_start',0);
+        $weekDay = ArrayHelper::get($settings, 'week_start', 0);
         return date('N', strtotime($weekDay));
     }
 
@@ -75,9 +78,9 @@ class BookingHelper
     {
         $form = wpFluent()->table('fluentform_forms')->find($formId);
         $fields = json_decode($form->form_fields, true);
-        foreach ($fields['fields'] as $field){
-            if($field['element'] == 'booking_datetime'){
-                return  ArrayHelper::get($field, 'settings.date_format');
+        foreach ($fields['fields'] as $field) {
+            if ($field['element'] == 'booking_datetime') {
+                return ArrayHelper::get($field, 'settings.date_format');
             }
         }
         return 'd/m/y';
@@ -107,5 +110,55 @@ class BookingHelper
                 'message' => $message
             ], 422);
         }
+    }
+
+    public static function loadView($fileName, $data)
+    {
+        $basePath = FF_BOOKINGDIR_PATH . 'src/Booking/view/';
+        $filePath = $basePath . $fileName . '.php';
+        extract($data);
+        ob_start();
+        include $filePath;
+        return ob_get_clean();
+    }
+
+    public static function bookingStatuses()
+    {
+        return array(
+            'booked' => __('Booked',FF_BOOKING_SLUG),
+            'canceled' => __('Cancel',FF_BOOKING_SLUG),
+            'pending' => __('Pending',FF_BOOKING_SLUG),
+            'complete' => __('Complete',FF_BOOKING_SLUG),
+            'draft' => __('Draft',FF_BOOKING_SLUG),
+        );
+    }
+
+    /**
+     * To modify time : 01:30 => 1 Hour 30 minutes
+     *
+     * @param $interval
+     * @param $timeZone
+     * @return string
+     * @throws \Exception
+     */
+    public static function timeDurationLength($interval ,$isHtml = false)
+    {
+        $addTime = '';
+        $fraction = explode(':', $interval);
+        $interval = new \DateTime($interval);
+        $append = ' +';
+        if($isHtml){
+            $append = '';
+        }
+        if ($fraction[0] != '00') {
+            $addTimeHour =  $append . $interval->format('g') . ' Hour';
+            $addTime = $addTimeHour;
+        }
+        if ($fraction[1] != '00') {
+            $addTimeMin =  $append . $interval->format('i') . ' minutes';
+            $addTime .= $addTimeMin;
+        }
+
+        return $addTime;
     }
 }
