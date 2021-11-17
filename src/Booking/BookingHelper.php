@@ -25,14 +25,7 @@ class BookingHelper
      */
     public static function getTimeFormat()
     {
-        $settings = json_decode(get_option('__ff_booking_general_settings'), true);
-        $timeFormat = 'h:i a';
-        if (ArrayHelper::get($settings, 'time_format') == '12') {
-            $timeFormat = 'h:i a';
-        } else {
-            $timeFormat = 'H:i';
-        }
-        return $timeFormat;
+        return get_option('time_format');
     }
 
     /**
@@ -53,11 +46,8 @@ class BookingHelper
      */
     public static function getTimeZone()
     {
-        $settings = json_decode(get_option('__ff_booking_general_settings'), true);
-        $timezone = ArrayHelper::get($settings, 'time_zone');
-        if (!$timezone) {
-            $timezone = get_option('timezone_string'); //wp timezone
-        }
+        $timezone = get_option('timezone_string'); //wp timezone
+    
         if (!in_array($timezone, timezone_identifiers_list())) {
             $timezone = 'America/New_York'; //add filter
         }
@@ -69,9 +59,7 @@ class BookingHelper
      */
     public static function firstWeekDay()
     {
-        $settings = get_option('__ff_booking_general_settings');
-        $weekDay = ArrayHelper::get($settings, 'week_start', 0);
-        return date('N', strtotime($weekDay));
+        return get_option('start_of_week');
     }
 
     public static function getBookingFieldDateFormat($formId)
@@ -166,7 +154,7 @@ class BookingHelper
         $settings = json_decode(get_option('__ff_booking_general_settings'), true);
         return ArrayHelper::get($settings, $key);
     }
-
+    //@todo add filters
     public static function formatTime($value)
     {
         return date_i18n(get_option('time_format'), strtotime($value));

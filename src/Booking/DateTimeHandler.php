@@ -187,9 +187,9 @@ class DateTimeHandler
             //add duration
             $slotEnd = $start->modify($duration)->format($timeFormat);
 
-            $time[$i]['label'] = date($timeFormat, strtotime($slotStart));
+            $time[$i]['label'] = BookingHelper::formatTime($slotStart);
             if ($with_end_time) {
-                $time[$i]['label'] .= ' - ' . date('h:i a', strtotime($slotEnd));
+                $time[$i]['label'] .= ' - ' . BookingHelper::formatTime($slotEnd);
             }
             $time[$i]['value'] = $slotStart;
 
