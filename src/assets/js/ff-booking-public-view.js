@@ -210,7 +210,13 @@ jQuery(document).ready(function ($) {
                         }, 1000);
                         return;
                     }
-                    $details.html('<span class="ffb_sucess">' + response.message + '</span> ');
+                    let msg = ''
+                    if(response.message){
+                        msg = response.message
+                    }else{
+                     msg= 'Error Please Try Again!'
+                    }
+                    $details.html('<span class="ffb_error">' + msg + '</span> ');
 
 
                 })

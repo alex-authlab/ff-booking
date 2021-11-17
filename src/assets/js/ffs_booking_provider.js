@@ -36,7 +36,7 @@ jQuery(document).ready(function ($) {
             $responseDom.html(message);
             setTimeout(() => {
                 window.location.reload();
-            }, 1000);
+            }, 2000);
         });
     })
     //close confirm prompt
@@ -46,6 +46,28 @@ jQuery(document).ready(function ($) {
         $confirm.find('.ffs_confirm').removeAttr('data-booking_status')
         $(this).closest('.ffs_booking_action_confirmation').slideUp();
     })
+    //show note
+    $('.ffs_booking_btns .ffs_edit_note').on('click', function (e) {
+        let $dom = $(this).closest('.ff_booking').find('.ffs_bookings_notes');
+        $dom.slideToggle();
+    })
+    //save note
+    $('.ffs_booking_btns .ffs_update_note').on('click', function (e) {
+        let text = $(this).closest('.ffs_bookings_notes').find('.edit-notes').val();
+        let bookingId = $(this).attr('data-booking_id')
+        let $dom = $(this).closest('.ff_booking').find('.ffs_note_response');
+
+        updateNote(bookingId,text, $(this), (message, status) => {
+
+            if (status != 'success') {
+                $dom.addClass('ffb_error')
+            }
+            $dom.html(message);
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+        });
+    })
     //send update req
     function updateBooking(bookingId, status, $elm, callback) {
 
@@ -54,6 +76,32 @@ jQuery(document).ready(function ($) {
             booking_id: bookingId,
             status: status,
             route: 'update_provider_booking',
+            action: 'handle_booking_frontend_endpoint',
+            ffs_booking_public_nonce: window.ffs_provider_vars.nonce
+        })
+            .then(response => {
+                callback(response.data.message, 'success');
+            })
+            .catch(errors => {
+                if (!errors.responseJSON) {
+                    callback(errors.responseText);
+                } else if (errors.responseJSON.data) {
+                    callback(errors.responseJSON.data.message);
+                } else {
+                    callback('Error. Please try again');
+                }
+            })
+            .always(() => {
+                $elm.prop("disabled", false);
+            });
+    }
+    function updateNote(bookingId,text, $elm, callback) {
+
+        $elm.prop("disabled", true);
+        jQuery.post(window.ffs_provider_vars.ajaxUrl, {
+            booking_id: bookingId,
+            notes: text,
+            route: 'update_provider_note',
             action: 'handle_booking_frontend_endpoint',
             ffs_booking_public_nonce: window.ffs_provider_vars.nonce
         })

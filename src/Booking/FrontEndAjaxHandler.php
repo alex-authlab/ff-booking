@@ -25,7 +25,8 @@ class FrontEndAjaxHandler
             'get_time_slots_booking_page' => 'getTimeSlotsBookingPage',
             'reschedule_booking' => 'rescheduleBooking',
             'cancel_booking' => 'cancelBooking',
-            'update_provider_booking' => 'updateProviderBooking'
+            'update_provider_booking' => 'updateProviderBooking',
+            'update_provider_note' => 'updateProviderNote'
 
         ];
         if (isset($validRoutes[$route])) {
@@ -192,14 +193,29 @@ class FrontEndAjaxHandler
     {
         BookingHelper::verifyRequest('ffs_booking_public_nonce');
 
-        $bookingId = sanitize_text_field($_REQUEST['booking_id']);
+        $bookingId = intval($_REQUEST['booking_id']);
         $status = sanitize_text_field($_REQUEST['status']);
 
         do_action('ff_booking_status_changing', $bookingId, $status);
         $data['booking_status'] = $status;
         (new BookingModel())->update($bookingId, $data);
         wp_send_json_success([
-            'message' => __('Booking has been updated succefully', FF_BOOKING_SLUG)
+            'message' => __('Booking has been updated succefully,refreshing in 2 sec', FF_BOOKING_SLUG)
+        ]);
+    }
+
+    public function updateProviderNote()
+    {
+        BookingHelper::verifyRequest('ffs_booking_public_nonce');
+
+        $bookingId = intval($_REQUEST['booking_id']);
+        $notes = sanitize_textarea_field($_REQUEST['notes']);
+
+        do_action('ff_booking_status_note_update', $bookingId, $notes);
+        $data['notes'] = $notes;
+        (new BookingModel())->update($bookingId, $data);
+        wp_send_json_success([
+            'message' => __('Note has been updated succefully, refreshing in 2 sec', FF_BOOKING_SLUG)
         ]);
     }
 

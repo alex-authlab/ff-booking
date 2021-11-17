@@ -12,7 +12,7 @@
                 if($key == $config['filterStatus']){
                   $active = 'ffs_active';
                 }
-                echo "<a href='?status={$key}' class='ffs_link {$active}'>{$label}</a>";
+                echo "<a href='{$config['base_url']}status={$key}' class='ffs_link {$active}'>{$label}</a>";
             }
             ?>
 
@@ -45,10 +45,10 @@
                         </div>
 
                         <div class="ff_booking_info">
-                                <?php echo $booking['booking_time']; ?>
+                            <?php echo $booking['booking_time']; ?>
                         </div>
                         <div class="ff_booking_info">
-                                <?php echo $booking['duration']; ?>
+                            <?php echo $booking['duration']; ?>
                         </div>
                         <div class="ff_booking_info ffs-pull-right">
                             <div class="ffs_booking_btns">
@@ -59,28 +59,56 @@
                     </div>
                     <div  class="ffs_booking_details_text" style="display: none">
 
-                            <div class="ffs_details_info">
-                                <span> <b><?php _e('Name', FF_BOOKING_SLUG); ?></b> <?php print $booking['name']?></span> <br>
-                                <span> <b><?php _e('Email', FF_BOOKING_SLUG); ?></b> <?php print $booking['email']?></span>
-                            </div>
+                        <div class="ffs_details_info">
+                             <b><?php _e('Name', FF_BOOKING_SLUG); ?></b> <?php echo $booking['name'] ?> <br>
+                             <b><?php _e('Email', FF_BOOKING_SLUG); ?></b> <?php echo $booking['email'] ?>
+                        </div>
 
-                            <div class="ffs_details_info">
-                                <b><?php _e('Notes', FF_BOOKING_SLUG); ?></b>
-                                <span> <?php echo $booking['notes']?></span>
-                            </div>
-
-                            <div class="ffs_details_info">
-                              <small> <?php _e('Created', FF_BOOKING_SLUG); ?> <?php echo $booking['created_at']?></small>
-                            </div>
+                        <div class="ffs_details_info with-table">
+                            <table class="table ffs_reschedule_table">
+                                <?php
+                                if ( is_array($booking['reschedule_data']) && count($booking['reschedule_data']) > 0) {
+                                    foreach ($booking['reschedule_data'] as $entry): ?>
+                                        <tr class="separator-td">
+                                            <td colspan="2"></td>
+                                        </tr>
+                                        <tr>
+                                            <th><?php _e('Rescheduled on', FF_BOOKING_SLUG); ?></th>
+                                            <td>
+                                                <?php echo \FF_Booking\Booking\BookingHelper::formatDate($entry->updated_at); ?>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th><?php _e('Rescheduled By', FF_BOOKING_SLUG); ?></th>
+                                            <td>
+                                                <?php echo ucfirst($entry->action_by); ?>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th><?php _e('Reason', FF_BOOKING_SLUG); ?></th>
+                                            <td>
+                                                <?php echo trim($entry->reason); ?>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th><?php _e('Previous Booking', FF_BOOKING_SLUG); ?></th>
+                                            <td><?php echo $entry->previous_booking; ?></td>
+                                        </tr>
+                                    
+                                    <?php
+                                    endforeach;
+                                } ?>
+                            </table>
+                        </div>
 
                             <div class="ffs_details_info_actions ffs_booking_btns">
+                                
                                 <span><?php _e('Change status', FF_BOOKING_SLUG); ?></span>
                                 <select name="" class="ffs_link ffs_booking_status" data-booking_id="<?php echo $booking['id'] ?> ">
                                     <?php foreach ($config['booking_status'] as $key => $status) {
+                                        $selected ='';
                                         if($key == $booking['booking_status']){
                                             $selected ='selected';
-                                        }else{
-                                            $selected ='';
                                         }
                                         ?>
                                         <option <?php echo $selected?> value="<?php echo $key ?>" >
@@ -91,18 +119,43 @@
                                 <a class="ffs_confirm ffs_link" href="<?php echo $config['base_url'].'?ff_simple_booking='.$booking['booking_hash'] ?>">
                                     <?php echo $config['reschulde_btn']; ?>
                                 </a>
+                                
+                                <div class="ffs_notes">
+                                    <b><?php _e('Notes', FF_BOOKING_SLUG); ?></b>
+                                    <p><?php echo empty($booking['notes'])? 'No Notes': $booking['notes'] ?>
+                                    </p>
+                                    <button class="ffs_edit_note ffs_link">
+                                        <?php _e("Edit Note",FF_BOOKING_SLUG); ?>
+                                    </button>
+                                    <div class="ffs_bookings_notes" style=" display:none">
+                                            <textarea name="notes"  class="edit-notes" cols="2" rows="2"><?php echo trim($booking['notes']); ?></textarea>
 
+                                        <button data-booking_id="<?php echo $booking['id'] ?> " class="ffs_update_note ffs_link">
+                                            <?php _e("Save Note",FF_BOOKING_SLUG); ?>
+                                        </button>
+                                    </div>
+                                    <div class="ffs_note_response"></div>
+
+                                </div>
+                                <div>
+                                    <small>
+                                        <?php _e('Created', FF_BOOKING_SLUG); ?>
+                                        <?php echo $booking['created_at'] ?>
+                                    </small>
+                                </div>
                             </div>
+
 
                     </div>
                     <div  class="ffs_booking_details ffs_booking_action_confirmation" style="display: none">
-                        <h4><?php
-                            echo $config['confirm_heading']; ?></h4>
+                        <h4><?php echo $config['confirm_heading']; ?></h4>
                         <div class="ffs_booking_btns">
-                            <button class="ffs_confirm ffs_link"><?php
-                                echo $config['confirm_btn']; ?></button>
-                            <button class="ffs_close ffs_link"><?php
-                                echo $config['close']; ?></button>
+                            <button class="ffs_confirm ffs_link">
+                                <?php echo $config['confirm_btn']; ?>
+                            </button>
+                            <button class="ffs_close ffs_link">
+                                <?php echo $config['close']; ?>
+                            </button>
                             <p class="ffs_message_notices"></p>
                         </div>
                     </div>

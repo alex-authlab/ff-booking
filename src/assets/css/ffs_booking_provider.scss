@@ -1,5 +1,8 @@
 .ff_bookings_container {
   .ff_booking_filters {
+    .ffs_booking_btns .ffs_link{
+      margin-right: 5px;
+    }
     padding: 15px 0px;
   }
 
@@ -17,6 +20,7 @@
     flex-direction: row;
     border-top: 1px solid #efefef;
 
+
     @media only screen and (max-width: 768px) {
       flex-direction: column;
 
@@ -30,14 +34,43 @@
       }
     }
 
+
     .ffs_details_info {
-      width: 300px;
       position: relative;
+      &.with-table{
+        flex:1 1 auto;
+      }
+      .ffs_reschedule_table{
+        font-size: 14px;
+        text-align: left;
+        border-collapse:separate;
+        border-spacing:0 5px;
+        margin: 0 15px;
+        tr.separator-td td{
+          border-bottom: 1px solid #cbcbcb;
+        }
+        tr.separator-td:nth-child(1) td {
+          border:none;
+        }
+      }
+      .ffs_bookings_notes{
+        margin-top: 10px;
+        textarea{
+          max-width: 350px;
+        }
+      }
+
     }
     .ffs_details_info_actions {
+
+      .ffs_bookings_notes {
+        margin-top: 10px;
+        .edit-notes{
+          max-width: 350px;
+        }
+      }
       flex: 1 1 auto;
       text-align: right;
-      min-width: 400px;
     }
   }
 
@@ -54,7 +87,6 @@
       box-sizing: border-box;
       outline: 0;
       margin: 0;
-      margin-right: 5px;
       transition: .1s;
       font-weight: 500;
       -moz-user-select: none;
@@ -65,6 +97,7 @@
       font-size: 14px;
       border-radius: 4px;
 
+
       &.ffs_active {
         background: #3182ce;
         color: #fff;
@@ -73,7 +106,9 @@
       &:not(select) {
         background: #fff;
       }
+
     }
+
   }
 
   .ff_booking {
@@ -85,7 +120,6 @@
 
     .ff_booking_info {
       position: relative;
-
       .ffs_service_badge {
         width: 15px;
         height: 15px;
@@ -111,6 +145,7 @@
       }
 
       @media only screen and (max-width: 768px) {
+
         flex-direction: column;
         > div {
           display: flex;

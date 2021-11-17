@@ -2,6 +2,8 @@
 
 namespace FF_Booking\Booking;
 
+use FluentForm\Framework\Helpers\ArrayHelper;
+
 class ProviderPage
 {
 
@@ -39,11 +41,28 @@ class ProviderPage
 
     private function getViewConfig()
     {
+        global $wp_query;
+        $pageId = $wp_query->post->ID;
+
+        $urlBase = false;
+        if($pageId) {
+            $urlBase = get_permalink($pageId);
+        }
+
+        if(!$urlBase) {
+            $urlBase = site_url('index.php');
+        }
+
+        if (!strpos($urlBase, '?')) {
+            $urlBase .= '?';
+        } else {
+            $urlBase .= '&';
+        }
         $wpDateTimeFormat = get_option('time_format') . ' ' . get_option('date_format');
         return apply_filters('ffs_provider_view_config', [
             'new_tab' => false,
             'view_text' => __('View', FF_BOOKING_SLUG),
-            'base_url' => site_url(),
+            'base_url' => $urlBase,
             'time_format' => get_option('time_format'),
             'date_format' => get_option('date_format'),
             'date_time_format' => $wpDateTimeFormat,
@@ -53,10 +72,11 @@ class ProviderPage
             'reschulde_btn' => __('Reschedule', FF_BOOKING_SLUG),
             'close' => __('Cancel', FF_BOOKING_SLUG),
             'get_filters' => array(
-                'all' => __('All', FF_BOOKING_SLUG),
                 'next' => __('Next Upcoming', FF_BOOKING_SLUG),
                 'pending' => __('Pending', FF_BOOKING_SLUG),
                 'past' => __('Past', FF_BOOKING_SLUG),
+                'all' => __('All', FF_BOOKING_SLUG),
+
             ),
             'booking_status' => BookingHelper::bookingStatuses(),
         ]);
@@ -65,7 +85,7 @@ class ProviderPage
     private function getBookingsHtml($userId)
     {
         $viewConfig = $this->getViewConfig();
-        $filterStatus = 'all';
+        $filterStatus = 'next';
         if (isset($_REQUEST['status'])) {
             $filterStatus = sanitize_text_field($_REQUEST['status']);
         }

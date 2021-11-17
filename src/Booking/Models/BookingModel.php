@@ -297,6 +297,7 @@ class BookingModel
             self::$table . '.created_at',
             self::$table . '.user_id',
             self::$table . '.entry_id',
+            self::$table . '.reschedule_data',
             wpFluent()->raw($wpdb->prefix . 'ff_booking_providers.title AS provider'),
             wpFluent()->raw($wpdb->prefix . 'ff_booking_providers.id AS provider_id'),
             wpFluent()->raw($wpdb->prefix . 'ff_booking_providers.assigned_user'),
@@ -334,6 +335,7 @@ class BookingModel
             $booking->booking_time = date_i18n(get_option('time_format'), strtotime($booking->booking_time));
             $booking->duration = BookingHelper::timeDurationLength($booking->duration,true);
             $booking->name = join(" ",maybe_unserialize( $booking->name));
+            $booking->reschedule_data = json_decode($booking->reschedule_data);
         }
         return $bookings;
 

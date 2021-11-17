@@ -173,6 +173,6 @@ class BookingHelper
     }
     public static function formatDate($value)
     {
-        return date_i18n(get_option('time_format').' '.get_option('date_format'), strtotime($value));
+        return date_i18n(get_option('date_format'), strtotime($value));
     }
 }
