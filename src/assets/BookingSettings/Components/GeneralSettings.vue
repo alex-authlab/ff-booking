@@ -131,9 +131,13 @@
                             }
                         }
                     })
-                    .fail((error) => {
-                        console.log(error)
-                    });
+                    .fail(error => {
+                        this.$notify.error({
+                            title: 'Error',
+                            message: error.responseJSON.message,
+                            offset: 30
+                        });
+                    })
 
             },
             toggleBookingModule() {
@@ -148,7 +152,15 @@
                             message: response.data.message,
                             offset: 30
                         });
-                    });
+                    })
+                    .fail(error => {
+                        this.$notify.error({
+                            title: 'Error',
+                            message: error.responseJSON.message,
+                            offset: 30
+                        });
+                    })
+                ;
             },
         },
         mounted() {

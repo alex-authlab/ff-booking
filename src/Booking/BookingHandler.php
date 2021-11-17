@@ -23,14 +23,13 @@ class BookingHandler
         $this->addMenus();
         //global settings page , need to select one only
 //        add_filter('fluentform_global_settings_components', [$this, 'pushGlobalSettings'], 1, 1);
-//        add_action('fluentform_global_settings_component_booking_settings_global', [$this, 'renderSettings']);
         // add on page
         add_action('admin_enqueue_scripts', array($this,'enqueScripts'));
-        add_action('fluentform_addons_page_render_fluentform_booking', array($this, 'renderSettings'));
-        add_filter('fluentform_addons_extra_menu', function ($menus) {
-            $menus['fluentform_booking'] = __('Fluent Forms Booking', 'fluentform');
-            return $menus;
-        }, 99, 1);
+//        add_action('fluentform_addons_page_render_fluentform_booking', array($this, 'renderSettings'));
+//        add_filter('fluentform_addons_extra_menu', function ($menus) {
+//            $menus['fluentform_booking'] = __('Fluent Forms Booking', 'fluentform');
+//            return $menus;
+//        }, 99, 1);
 
         if (!$this->isEnabled()) {
             return;

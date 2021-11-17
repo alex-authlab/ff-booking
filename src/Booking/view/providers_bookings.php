@@ -45,10 +45,15 @@
                         </div>
 
                         <div class="ff_booking_info">
-                            <?php echo $booking['booking_time']; ?>
+                            <?php if ($booking['booking_type'] =='time_slot') {echo $booking['booking_time'];} ?>
                         </div>
                         <div class="ff_booking_info">
-                            <?php echo $booking['duration']; ?>
+                            <?php if($booking['booking_type'] =='date_slot'){
+                                _e('Full Day',FF_BOOKING_SLUG);
+                            }elseif ($booking['booking_type'] =='time_slot'){
+                                echo $booking['duration'];
+                            }
+                            ?>
                         </div>
                         <div class="ff_booking_info ffs-pull-right">
                             <div class="ffs_booking_btns">
@@ -60,8 +65,8 @@
                     <div  class="ffs_booking_details_text" style="display: none">
 
                         <div class="ffs_details_info">
-                             <b><?php _e('Name', FF_BOOKING_SLUG); ?></b> <?php echo $booking['name'] ?> <br>
-                             <b><?php _e('Email', FF_BOOKING_SLUG); ?></b> <?php echo $booking['email'] ?>
+                             <b><?php _e('Name', FF_BOOKING_SLUG); ?></b> <?php echo empty($booking['name'])? '-' :$booking['name'] ?> <br>
+                             <b><?php _e('Email', FF_BOOKING_SLUG); ?></b> <?php echo empty($booking['email'])? '-' :$booking['email']  ?>
                         </div>
 
                         <div class="ffs_details_info with-table">
@@ -121,6 +126,9 @@
                                 </a>
                                 
                                 <div class="ffs_notes">
+                                    <b><?php _e('Form Name', FF_BOOKING_SLUG); ?></b>
+                                    <p><?php echo ($booking['form_title']) ?>
+                                    </p>
                                     <b><?php _e('Notes', FF_BOOKING_SLUG); ?></b>
                                     <p><?php echo empty($booking['notes'])? 'No Notes': $booking['notes'] ?>
                                     </p>

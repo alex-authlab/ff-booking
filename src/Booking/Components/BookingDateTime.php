@@ -11,7 +11,7 @@ class BookingDateTime extends \FluentForm\App\Services\FormBuilder\BaseFieldMana
     {
         parent::__construct(
             'booking_datetime',
-            'Booking Input',
+            'Select a Date & Time',
             ['booking', 'appointment'],
             'advanced'
         );

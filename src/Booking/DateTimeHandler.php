@@ -363,13 +363,7 @@ class DateTimeHandler
         $validSlots = array_column($validSlots, 'value');
 
         $format = BookingHelper::getTimeFormat();
-        $selectedTime = date($format, strtotime($time));
-        if (!in_array($selectedTime, $validSlots)) {
-            return [
-                'status' => false,
-                'message' => 'Invalid Time slot selected'
-            ];
-        }
+    
         //ignore current booking time slot when updating
         $bookedSlotsByTime = (new BookingModel())->getBookingsOfSingleDay(
             $this->serviceId,
@@ -390,6 +384,13 @@ class DateTimeHandler
 
         //booking type timeslot
         if ($service['booking_type'] == 'time_slot') {
+            $selectedTime = date($format, strtotime($time));
+            if (!in_array($selectedTime, $validSlots)) {
+                return [
+                    'status' => false,
+                    'message' => __('Invalid Time slot selected',FF_BOOKING_SLUG)
+                ];
+            }
             //single booking validation
             if ($bookedSlotsByTime->total >= 1 && $service['capacity_type'] == 'single') {
                 return [

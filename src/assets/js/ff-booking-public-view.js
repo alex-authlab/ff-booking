@@ -71,6 +71,7 @@ jQuery(document).ready(function ($) {
             },
         });
         jQuery.post(window.ff_booking_page_vars.ajaxUrl, {
+            // ffs_booking_public_nonce: window.ff_booking_page_vars.nonce,
             action: 'handle_booking_frontend_endpoint',
             route: 'get_time_slots_booking_page',
             selectedDate: selectedDate,
@@ -83,7 +84,6 @@ jQuery(document).ready(function ($) {
                     return;
                 }
                 $slot.addClass('ffb_error');
-
                 $slot.html(response.message)
             })
             .catch(errors => {
@@ -196,7 +196,8 @@ jQuery(document).ready(function ($) {
                 route: 'reschedule_booking',
                 dateTime: datepickerElm.val(),
                 reason: $('#ffs-reason-text').val(),
-                bookingHash: data.booking_hash
+                bookingHash: data.booking_hash,
+                ffs_booking_public_nonce: window.ff_booking_page_vars.nonce
 
             })
                 .then(response => {
@@ -221,7 +222,15 @@ jQuery(document).ready(function ($) {
 
                 })
                 .fail((errors) => {
-                    console.log(errors)
+                    let $details = $(".ff-time-slot-details");
+                    let msg = '';
+                    if(errors.responseJSON.message){
+                        msg = errors.responseJSON.message;
+                    }else{
+                        msg = "Please try again!"
+                    }
+                    $details.html('<span class="ffb_error">' + msg+ '</span> ');
+
                 })
                 .always(() => {
                     $('.ff-booking-loader').remove();

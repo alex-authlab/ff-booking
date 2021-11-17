@@ -36,7 +36,7 @@
 
 
     .ffs_details_info {
-      position: relative;
+      min-width: 200px;
       &.with-table{
         flex:1 1 auto;
       }
@@ -62,7 +62,11 @@
 
     }
     .ffs_details_info_actions {
+      p{margin: 0}
+      .ffs_notes{
+        margin-top: 10px;
 
+      }
       .ffs_bookings_notes {
         margin-top: 10px;
         .edit-notes{

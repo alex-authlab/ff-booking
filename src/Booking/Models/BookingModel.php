@@ -334,7 +334,8 @@ class BookingModel
             $booking->created_date = date_i18n(get_option('time_format').' '.get_option('date_format'), strtotime($booking->created_at));
             $booking->booking_time = date_i18n(get_option('time_format'), strtotime($booking->booking_time));
             $booking->duration = BookingHelper::timeDurationLength($booking->duration,true);
-            $booking->name = join(" ",maybe_unserialize( $booking->name));
+            $name = maybe_unserialize( $booking->name);
+            $booking->name = is_array($name)? join(' ',$name) : $name;
             $booking->reschedule_data = json_decode($booking->reschedule_data);
         }
         return $bookings;
