@@ -130,8 +130,8 @@ if (!class_exists('FFBooking')) {
             add_action('wp_ajax_handle_booking_frontend_endpoint', [$ajax, 'init']);
             add_action('wp_ajax_nopriv_handle_booking_frontend_endpoint', [$ajax, 'init']);
 
-            new \FF_Booking\Booking\BookingUserPage();
-            (new  \FF_Booking\Booking\ProviderPage())->init();
+            (new \FF_Booking\Booking\BookingViewPage())->init();
+            (new \FF_Booking\Booking\ProviderPage())->init();
         }
 
         private function loadTextDomain()

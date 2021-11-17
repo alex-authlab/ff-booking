@@ -12,7 +12,7 @@ class FrontEndAjaxHandler
     public function init()
     {
         $route = sanitize_text_field($_REQUEST['route']);
-        //nonce verify : todo
+
         $this->handleEndpoint($route);
     }
 
@@ -25,7 +25,7 @@ class FrontEndAjaxHandler
             'get_time_slots_booking_page' => 'getTimeSlotsBookingPage',
             'reschedule_booking' => 'rescheduleBooking',
             'cancel_booking' => 'cancelBooking',
-            'update_provider_booking'=>'updateProviderBooking'
+            'update_provider_booking' => 'updateProviderBooking'
 
         ];
         if (isset($validRoutes[$route])) {
@@ -132,7 +132,9 @@ class FrontEndAjaxHandler
 
     public function rescheduleBooking()
     {
+        BookingHelper::verifyRequest('ffs_booking_public_nonce');
         $bookingHash = sanitize_text_field($_REQUEST['bookingHash']);
+        $reason = sanitize_textarea_field($_REQUEST['reason']);
         $dateTime = sanitize_text_field($_REQUEST['dateTime']);
         $dateTime = BookingActions::getFormattedDateTime($dateTime, []);
 
@@ -144,11 +146,21 @@ class FrontEndAjaxHandler
             wp_send_json($response);
             return;
         }
+
+        $ifProviderLoggedIn = $this->isProviderLoggedIn($bookingData);
+        $actionBy = ($ifProviderLoggedIn) ? 'provider' : 'user';
+        $isValid = $this->ifUserCanReschedule($actionBy, $bookingData);
+        if (!$isValid) {
+            wp_send_json(['message' => __('Permission Error',FF_BOOKING_SLUG)]);
+            return;
+        }
+        $rescheduleData = $this->getRescheduleData($bookingData, $actionBy, $reason);
         $updateData = [
             'booking_date' => $bookingDate,
             'booking_time' => $bookingTime,
+            'reschedule_data' => \json_encode($rescheduleData)
         ];
-        $update = (new BookingModel())->update($bookingId, $updateData);
+        (new BookingModel())->update($bookingId, $updateData);
 
         do_action('ff_booking_updated', $bookingId, $entryId, $bookingData, $updateData);
 
@@ -159,8 +171,9 @@ class FrontEndAjaxHandler
 
     public function cancelBooking()
     {
-        $bookingHash = sanitize_text_field($_REQUEST['bookingHash']);
+        BookingHelper::verifyRequest('ffs_booking_public_nonce');
 
+        $bookingHash = sanitize_text_field($_REQUEST['bookingHash']);
         $bookingData = (new BookingModel())->getBooking(['booking_hash' => $bookingHash]);
         $bookingId = (int)ArrayHelper::get($bookingData, 'id');
         $entryId = (int)ArrayHelper::get($bookingData, 'entry_id');
@@ -177,6 +190,8 @@ class FrontEndAjaxHandler
 
     public function updateProviderBooking()
     {
+        BookingHelper::verifyRequest('ffs_booking_public_nonce');
+
         $bookingId = sanitize_text_field($_REQUEST['booking_id']);
         $status = sanitize_text_field($_REQUEST['status']);
 
@@ -186,7 +201,6 @@ class FrontEndAjaxHandler
         wp_send_json_success([
             'message' => __('Booking has been updated succefully', FF_BOOKING_SLUG)
         ]);
-
     }
 
     /**
@@ -209,5 +223,43 @@ class FrontEndAjaxHandler
             $bookingTime
         );
         return array($bookingData, $bookingId, $entryId, $bookingDate, $bookingTime, $response);
+    }
+
+    /**
+     * @return bool
+     */
+    private function isProviderLoggedIn($data)
+    {
+        return get_current_user_id() == $data['assigned_user'];
+    }
+
+    private function ifUserCanReschedule($actionBy, $data)
+    {
+        if ($actionBy == 'user' && ArrayHelper::get($data, 'allow_user_reschedule') != 'yes') {
+            return false;
+        } elseif ($actionBy == 'provider' && BookingHelper::getSettingsByKey('allow_provider_reschedule')) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * @param $bookingData
+     * @param string $actionBy
+     * @param string $reason
+     * @return mixed|null
+     */
+    private function getRescheduleData($bookingData, string $actionBy, string $reason)
+    {
+        $rescheduleData = \json_decode($bookingData['reschedule_data']);
+        $rescheduleData[] = array(
+            'action_by' => $actionBy,
+            'reason' => $reason,
+            'previous_booking' => BookingHelper::formatTime(
+                    $bookingData['booking_time']
+                ) . ' ' . BookingHelper::formatDate($bookingData['booking_date']),
+            'updated_at' => date('Y-m-d')
+        );
+        return $rescheduleData;
     }
 }

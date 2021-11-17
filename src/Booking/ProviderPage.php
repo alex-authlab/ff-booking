@@ -30,7 +30,7 @@ class ProviderPage
         );
         wp_localize_script('ffs_booking_provider_js', 'ffs_provider_vars', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('ff_simple_booking')
+            'nonce' => wp_create_nonce('ffs_booking_public_nonce')
         ]);
 
         return  $this->getBookingsHtml($userId);
@@ -69,8 +69,7 @@ class ProviderPage
         if (isset($_REQUEST['status'])) {
             $filterStatus = sanitize_text_field($_REQUEST['status']);
         }
-        $bookings = \FF_Booking\Booking\Models\BookingModel::getBookingsByProvider($userId, ['status' => $filterStatus]
-        );
+        $bookings = \FF_Booking\Booking\Models\BookingModel::getBookingsByProvider($userId, ['status' => $filterStatus]);
         $viewConfig['filterStatus'] = $filterStatus;
         $bookingHtml = \FF_Booking\Booking\BookingHelper::loadView('providers_bookings', [
             'bookings' => $this->groupBy('formatted_date', $bookings),

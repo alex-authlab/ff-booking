@@ -161,4 +161,18 @@ class BookingHelper
 
         return $addTime;
     }
+    public static function getSettingsByKey($key)
+    {
+        $settings = json_decode(get_option('__ff_booking_general_settings'), true);
+        return ArrayHelper::get($settings, $key);
+    }
+
+    public static function formatTime($value)
+    {
+        return date_i18n(get_option('time_format'), strtotime($value));
+    }
+    public static function formatDate($value)
+    {
+        return date_i18n(get_option('time_format').' '.get_option('date_format'), strtotime($value));
+    }
 }

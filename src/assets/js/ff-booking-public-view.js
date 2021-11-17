@@ -1,5 +1,4 @@
 jQuery(document).ready(function ($) {
-
     let datepickerElm = jQuery('#ffb_view_picker');
     let targetFp = document.getElementById(datepickerElm.attr('id'))._flatpickr;
     const data = window.ff_booking_page_vars;
@@ -49,7 +48,6 @@ jQuery(document).ready(function ($) {
                 datepickerElm.val(formattedDate + ' ' + '00:00:00')
             } else if (data.dates_data.booking_type == 'time_slot') {
                 let selectedDate = targetFp.formatDate(selectedDates[0], "Y-m-d")
-
                 getTimeSlots(targetFp, selectedDate)
             }
 
@@ -63,6 +61,9 @@ jQuery(document).ready(function ($) {
 
         let that = this;
         jQuery.ajaxSetup({
+            data: {
+                ffs_booking_public_nonce: window.ff_booking_page_vars.nonce
+            },
             beforeSend: function () {
                 let loader = '<div class="ff-booking-loader"></div>'
                 let $details = jQuery(".ff-time-slot-details");
@@ -81,11 +82,21 @@ jQuery(document).ready(function ($) {
                     generateTimeSlots(response)
                     return;
                 }
-                $slot.addClass('error text-danger');
+                $slot.addClass('ffb_error');
+
                 $slot.html(response.message)
             })
-            .fail((errors) => {
-                console.log(errors)
+            .catch(errors => {
+                $slot.addClass('ffb_error');
+                if (errors.responseJSON) {
+                    $slot.html(errors.responseJSON.message)
+
+                } else if (errors.responseJSON.data) {
+                    $slot.html(errors.responseJSON.data.message)
+
+                } else {
+                    $slot.html('Error. Please try again')
+                }
             })
             .always(() => {
                 jQuery('.ff-booking-loader').remove();
@@ -131,7 +142,8 @@ jQuery(document).ready(function ($) {
 
 
     }
-    function  setInput() {
+
+    function setInput() {
         let $details = jQuery(".ff-time-slot-details");
         $details.html('');
         jQuery(document).on('change', '.ff-time-slot-container input', (e) => {
@@ -148,7 +160,8 @@ jQuery(document).ready(function ($) {
             datepickerElm.val(formattedDate + ' ' + time)
         });
     }
-    function  initCheckables(){
+
+    function initCheckables() {
         $(document).on('change', '.ff-el-form-check input[type=radio]', function () {
             if ($(this).is(':checked')) {
                 $(this).closest('.ff-el-input--content').find('.ff-el-form-check').removeClass('ff_item_selected');
@@ -156,43 +169,48 @@ jQuery(document).ready(function ($) {
             }
         });
     }
-    function validate(){
+
+    function validate() {
         let $details = jQuery(".ff-time-slot-details");
 
-        if(!datepickerElm.val()){
+        if (!datepickerElm.val()) {
             $details.html('<span class="ffb_error">Please select a Date</span> ');
             return false;
         }
-        if(data.dates_data.booking_type == 'time_slot' && !$('.ff-el-booking-slot').is(':checked')){
+        if (data.dates_data.booking_type == 'time_slot' && !$('.ff-el-booking-slot').is(':checked')) {
             $details.html('<span class="ffb_error">Please select a time</span> ');
             return false;
         }
 
-        return  true;
+        return true;
     }
-    function submit(){
-        $('.ffb-submit-bttn').on('click',function (e){
+
+    function submit() {
+        $('.ffb-submit-bttn').on('click', function (e) {
             e.preventDefault();
-            if(!validate()){
+            if (!validate()) {
                 return;
             }
             jQuery.post(window.ff_booking_page_vars.ajaxUrl, {
                 action: 'handle_booking_frontend_endpoint',
                 route: 'reschedule_booking',
                 dateTime: datepickerElm.val(),
+                reason: $('#ffs-reason-text').val(),
                 bookingHash: data.booking_hash
 
             })
                 .then(response => {
-                    let $details = jQuery(".ff-time-slot-details");
+                    let $details = $(".ff-time-slot-details");
                     $details.html('');
                     if (response.success == true) {
                         let $response = $(".ff_booking_content.ffb_form");
-
-                        $response.html('<span class="ffb_sucess">'+response.data.message+'</span> ');
+                        $response.html('<span class="ffb_sucess">' + response.data.message + '</span> ');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
                         return;
                     }
-                    $details.html('<span class="ffb_sucess">'+response.message+'</span> ');
+                    $details.html('<span class="ffb_sucess">' + response.message + '</span> ');
 
 
                 })
@@ -200,7 +218,7 @@ jQuery(document).ready(function ($) {
                     console.log(errors)
                 })
                 .always(() => {
-                    jQuery('.ff-booking-loader').remove();
+                    $('.ff-booking-loader').remove();
                 });
         });
     }
@@ -210,18 +228,25 @@ jQuery(document).ready(function ($) {
     initCheckables();
     setInput();
     submit();
-
-    jQuery('.ffb_bttns.resched-bttn').on('click', function (e) {
+    //show form
+    $('.ffb_bttns.resched-bttn').on('click', function (e) {
         e.preventDefault();
-        jQuery('.ff_booking_content.ffb_form').slideDown().css('display', 'flex');
-        $(this).hide();
+        $('.ff_booking_content.ffb_form').slideDown().css('display', 'flex');
+        $('.user_cancel_confirm').hide();
     })
-    jQuery('.ffb_bttns.cancel-bttn').on('click', function (e) {
+    //show cancel confirm
+    $('.ffb_bttns.cancel-bttn').on('click', function (e) {
         e.preventDefault();
-        jQuery('.ff_booking_view_holder').append( "<div class='prompt-cancel'>Are You Sure to cancel this booking? <button class='ffb_bttns cancel-confirm'>Confrim</button> </div>" );
+        $('.user_cancel_confirm').show();
+        $('.ff_booking_content.ffb_form').hide();
     })
-
-    jQuery(document).on('click', '.cancel-confirm', (e)=> {
+    //close cancel prompt
+    $('.ffb_bttns.close-confirm').on('click', function (e) {
+        e.preventDefault();
+        $('.user_cancel_confirm').hide();
+    })
+    //confirm cancel request
+    $(document).on('click', '.cancel-confirm', (e) => {
         e.preventDefault();
         let loader = '<div class="ff-booking-loader"></div>'
         $(this).html(loader)
@@ -229,24 +254,24 @@ jQuery(document).ready(function ($) {
         jQuery.post(window.ff_booking_page_vars.ajaxUrl, {
             action: 'handle_booking_frontend_endpoint',
             route: 'cancel_booking',
-            bookingHash: data.booking_hash
-
+            bookingHash: data.booking_hash,
+            ffs_booking_public_nonce: window.ff_booking_page_vars.nonce
         })
             .then(response => {
-
                 if (response.success == true) {
-                    $('.prompt-cancel').remove();
-                    $('.ff_booking_info.with-border').append( '<div class="ffb_sucess">'+response.data.message+'</div> ');
-                }
-                $details.html('<span class="ffb_sucess">'+response.message+'</span> ');
-
-
+                    $('.user_cancel_confirm').remove();
+                    $('.ff_booking_info.with-border').append('<div class="ffb_sucess">' + response.data.message + '</div> ');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else
+                    $('.ff_booking_info.with-border').append('<span class=" ffb_error">' + response.message + '</span> ');
             })
             .fail((errors) => {
                 console.log(errors)
             })
             .always(() => {
-                jQuery('.ff-booking-loader').remove();
+                $('.ff-booking-loader').remove();
             });
     })
 

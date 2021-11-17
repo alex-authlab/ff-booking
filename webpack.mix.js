@@ -11,5 +11,6 @@ mix
     .sass('src/assets/BookingSettings/booking-settings.scss', 'public/js/booking-settings.css')
     .sass('src/assets/css/form_booking.scss', 'public/css/form_booking.css')
     .sass('src/assets/css/ffs_booking_provider.scss', 'public/css/ffs_booking_provider.css')
+    .sass('src/assets/css/ffs_booking_page.scss', 'public/css/ffs_booking_page.css')
     .js('src/assets/js/ffs_booking_provider.js', 'public/js/ffs_booking_provider.js')
 

@@ -30,12 +30,13 @@ jQuery(document).ready(function ($) {
 
         updateBooking(bookingId, status, $(this), (message, status) => {
 
-            if (status == 'success') {
-                $responseDom.html(message);
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1000);
+            if (status != 'success') {
+                $responseDom.addClass('ffb_error')
             }
+            $responseDom.html(message);
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
         });
     })
     //close confirm prompt
@@ -46,7 +47,6 @@ jQuery(document).ready(function ($) {
         $(this).closest('.ffs_booking_action_confirmation').slideUp();
     })
     //send update req
-    //@todo verify nonce
     function updateBooking(bookingId, status, $elm, callback) {
 
         $elm.prop("disabled", true);
@@ -55,7 +55,7 @@ jQuery(document).ready(function ($) {
             status: status,
             route: 'update_provider_booking',
             action: 'handle_booking_frontend_endpoint',
-            nonce: window.ffs_provider_vars.nonce
+            ffs_booking_public_nonce: window.ffs_provider_vars.nonce
         })
             .then(response => {
                 callback(response.data.message, 'success');

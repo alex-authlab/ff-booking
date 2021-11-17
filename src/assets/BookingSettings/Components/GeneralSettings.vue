@@ -59,24 +59,11 @@
                 <div v-else-if="current_page == 'bookings'">
 
 
-                    <el-form-item label="Allow Provider To Confirm">
-                        <el-switch active-color="#13ce66" v-model="settings_data.allow_provider_confirm"></el-switch>
+                    <el-form-item label="Allow Provider To ReSchedule">
+                        <el-switch active-color="#13ce66" v-model="settings_data.allow_provider_reschedule"></el-switch>
                     </el-form-item>
-                    <el-form-item label="Allow Provider To Cancel">
-                        <el-switch active-color="#13ce66" v-model="settings_data.allow_provider_canncel"></el-switch>
-                    </el-form-item>
-                    <el-form-item label="Allow User To Cancel">
-                        <el-switch active-color="#13ce66" v-model="settings_data.allow_user_cancel"></el-switch>
-                    </el-form-item>
-                    <el-form-item label="Allow User To Set Pending">
-                        <el-switch active-color="#13ce66" v-model="settings_data.allow_user_pending"></el-switch>
-                    </el-form-item>
+<!--                    todo auto complete bookings-->
 
-                    <el-form-item label="Auto Complete">
-
-                        <el-switch active-color="#13ce66" v-model="settings_data.enable_autocomplete"></el-switch>
-
-                    </el-form-item>
 
                 </div>
 
