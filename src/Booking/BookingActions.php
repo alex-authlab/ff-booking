@@ -91,12 +91,12 @@ class BookingActions
                 $formattedData = $this->getFormattedDateTime($data[$name], $formattedData);
                 $emailInput = ArrayHelper::get($bookingInput, 'settings.target_email');
                 $nameInput = ArrayHelper::get($bookingInput, 'settings.target_name');
-                $formattedData['email'] = $data[$emailInput];
-                $formattedData['name'] = maybe_serialize($data[$nameInput]);
+                $formattedData['email'] = ArrayHelper::get($data,$emailInput);
+                $formattedData['name'] =  maybe_serialize(ArrayHelper::get($data,$nameInput));
             } elseif ($element == 'ff_booking_provider') {
-                $formattedData['provider_id'] = $data[$name];
+                $formattedData['provider_id'] =  ArrayHelper::get($data,$name);
             } elseif ($element == 'ff_booking_service') {
-                $formattedData['service_id'] = $data[$name];
+                $formattedData['service_id'] =  ArrayHelper::get($data,$name);
             }
         }
         $this->bookingInputValues = $formattedData;
@@ -249,15 +249,7 @@ class BookingActions
         }, 10, 4);
     }
 
-    private function getTimeFormat()
-    {
-        $settings = json_decode(get_option('__ff_booking_general_settings'),true);
 
-        if($value = ArrayHelper::get($settings, 'time_format')){
-            return $value;
-        }
-        return '12';
-    }
 
 
 }

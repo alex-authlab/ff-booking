@@ -47,17 +47,7 @@
                         v-model="email.body">
                 </wp_editor>
             </el-form-item>
-
-
-            <el-checkbox v-if="showButtons" style="margin-bottom: 10px;" true-label="yes" false-label="no"
-                         v-model="email.reschedule_link">
-                Add Reschedule Link
-            </el-checkbox>
-            <el-checkbox v-if="showButtons" style="margin-bottom: 10px;" true-label="yes" false-label="no"
-                         v-model="email.cancel_link">
-                Add Cancel Link
-            </el-checkbox>
-
+            
 
             <el-form-item v-if="time != false" :label="`Send ${time}`">
                 <delay-counter v-model="email.time"></delay-counter>

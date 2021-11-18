@@ -220,26 +220,21 @@ class FF_booking_handler {
         });
 
     }
+    addLoader(){
+        let $slot = this.$form.find(".ff-time-slot-container");
+        let loader = '<div class="ff-booking-loader"></div>';
+        if (!$slot.length) {
+            jQuery('<div/>', {
+                class: 'ff-time-slot-container'
+            }).appendTo(this.$form.find('.ff-booking-container'));
+            $slot = jQuery('.ff-time-slot-container');
 
+        }
+        $slot.html(loader); //test
+    }
     getTimeSlots(targetFp, selectedDate) {
         let that = this;
-        jQuery.ajaxSetup({
-            data: {
-                //todo nonce
-            },
-            beforeSend: function () {
-                let $slot = that.$form.find(".ff-time-slot-container");
-                let loader = '<div class="ff-booking-loader"></div>';
-                if (!$slot.length) {
-                    jQuery('<div/>', {
-                        class: 'ff-time-slot-container'
-                    }).appendTo(that.$form.find('.ff-booking-container'));
-                    $slot = jQuery('.ff-time-slot-container');
-
-                }
-                $slot.html(loader); //test
-            },
-        });
+        this.addLoader();
         let providerElm = jQuery(this.$form.find(this.providerElmClass));
         let serviceElm = jQuery(this.$form.find(this.serviceElmClass));
         jQuery.get(window.ff_booking_date_time_vars.ajaxUrl, {

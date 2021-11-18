@@ -31,7 +31,7 @@ class BookingHelper
     /**
      * @return string time period
      */
-    public static function getTimePeriod()
+    public static function  getTimePeriod()
     {
         $settings = json_decode(get_option('__ff_booking_general_settings'), true);
         $timePeriod = '12';

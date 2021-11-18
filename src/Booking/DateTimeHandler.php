@@ -290,7 +290,7 @@ class DateTimeHandler
     /**
      * Validate slot
      * Save time as 24 hour in backend
-     * When bookinID passed ignnore current slot for updating pupose
+     * When bookinID passed ignnore current slot for updating purpose
      * @param $provider
      * @param $service
      * @return array
@@ -301,25 +301,25 @@ class DateTimeHandler
     {
         $provider = $this->getProviderData();
         $service = $this->getServiceData();
-
+    
         if (!$provider || !$service) {
             return [
                 'status' => false,
-                'message' => 'Invalid Data, try again'
+                'message' => __('Invalid Data, try again',FF_BOOKING_SLUG)
             ];
         }
 
         if (!in_array($this->serviceId, $provider['assigned_services'])) {
             return [
                 'status' => false,
-                'message' => 'Invalid Service'
+                'message' => __('Invalid Service',FF_BOOKING_SLUG)
             ];
         }
         if ($formIds = ArrayHelper::get($provider, 'allowed_form_ids')) {
             if (!in_array($this->formId, $formIds)) {
                 return [
                     'status' => false,
-                    'message' => 'Invalid Provider Form'
+                    'message' => __('Invalid Provider Form',FF_BOOKING_SLUG)
                 ];
             }
         }
@@ -327,7 +327,7 @@ class DateTimeHandler
             if (!in_array($this->formId, $formIds)) {
                 return [
                     'status' => false,
-                    'message' => 'Invalid Service Form'
+                    'message' => __('Invalid Service Form',FF_BOOKING_SLUG)
                 ];
             }
         }
@@ -335,7 +335,7 @@ class DateTimeHandler
         if ($this->date < $minDate || $this->date > $maxDate) {
             return [
                 'status' => false,
-                'message' => 'Selected date is not in valid range'
+                'message' => __('Selected date is not in valid range',FF_BOOKING_SLUG)
             ];
         }
 
@@ -348,7 +348,7 @@ class DateTimeHandler
         if (in_array($this->date, $disabledDates)) {
             return [
                 'status' => false,
-                'message' => 'Invalid Date Selected'
+                'message' => __('Invalid Date Selected',FF_BOOKING_SLUG)
             ];
         }
         $weekOffDays = ArrayHelper::get($provider, 'weekend_days');
@@ -373,15 +373,16 @@ class DateTimeHandler
             $time,
             $bookingId
         );
-
+    
         $bookedSlotsByDate = (new BookingModel())->getBookingsOfSingleDay(
             $this->serviceId,
             $this->providerId,
             $this->formId,
             $this->date,
-            $time = null
+            null
         );
-
+    
+    
         //booking type timeslot
         if ($service['booking_type'] == 'time_slot') {
             $selectedTime = date($format, strtotime($time));
