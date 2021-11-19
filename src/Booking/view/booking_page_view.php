@@ -138,17 +138,14 @@ echo $settings['design_style']; ?>">
                                             <path d="M 14 2 C 13.448 2 13 2.448 13 3 L 13 4.1914062 C 7.8890453 5.1364053 4 9.6205775 4 15 C 4 21.063288 8.9367124 26 15 26 C 21.063288 26 26 21.063288 26 15 C 26 9.6205775 22.110955 5.1364053 17 4.1914062 L 17 3 C 17 2.448 16.552 2 16 2 L 14 2 z M 22.990234 3.9902344 A 1.0001 1.0001 0 0 0 22.292969 5.7070312 L 23.292969 6.7070312 A 1.0001 1.0001 0 1 0 24.707031 5.2929688 L 23.707031 4.2929688 A 1.0001 1.0001 0 0 0 22.990234 3.9902344 z M 15 6 C 19.982407 6 24 10.017593 24 15 C 24 19.982407 19.982407 24 15 24 C 10.017593 24 6 19.982407 6 15 C 6 10.017593 10.017593 6 15 6 z M 14.984375 7.9863281 A 1.0001 1.0001 0 0 0 14 9 L 14 13.271484 A 2 2 0 0 0 13 15 A 2 2 0 0 0 14 16.730469 L 14 18 A 1.0001 1.0001 0 1 0 16 18 L 16 16.728516 A 2 2 0 0 0 17 15 A 2 2 0 0 0 16 13.269531 L 16 9 A 1.0001 1.0001 0 0 0 14.984375 7.9863281 z"></path>
                                         </svg>
                                         <?php
-                                        echo date(
-                                            get_option('time_format'),
-                                            strtotime($data['booking_time'])
-                                        ); ?>
+                                        echo \FF_Booking\Booking\BookingHelper::formatTime($data['booking_time']) ?>
                                     </li>
                                     <li>
                                         <svg xmlns="http://www.w3.org/2000/svg" height="28px" width="28px">
                                             <path d="M 6 1 L 6 3 L 5 3 C 3.9 3 3 3.9 3 5 L 3 19 C 3 20.1 3.9 21 5 21 L 19 21 C 20.1 21 21 20.1 21 19 L 21 5 C 21 3.9 20.1 3 19 3 L 18 3 L 18 1 L 16 1 L 16 3 L 8 3 L 8 1 L 6 1 z M 5 5 L 6 5 L 8 5 L 16 5 L 18 5 L 19 5 L 19 7 L 5 7 L 5 5 z M 5 9 L 19 9 L 19 19 L 5 19 L 5 9 z"></path>
                                         </svg>
                                         <?php
-                                        echo date('l F j Y', strtotime($data['booking_date'])); ?>
+                                        echo date_i18n('l F j Y', strtotime($data['booking_date'])); ?>
                                     </li>
                                     <li>
                                         <svg xmlns="http://www.w3.org/2000/svg" height="28px" width="28px">
@@ -171,7 +168,12 @@ echo $settings['design_style']; ?>">
                                     <input type="text" class="ffb-input" id="ffb_view_picker">
                                     <label for="reason">Reason for change</label>
                                     <textarea class="ffb-input" name="reason" id="ffs-reason-text" cols="30" rows="3"></textarea>
-                                    <button class="ffb_bttns ffb-submit-bttn ffb-input">Submit</button>
+                                    <div class="ff_booking_bttns">
+                                        <button class="ffb_bttns ffb-submit-bttn ffb-input">
+                                            <?php _e('Submit' ,FF_BOOKING_SLUG) ?>
+                                        </button>
+                                    </div>
+                                   
 
                                 </div>
                                 <div class="ff_booking_info slot">

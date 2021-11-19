@@ -11,8 +11,11 @@ if (!defined('ABSPATH')) {
 
 class BookingHelper
 {
-    public static function convertTime($convertTo = '24', $time)
+    public static function convertTime($convertTo = '24', $time ='')
     {
+        if(!$time){
+            return '';
+        }
         if ($convertTo == '24') {
             return date("H:i", strtotime($time));
         } elseif ($convertTo == '12') {
@@ -46,10 +49,31 @@ class BookingHelper
      */
     public static function getTimeZone()
     {
-        $timezone = get_option('timezone_string'); //wp timezone
+        $timezone = wp_timezone_string(); //wp timezone
+    
+//        date_default_timezone_set(get_option('timezone_string'));
+//
+//        echo date('T'); // will give you three-character string like "EST"
+//
+//        $timezones = array (
+//            'EST' => 'US/Eastern',
+//            'CST' => 'US/Central',
+//            // etc, etc, etc.
+//        );
+//
+//        echo $timezones [ date('T') ];
     
         if (!in_array($timezone, timezone_identifiers_list())) {
-            $timezone = 'America/New_York'; //add filter
+            
+            //its in offset , convert to timezone string
+            list($hours, $minutes) = explode(':', $timezone);
+            $seconds = $hours * 60 * 60 + $minutes * 60;
+            $tz = timezone_name_from_abbr('', $seconds, 1);
+            if($tz === false) {
+                $tz = timezone_name_from_abbr('', $seconds, 0);
+            }
+    
+             $timezone = $tz;
         }
         return $timezone;
     }

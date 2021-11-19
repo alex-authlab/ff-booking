@@ -35,23 +35,14 @@ class ProviderPage
             'nonce' => wp_create_nonce('ffs_booking_public_nonce')
         ]);
 
-        return  $this->getBookingsHtml($userId);
+        echo  $this->getBookingsHtml($userId);
 
     }
 
     private function getViewConfig()
     {
-        global $wp_query;
-        $pageId = $wp_query->post->ID;
-
-        $urlBase = false;
-        if($pageId) {
-            $urlBase = get_permalink($pageId);
-        }
-
-        if(!$urlBase) {
-            $urlBase = site_url('index.php');
-        }
+        global $wp;
+        $urlBase = home_url( $wp->request );
 
         if (!strpos($urlBase, '?')) {
             $urlBase .= '?';

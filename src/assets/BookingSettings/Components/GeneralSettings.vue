@@ -10,6 +10,9 @@
         <el-form label-position="left" label-width="220px">
             <div class="ff_booking_settings_section">
                 <div v-if="current_page == 'general'">
+                    <h4>
+                        <code>['ff_simple_booking'] </code> Add this shortcode to list & manage providers bookings
+                    </h4>
                     <el-form-item>
                         <template slot="label">
                             Status
@@ -27,33 +30,6 @@
                         </el-checkbox>
                     </el-form-item>
 
-                    <el-form-item label="Time Zone">
-                        <el-select v-model="settings_data.time_zone" filterable placeholder="Select">
-                            <el-option
-                                    v-for="(timezone) in general_settings.time_zones"
-                                    :key="timezone"
-                                    :label="timezone"
-                                    :value="timezone">
-                            </el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="Time Format">
-                        <el-select v-model="settings_data.time_format" filterable placeholder="Select">
-                            <el-option label="12 Hour" value="12"></el-option>
-                            <el-option label="24 Hour" value="24"></el-option>
-                        </el-select>
-                    </el-form-item>
-
-                    <el-form-item label="Week Start">
-                        <el-select v-model="settings_data.week_start" filterable placeholder="Select">
-                            <el-option
-                                    v-for="(day) in weekdays"
-                                    :key="day"
-                                    :label="day"
-                                    :value="day">
-                            </el-option>
-                        </el-select>
-                    </el-form-item>
 
                 </div>
                 <div v-else-if="current_page == 'bookings'">
