@@ -1,33 +1,12 @@
 <template>
 <div>
 
-    <el-popover
-        ref="input-popover"
-        :placement="placement"
-        width="200"
-        popper-class=" ff-booking-list-wrapper"
-        trigger="click">
-            <ul class="">
-                <li v-for="item in data">
-                    <span v-if="data.length > 1" class="group-title">{{ item.title }}</span>
-                    <ul>
-                        <li v-for="title, code in item.shortcodes"
-                            @click="insertShortcode(code)"
-                            class="el-dropdown-menu__item">
-                            {{ title }}
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-    </el-popover>
-
     <div v-if="fieldType == 'textarea'" class="input-textarea-value">
         <i class="icon el-icon-tickets" v-popover:input-popover></i>
         <el-input :rows="rows" :placeholder="placeholder" type="textarea" v-model="model"></el-input>
     </div>
 
     <el-input :placeholder="placeholder" v-else v-model="model" :type="fieldType">
-        <el-button slot="append" :icon="icon" v-popover:input-popover></el-button>
     </el-input>
 </div>
 </template>

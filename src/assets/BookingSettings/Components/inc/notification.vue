@@ -8,7 +8,7 @@
                 </el-form-item>
             </el-col>
             <el-col :span="16">
-                <el-form-item label="Edit Template">
+                <el-form-item >
                     <el-button @click="email_editor_visible = true" type="info" size="mini"
                                icon="el-icon-edit"></el-button>
                 </el-form-item>
@@ -24,26 +24,16 @@
                 width="60%">
             <!--Subject-->
             <el-form-item label="Subject">
-
-                <input-popover fieldType="text"
-                               v-model="email.subject"
-                               :data="editorShortcodes"
-                ></input-popover>
+                <input-popover fieldType="text" v-model="email.subject"></input-popover>
             </el-form-item>
             <!--message-->
-            <el-form-item label="Email Body" class="is-required">
-                <input-popover :rows="10" v-if="email.asPlainText == 'yes'" fieldType="textarea"
-                               v-model="email.message"
-                               placeholder="Email Body HTML"
-                               :data="editorShortcodes"
-                ></input-popover>
-
+            <el-form-item label="Email Body">
+                <input-popover :rows="6" v-if="email.asPlainText == 'yes'" fieldType="textarea" v-model="email.message" placeholder="Email Body HTML"></input-popover>
                 <wp_editor
                         ref="emailEditor"
                         :key="componentKey"
                         v-else
-                        :editorShortcodes="editorShortcodes"
-                        :height="300"
+                        :height="200"
                         v-model="email.body">
                 </wp_editor>
             </el-form-item>
@@ -52,6 +42,22 @@
             <el-form-item v-if="time != false" :label="`Send ${time}`">
                 <delay-counter v-model="email.time"></delay-counter>
             </el-form-item>
+            <el-collapse>
+                <el-collapse-item title="Show Shortcodes" name="1">
+                    <div>
+                        <ul class="">
+                            <li v-for="item in editorShortcodes">
+                                <span v-if="item.length > 1" class="group-title">{{ item.title }}</span>
+                                <ul>
+                                    <li v-for="title, code in item.shortcodes">
+                                        {{ title }} - {{code}}
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </el-collapse-item>
+            </el-collapse>
             <span slot="footer" class="dialog-footer">
               <el-button type="primary" v-loading="saving" @click="saveEmail()">Save</el-button>
           </span>

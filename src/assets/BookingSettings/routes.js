@@ -1,3 +1,4 @@
+import Services from './Components/Services';
 import Service from './Components/Service';
 import Bookings from './Components/Bookings';
 import BookingInfo from "./Components/BookingInfo";
@@ -23,14 +24,20 @@ export const routes = [
 
     },
     {
+        path: '/services',
+        name: "Services",
+        component: Services,
+
+    },
+    {
         path: '/service',
         name: "Service",
         component: Service,
-       
+        props: route => ({ service_id: route.query.service_id })
     },
     {
-        path: '/provider',
-        name: "Provider",
+        path: '/providers',
+        name: "Providers",
         component: Provider,
 
     },

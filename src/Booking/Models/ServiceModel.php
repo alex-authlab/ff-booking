@@ -93,7 +93,6 @@ class ServiceModel
     {
         $query = wpFluent()->table($this->table);
         $query->where('id',$serviceId);
-        $query->where('status','active');
         $service = $query->first();
         if(!$service){
             return false;
@@ -102,9 +101,7 @@ class ServiceModel
         $service->allowed_future_date_range = maybe_unserialize($service->allowed_future_date_range);
         $service->required_fields = maybe_unserialize($service->required_fields);
         $service->notifications = json_decode($service->notifications);
-
-
-
+        
         return $service;
     }
 

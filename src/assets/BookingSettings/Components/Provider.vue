@@ -14,7 +14,7 @@
                     </div>
                 </el-col>
             </el-row>
-            <el-table :data="items" stripe>
+            <el-table :data="items" stripe border>
                 <el-table-column width="100" label="ID" prop="id"/>
                 <el-table-column label="Title" prop="title"/>
                 <el-table-column label="User" prop="user_assigned">

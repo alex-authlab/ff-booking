@@ -15,7 +15,6 @@
         props: {
             value: {
                 type: String,
-                required: true,
             },
         },
         data() {
@@ -39,6 +38,9 @@
         },
         computed: {},
         mounted() {
+            if(!this.value){
+                return;
+            }
             this.delayValue = parseInt(this.value.split(" ")[0]);
             this.selectedUnit = this.value.split(" ")[1];
         }

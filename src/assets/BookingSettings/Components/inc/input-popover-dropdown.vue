@@ -26,12 +26,6 @@
                 </div>
             </div>
         </el-popover>
-        <el-button class="editor-add-shortcode"
-                   size="mini"
-                   v-popover:input-popover1
-                   :type="btnType"
-                   v-html="buttonText"
-        />
     </div>
 </template>
 
@@ -44,12 +38,6 @@
                 type: Boolean,
                 default() {
                     return true;
-                }
-            },
-            buttonText: {
-                type: String,
-                default() {
-                    return 'Add Shortcodes <i class="el-icon-arrow-down el-icon--right"></i>';
                 }
             },
             btnType: {

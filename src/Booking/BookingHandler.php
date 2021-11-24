@@ -111,14 +111,14 @@ class BookingHandler
 
     private function addMenus()
     {
-        $menu = new Menu();
+        $menu = new MenuApi();
         $menu->registerScipts();
         $menu->addPages($this->getPages())->withSubPages('Bookings')->addSubPages($this->getSubPages())->register();
     }
 
     public function enqueScripts()
     {
-        (new Menu())->enqueScipts();
+        (new MenuApi())->enqueScipts();
     }
 
     private function getPages()
@@ -141,10 +141,10 @@ class BookingHandler
         return [
             [
                 'parent_slug' => 'ff_simple_booking',
-                'page_title' => 'Service',
-                'menu_title' => 'Service',
+                'page_title' => 'Services',
+                'menu_title' => 'Services',
                 'capability' => $this->getBookingCapability(),
-                'menu_slug' => 'admin.php?page=ff_simple_booking#/service',
+                'menu_slug' => 'admin.php?page=ff_simple_booking#/services',
                 'callback' => ''
             ],
             [

@@ -2,7 +2,7 @@
 
 namespace FF_Booking\Booking;
 
-class Menu
+class MenuApi
 {
 
     public $admin_pages = [];

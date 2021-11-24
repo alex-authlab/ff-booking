@@ -37,12 +37,12 @@
                         name: 'Bookings'
                     },
                     {
-                        route: 'service',
-                        name: 'Service'
+                        route: 'services',
+                        name: 'Services'
                     },
                     {
-                        route: 'provider',
-                        name: 'Provider'
+                        route: 'providers',
+                        name: 'Providers'
                     },
                     {
                         route: 'settings',

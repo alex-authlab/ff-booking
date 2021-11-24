@@ -35,6 +35,7 @@ class AjaxHandler
             'toggle_booking' => 'toggleBookingModule',
             'save_service' => 'saveService',
             'delete_service' => 'deleteService',
+            'get_service' => 'getService',
             'get_services' => 'getServices',
             'save_payment_method_settings' => 'savePaymentMethodSettings',
             'get_form_settings' => 'getFormSettings',
@@ -115,16 +116,18 @@ class AjaxHandler
             'service_type' => 'required',
             'booking_type' => 'required',
             'capacity_type' => 'required',
-            'slot_capacity' => 'required',
             'default_booking_status' => 'required',
             'range_type' => 'required',
             'max_bookings' => 'required',
-            'duration' => 'required',
-            'slot_capacity' => 'required',
             'status' => 'required'
         ], [
             'title.required' => 'The Service Title field is required.',
-            'service_type.required' => 'The Service Type field is required.'
+            'service_type.required' => 'Service Type field is required.',
+            'booking_type.required' => 'Booking Type field is required.',
+            'capacity_type.required' => 'Booking Capacity Type is required.',
+            'status.required' => 'Service Status is required.',
+            'max_bookings.required' => 'Max Bookings is required.',
+            'default_booking_status.required' => 'Default Booking Status is required.',
         ]);
         if ($validator->validate()->fails()) {
             $errors = $validator->errors();
@@ -133,14 +136,13 @@ class AjaxHandler
                 'message' => 'Please fill up all the required fields'
             ], 423);
         }
-
+        
         $serviceId = false;
-
         if (isset($service['id'])) {
             $serviceId = $service['id'];
             unset($service['id']);
         }
-
+        
         if ($serviceId) {
             (new ServiceModel())->update($serviceId, $service);
         } else {
@@ -167,6 +169,59 @@ class AjaxHandler
         $data['available_forms'] = BookingHelper::getAvailableForms();
         $data['service'] = $services;
 
+        wp_send_json_success($data);
+    }
+    
+    public function getService()
+    {
+        $serviceId = intval($_REQUEST['service_id']);
+        $today = date("Y-m-d");
+        
+        $serviceData = [
+            'title' => '',
+            'status' => 'active',
+            'service_type' => 'in_person',
+            'range_type' => 'days',
+            'booking_type' => 'time_slot',
+            'duration' => '01:00',
+            'gap_time_after' => '00:30',
+            'capacity_type' => 'single',
+            'show_end_time' => 'show',
+            'show_booked_time' => 'show',
+            'default_booking_status' => 'pending',
+            'append_info' => 'yes',
+            'allowed_future_days' => '1 Month',
+            'slot_capacity' => 1,
+            'allowed_future_date_range' => $today. '-'.date('Y-m-d', strtotime('+1 month', strtotime($today))),
+            'color' => '#BAE0F1',
+            'disable_booking_before' => '1 Day',
+            'allow_user_cancel' => 'no',
+            'allow_user_reschedule' => 'no',
+            'max_bookings' => 20,
+            'notifications' =>[
+                'instant_email' =>  [
+                    'body' => 'instant {ff_booking_info}',
+                    'status' => 'yes'
+                ],
+                'confirm_email' =>  [
+                    'body' => 'confirm {ff_booking_info}',
+                    'status' => 'yes'
+                ]
+            ]
+        ];
+        
+        if($serviceId){
+            $serviceModel = new ServiceModel();
+            $data =  (array) $serviceModel->getService($serviceId);
+            if(!$data){
+                wp_send_json([
+                    'message' => 'Invalid Service ID'
+                ], 423);
+            }
+            $serviceData = wp_parse_args($data, $serviceData);
+        }
+        $data['available_forms'] = BookingHelper::getAvailableForms();
+        $data['service'] = $serviceData;
         wp_send_json_success($data);
     }
 

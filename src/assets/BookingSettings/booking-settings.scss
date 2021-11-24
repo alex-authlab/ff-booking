@@ -5,7 +5,7 @@
 @import "~element-ui/lib/theme-chalk/input-number.css";
 //@import "~element-ui/lib/theme-chalk/tag.css";
 @import "~element-ui/lib/theme-chalk/message-box.css";
-@import "~element-ui/lib/theme-chalk/rate.css";
+//@import "~element-ui/lib/theme-chalk/rate.css";
 @import "~element-ui/lib/theme-chalk/tooltip.css";
 //@import "~element-ui/lib/theme-chalk/upload.css";
 @import "~element-ui/lib/theme-chalk/card.css";
@@ -46,9 +46,13 @@
 @import "~element-ui/lib/theme-chalk/notification.css";
 @import "~element-ui/lib/theme-chalk/step.css";
 @import "~element-ui/lib/theme-chalk/steps.css";
-@import "~element-ui/lib/theme-chalk/timeline.css";
-@import "~element-ui/lib/theme-chalk/timeline-item.css";
+//@import "~element-ui/lib/theme-chalk/timeline.css";
+//@import "~element-ui/lib/theme-chalk/timeline-item.css";
 .ff_booking_settings_wrapper {
+  .ffs_settings_holder{
+    padding: 10px;
+    border: 1px solid #dedede;
+  }
   .el-menu-demo{
     margin-bottom: 25px;
   }
@@ -89,7 +93,9 @@
   .pull-left{
     float: left;
   }
-
+  .ffs_collapse_div .el-collapse-item__header{
+    font-size: 15px;
+  }
   input {
     -webkit-appearance: none;
     background-color: #fff;
@@ -116,6 +122,7 @@
 
   }
   .el-form-item {
+
     > label {
       font-weight: 500;
       line-height: 100%;

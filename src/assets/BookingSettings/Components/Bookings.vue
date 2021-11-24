@@ -41,6 +41,7 @@
                             v-if="tableData.length > 0"
                             :data="tableData"
                             border
+                            stripe
                             style="width: 100%">
 
                         <el-table-column
