@@ -20,6 +20,7 @@ class AjaxHandler
 {
     public function init()
     {
+        
         $route = sanitize_text_field($_REQUEST['route']);
         BookingHelper::verifyRequest();
 
@@ -198,16 +199,7 @@ class AjaxHandler
             'allow_user_cancel' => 'no',
             'allow_user_reschedule' => 'no',
             'max_bookings' => 20,
-            'notifications' =>[
-                'instant_email' =>  [
-                    'body' => 'instant {ff_booking_info}',
-                    'status' => 'yes'
-                ],
-                'confirm_email' =>  [
-                    'body' => 'confirm {ff_booking_info}',
-                    'status' => 'yes'
-                ]
-            ]
+            'notifications' => $this->defaultEmails()
         ];
         
         if($serviceId){
@@ -343,6 +335,7 @@ class AjaxHandler
     {
         $info = fluentFormSanitizer($_REQUEST['booking_info']);
         $bookingId = ArrayHelper::get($info, 'id');
+        $entryId = ArrayHelper::get($info, 'entry_id');
         $serviceId = ArrayHelper::get($info, 'service_id');
         $providerId = ArrayHelper::get($info, 'provider_id');
         $bookingDate = ArrayHelper::get($info, 'booking_date');
@@ -376,6 +369,8 @@ class AjaxHandler
             ], 423);
             return;
         }
+        do_action('ff_booking_status_changing', $bookingId, $entryId, 'rescheduled');
+    
         $bookingId = (new BookingModel())->update($bookingId, $info);
 
         wp_send_json_success([
@@ -390,6 +385,7 @@ class AjaxHandler
         $bookinEntryId = intval($_REQUEST['booking_id']);
         $insertId = intval($_REQUEST['entry_id']);
         $bookingStatus = sanitize_text_field($_REQUEST['booking_Status']);
+        do_action("ff_booking_{$bookingStatus}", $bookinEntryId, $insertId);
         do_action('ff_booking_status_changing', $bookinEntryId, $insertId, $bookingStatus);
         $data['booking_status'] = $bookingStatus;
         (new BookingModel())->update($bookinEntryId, $data);
@@ -449,6 +445,49 @@ class AjaxHandler
             'settings_data' => $settings ? json_decode($settings) : false
         ], 200);
     }
-
-
+    
+    /**
+     * @return array[]
+     * notification for all type of status using keys
+     */
+    private function defaultEmails(): array
+    {
+        return [
+            'user' => [
+                'booked' => [
+                    'body' => '<p>Hello %customer_full_name%,</p>
+<p>You have a confirmed scheduled %service_name% booking with %employee_full_name% on %appointment_date_time%. <br>
+Thank you {ff_booking_info}</p>
+{ff_booking_info}',
+                    'status' => 'yes',
+                    'subject' => 'Booking Confirmed'
+                ],
+                'pending' => [
+                    'body' => 'confirm {ff_booking_info}',
+                    'status' => 'yes',
+                    'subject' => 'Booking Pending'
+                ],
+                'canceled' => (object)[],
+                'rescheduled' => (object)[],
+    
+            ],
+            'provider' => [
+                'booked' => [
+                    'body' => 'confirmed {ff_booking_info}',
+                    'status' => 'yes',
+                    'subject' => 'Booking Confirmed'
+        
+                ],
+                'pending' => [
+                    'body' => 'pedning {ff_booking_info}',
+                    'status' => 'yes',
+                    'subject' => 'Booking Pending'
+                ],
+                'canceled' => (object)[],
+                'rescheduled' => (object)[],
+            ],
+        ];
+    }
+    
+    
 }

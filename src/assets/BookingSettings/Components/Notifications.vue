@@ -1,8 +1,7 @@
 <template>
     <div>
-
-        <notification :key="key" v-for="(notification, key) in notificationsData" :name="emailName(key)|ucFirst"
-                      :email_key="key" :emailData="getEmail(key)" v-bind:time='false'
+        <notification :key="key" v-for="(email ,key) in emails" :name="emailName(key)|ucFirst"
+                      :email_key="key" :emailData="email" v-bind:time='false'
                       @update-email="updateEmail">
         </notification>
 
@@ -13,26 +12,13 @@
 
     export default {
         name: 'Notifications',
-        props: ['notifications'],
+        props: ['notifications' , 'targetUser'],
         components: {
             notification
         },
-        data() {
-            return {
-                notificationsData: {
-                    'instant_email': '',
-                    'confirm_email': '',
-                    'reminder_email': '',
-                    'query_email': ''
-
-                }
-            }
-        },
         methods: {
-            updateEmail(email) {
-
-                this.notificationsData[email.key] = email.value;
-                this.$emit('update-notifications', this.notificationsData);
+            updateEmail(emailKey,emailData) {
+                this.notifications[this.targetUser][emailKey] = emailData;
             },
             getEmail(key) {
                 if (this.notificationsData[key]) {
@@ -43,14 +29,17 @@
             emailName(key) {
                 let name = key.replace("_", " ");
                 return name;
-            }
+            },
+        },
+        computed:{
+            emails() {
+                let notification = Object.assign([], this.notifications)
+                return  notification[this.targetUser]
+            },
+
         },
         mounted() {
-            if (this.notifications && Object.keys(this.notifications).length) {
-                this.notificationsData = this.notifications
-            }
-        },
-        computed: {}
+        }
 
     }
 </script>

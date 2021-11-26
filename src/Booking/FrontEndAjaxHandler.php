@@ -152,7 +152,7 @@ class FrontEndAjaxHandler
         $actionBy = ($ifProviderLoggedIn) ? 'provider' : 'user';
         $isValid = $this->ifUserCanReschedule($actionBy, $bookingData);
         if (!$isValid) {
-            wp_send_json(['message' => __('Permission Error',FF_BOOKING_SLUG)]);
+            wp_send_json(['message' => __('Permission Error', FF_BOOKING_SLUG)]);
             return;
         }
         $rescheduleData = $this->getRescheduleData($bookingData, $actionBy, $reason);
@@ -162,9 +162,10 @@ class FrontEndAjaxHandler
             'reschedule_data' => \json_encode($rescheduleData)
         ];
         (new BookingModel())->update($bookingId, $updateData);
-
-        do_action('ff_booking_updated', $bookingId, $entryId, $bookingData, $updateData);
-
+        
+        do_action('ff_booking_status_changing', $bookingId, $entryId, 'rescheduled');
+    
+    
         wp_send_json_success([
             'message' => __('Booking has been updated succefully', FF_BOOKING_SLUG)
         ]);
@@ -176,14 +177,16 @@ class FrontEndAjaxHandler
 
         $bookingHash = sanitize_text_field($_REQUEST['bookingHash']);
         $bookingData = (new BookingModel())->getBooking(['booking_hash' => $bookingHash]);
-        $bookingId = (int)ArrayHelper::get($bookingData, 'id');
+        $bookinEntryId = (int)ArrayHelper::get($bookingData, 'id');
         $entryId = (int)ArrayHelper::get($bookingData, 'entry_id');
         $updateData = [
             'booking_status' => 'canceled',
         ];
-        (new BookingModel())->update($bookingId, $updateData);
-        do_action('ff_booking_updated', $bookingId, $entryId, $bookingData, $updateData);
-
+        
+        do_action('ff_booking_status_changing', $bookinEntryId, $entryId, 'canceled');
+        
+        (new BookingModel())->update($bookinEntryId, $updateData);
+    
         wp_send_json_success([
             'message' => __('Booking has been canceled succefully', FF_BOOKING_SLUG)
         ]);
@@ -192,15 +195,17 @@ class FrontEndAjaxHandler
     public function updateProviderBooking()
     {
         BookingHelper::verifyRequest('ffs_booking_public_nonce');
-
-        $bookingId = intval($_REQUEST['booking_id']);
+    
+        $bookinEntryId = intval($_REQUEST['booking_id']);
         $status = sanitize_text_field($_REQUEST['status']);
-
-        do_action('ff_booking_status_changing', $bookingId, $status);
+        $bookingData = (new BookingModel())->getBooking(['id' => $bookinEntryId]);
+        
+        do_action('ff_booking_status_changing', $bookinEntryId, $bookingData['entry_id'], $status);
+        
         $data['booking_status'] = $status;
-        (new BookingModel())->update($bookingId, $data);
+        (new BookingModel())->update($bookinEntryId, $data);
         wp_send_json_success([
-            'message' => __('Booking has been updated succefully,refreshing in 2 sec', FF_BOOKING_SLUG)
+            'message' => __('Booking has been updated successfully,refreshing in 2 sec', FF_BOOKING_SLUG)
         ]);
     }
 
@@ -212,6 +217,7 @@ class FrontEndAjaxHandler
         $notes = sanitize_textarea_field($_REQUEST['notes']);
 
         do_action('ff_booking_status_note_update', $bookingId, $notes);
+        
         $data['notes'] = $notes;
         (new BookingModel())->update($bookingId, $data);
         wp_send_json_success([

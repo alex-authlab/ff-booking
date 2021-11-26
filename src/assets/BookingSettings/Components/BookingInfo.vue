@@ -133,14 +133,7 @@
                 booking_id: this.$route.params.bookingId,
                 service_list: [],
                 provider_list: [],
-                booking_status: {
-                    'booked': 'Confirm Booking',
-                    'pending': 'Pending Booking',
-                    'canceled': 'Cancel Booking',
-                    'declined': 'Decline Booking',
-                    'complete': 'Booking Complete',
-                    'draft': 'Draft Booking',
-                },
+                booking_status: window.ff_booking_settings.booking_status,
             }
         },
         methods: {
@@ -148,6 +141,7 @@
                 this.saving = true;
                 let data = {
                     id: this.booking_info.id,
+                    entry_id: this.booking_info.entry_id,
                     service_id: this.booking_info.service_id,
                     form_id: this.booking_info.form_id,
                     provider_id: this.booking_info.provider_id,

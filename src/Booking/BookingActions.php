@@ -135,6 +135,7 @@ class BookingActions
     {
         $bookinEntryId = (new BookingModel())->insert($bookingData);
         do_action('ff_booking_inserted', $bookinEntryId, $insertId, $bookingData);
+        do_action('ff_booking_status_changing', $bookinEntryId, $insertId, $bookingData['booking_status']);
     }
 
     private function validate()
@@ -236,10 +237,13 @@ class BookingActions
 
         return true;
     }
-
+    
+    /**
+     * Append booking info with submission message
+     */
     private function afterSubmissionInfo()
     {
-        // booking info after submission
+        
         add_filter('fluentform_submission_message_parse', function ($messageToShow, $insertId, $formData, $form) {
             $html = (new BookingInfo($insertId))->getConfirmationHtml();
             if ($html) {

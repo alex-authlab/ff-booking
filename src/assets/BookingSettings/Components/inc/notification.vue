@@ -87,19 +87,16 @@
             return {
                 componentKey: false,
                 saving: false,
-                email: {
-                    subject: 'Booking Notification',
-                    message: '',
-                    body: '{ff_booking_info}',
-                    time: '',
-                    asPlainText: '',
-                    status: '',
-                    time_direction: ''
-                },
                 editorShortcodes: [
                     {
                         "shortcodes": {
                             "{ff_booking_info}": "Booking Info",
+                            "{ff_booking_info_page_link}" : "Booking Info Page Link",
+                           " {ff_booking_date_time}": "Booking Date Time",
+                            "{ff_booking_service}": "Booking Service",
+                            "{ff_booking_provider}": "Booking Provider",
+                            "{ff_booking_user_email}": "Booking User Email",
+                            "{ff_booking_user_name}": "Booking User Name",
                         },
                         "title": "Booking Shortcodes"
                     },
@@ -109,11 +106,6 @@
         },
         methods: {
             saveEmail() {
-                let emailData = {
-                    'key': this.email_key,
-                    'value': this.email
-                };
-                this.$emit('update-email', emailData)
                 this.email_editor_visible = false;
             },
             handleOpen() {
@@ -136,6 +128,14 @@
                 }
                 return false;
 
+            },
+            email :{
+                get(){
+                    return this.emailData
+                },
+                set(data){
+                    this.$emit('update-email', this.email_key , data )
+                }
             }
         }
     }

@@ -139,6 +139,7 @@ class BookingHelper
         return array(
             'booked' => __('Booked',FF_BOOKING_SLUG),
             'canceled' => __('Cancel',FF_BOOKING_SLUG),
+            'rejected' => __('Rejected',FF_BOOKING_SLUG),
             'pending' => __('Pending',FF_BOOKING_SLUG),
             'complete' => __('Complete',FF_BOOKING_SLUG),
             'draft' => __('Draft',FF_BOOKING_SLUG),
@@ -183,8 +184,11 @@ class BookingHelper
     {
         return date_i18n(get_option('time_format'), strtotime($value));
     }
-    public static function formatDate($value)
+    public static function formatDate($value , $format='')
     {
-        return date_i18n(get_option('date_format'), strtotime($value));
+        if(!$format){
+            $format = get_option('date_format');
+        }
+        return date_i18n($format, strtotime($value));
     }
 }

@@ -21,8 +21,6 @@ class BookingHandler
     public function init($app)
     {
         $this->addMenus();
-        //global settings page , need to select one only
-//        add_filter('fluentform_global_settings_components', [$this, 'pushGlobalSettings'], 1, 1);
         // add on page
         add_action('admin_enqueue_scripts', array($this,'enqueScripts'));
 //        add_action('fluentform_addons_page_render_fluentform_booking', array($this, 'renderSettings'));
@@ -34,13 +32,13 @@ class BookingHandler
         if (!$this->isEnabled()) {
             return;
         }
-        $this->addShortCodes();
 
         //components
         new BookingDateTime();
         new Service();
         new Provider();
         (new BookingNotification())->init();
+        (new BookingShortCodes())->init();
 
         add_action('fluentform_before_insert_submission', array($this, 'maybeProccessBooking'), 10, 3);
         add_filter('fluentform_form_class', [$this, 'checkBookingForm'], 10, 2);
@@ -63,18 +61,7 @@ class BookingHandler
         }
         return $classes;
     }
-
-    public function pushGlobalSettings($components)
-    {
-        $components['booking_settings'] = [
-            'hash' => '',
-            'title' => 'Booking Settings',
-            'query' => [
-                'component' => 'booking_settings_global'
-            ]
-        ];
-        return $components;
-    }
+    
 
     public function renderSettings()
     {
@@ -86,13 +73,11 @@ class BookingHandler
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'booking_status' => BookingHelper::bookingStatuses(),
         ];
-
+    
         wp_localize_script('ff-booking-settings', 'ff_booking_settings', $data);
-
+    
         ob_start();
-
         include_once(plugin_dir_path(__FILE__) . 'view/admin-booking-view.php');
-
         echo ob_get_clean();
     }
 
@@ -165,24 +150,7 @@ class BookingHandler
             ],
         ];
     }
-
-
-    private function addShortCodes()
-    {
-        //{ff_booking_info}
-        add_filter('fluentform_shortcode_parser_callback_ff_booking_info', function ($value, $parser) {
-            $entry = $parser::getEntry();
-            return (new BookingInfo($entry->id))->bookingInfoHtml();
-        }, 10, 2);
-        //{ff_booking_info_page_link}
-//        add_filter('fluentform_shortcode_parser_callback_ff_booking_info_page_link', function ($value, $parser) {
-//            $entry = $parser::getEntry();
-//            $data = (new BookingInfo($entry->id))->getBookingInfoData();
-//            $hash = ArrayHelper::get($data,'bookingData.booking_hash');
-//            $html = '';
-//
-//        }, 10, 2);
-    }
+    
 
 
 

@@ -31,7 +31,7 @@ class BookingInfo
         }
         $this->data = [
             'bookingData' => $this->getBookingData($data),
-            'userData' => ArrayHelper::only($data, ['name', 'email','allow_user_cancel','allow_user_reschedule']),
+            'userData' => $this->getUserData($data),
             'providerData' => $this->getProvider($data)
         ];
         $this->submissionInfoEnabled = ArrayHelper::get($data, 'append_info') == 'yes';
@@ -74,10 +74,10 @@ class BookingInfo
         ]);
 
         $time = ArrayHelper::get($data, 'booking_time');
-        $bookingData['booking_time'] = date(BookingHelper::getTimeFormat(), strtotime($time));
+        $bookingData['booking_time'] = BookingHelper::formatTime($time);
 
         $date = ArrayHelper::get($data, 'booking_date');
-        $bookingData['booking_date'] = date('l F j Y', strtotime($date)); //@todo add date format option
+        $bookingData['booking_date'] = BookingHelper::formatDate($date,'l F j Y');
         return $bookingData;
     }
     public function getConfirmationHtml()
@@ -164,6 +164,18 @@ class BookingInfo
     {
         
     }
-
-
+    
+    /**
+     * @param array $data
+     * @return mixed
+     */
+    private function getUserData($data)
+    {
+        $userData = ArrayHelper::only($data, ['name', 'email', 'allow_user_cancel', 'allow_user_reschedule']);
+        $name = maybe_unserialize(ArrayHelper::get($data, 'name'));
+        $userData['name'] = is_array($name) ? join(' ', $name) : $name;
+        return $userData;
+    }
+    
+    
 }

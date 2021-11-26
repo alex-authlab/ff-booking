@@ -147,8 +147,18 @@
                         </div>
                     </el-collapse-item>
                     <el-collapse-item title="Notification" name="notification">
-                        <Notifications @update-notifications="updateNotifications"
-                                       :notifications="editing_item.notifications"></Notifications>
+                        <el-tabs value="provider">
+                            <el-tab-pane label="Provider Notification" name="provider">
+                                <Notifications @update-notifications="updateNotifications"
+                                               targetUser="provider"
+                                               :notifications="editing_item.notifications"></Notifications>
+                            </el-tab-pane>
+                            <el-tab-pane label="User Notification" name="user">
+                                <Notifications @update-notifications="updateNotifications"
+                                               targetUser="user"
+                                               :notifications="editing_item.notifications"></Notifications>
+                            </el-tab-pane>
+                        </el-tabs>
                     </el-collapse-item>
                     <el-collapse-item title="Capacity" name="capacity">
 
@@ -337,7 +347,6 @@
                 saving: false,
                 activeName: 'info',
                 editing_item: {},
-                items: [],
                 service_types: {
                     in_person: 'In Person',
                     // google_meet: 'Google Meet',
@@ -404,14 +413,7 @@
                         }
                     ]
                 },
-                booking_status: {
-                    'booked': 'Booked',
-                    'pending': 'Pending',
-                    'canceled': 'Canceled',
-                    'rejected': 'Rejected',
-                    // 'completed' :'completed',
-                },
-
+                booking_status: window.ff_booking_settings.booking_status,
                 show_modal: false,
                 available_forms: {},
                 errors: false
@@ -462,7 +464,7 @@
                             offset: 30
                         });
                         this.$router.push({
-                            name: 'services',
+                            name: 'Services',
                         });
 
                     })
@@ -479,9 +481,9 @@
                     });
 
             },
-            updateNotifications(data) {
-
-                this.$set(this.editing_item, 'notifications', data);
+            updateNotifications(key,data) {
+                // console.log(data)
+                // this.$set(this.editing_item, 'notifications', data);
             },
         },
         computed: {
