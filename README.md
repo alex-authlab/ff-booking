@@ -1,9 +1,22 @@
 # ff-booking
  Simple booking with fluent form
-=== Fluent Forms Simple Booking ===
+###Features
+* Booking Services
+  * Create Slots & Duration
+  * Set Slot Type Date or Time
+  * Set Slot Capacity Type Single or Multiple Person 
+  * Set Notifications on bookings status change
+  * Set Range
+  
+* Booking Provider
+  * Create a Schedule
+  * Assign Services
+  * Set Holiday & Weekends
+
 Todo
-* Create one component for both date and service
-* Remove static name and ID from components
-* Check and handle if form has booking element
-* Show  booking calendar
-* filter booking entries for normal entry page
+* automated emails 
+* third party calendars
+* time off
+* custom slots
+* Email settings
+

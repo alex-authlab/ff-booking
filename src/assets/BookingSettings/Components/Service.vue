@@ -5,7 +5,7 @@
             <el-row class="setting_header">
                 <el-col :md="18">
                     <h2>
-                        <span v-if="isEditing">{{ $t('Edit Service') }}}</span>
+                        <span v-if="isEditing">{{ $t('Edit Service') }}</span>
                         <span v-else="isEditing">{{ $t('New Service') }} </span>
                     </h2>
                 </el-col>

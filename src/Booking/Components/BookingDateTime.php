@@ -176,7 +176,7 @@ class BookingDateTime extends \FluentForm\App\Services\FormBuilder\BaseFieldMana
         }
         $formatValue = explode(' ', $value);
         if (!is_array($formatValue) || count($formatValue) < 2) {
-            return ["Please select a time slot."];
+            return [__('Please select a time slot.', FF_BOOKING_SLUG)];
         }
         return;
     }

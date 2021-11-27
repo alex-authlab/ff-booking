@@ -139,7 +139,9 @@
         overflow-y: auto;
         max-height: 350px;
         max-width: 300px;
-
+        .ff-booked-slot{
+          opacity: .7;
+        }
         li {
           margin: 0px 10px;
           justify-content: center;
