@@ -119,6 +119,7 @@ if (!class_exists('FFBooking')) {
             if (!is_admin()) {
                 return;
             }
+            \FF_Booking\Router::load('src/routes.php')->init();
             $ajax = new  FF_Booking\Booking\AjaxHandler();
             add_action('wp_ajax_handle_booking_ajax_endpoint', [$ajax, 'init']);
             add_action('wp_ajax_nopriv_handle_booking_ajax_endpoint', [$ajax, 'init']);

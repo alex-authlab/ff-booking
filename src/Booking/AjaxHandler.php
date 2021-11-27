@@ -41,7 +41,7 @@ class AjaxHandler
             'save_payment_method_settings' => 'savePaymentMethodSettings',
             'get_form_settings' => 'getFormSettings',
             'save_form_settings' => 'saveFormSettings',
-            'get_bookings' => 'getBookings',
+//            'get_bookings' => 'getBookings',
             'get_booking_info' => 'getBookingInfo',
             'update_booking' => 'updateBooking',
             'get_providers' => 'getProviders',
