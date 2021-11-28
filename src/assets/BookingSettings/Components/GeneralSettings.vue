@@ -11,7 +11,7 @@
             <div class="ff_booking_settings_section">
                 <div v-if="current_page == 'general'">
                     <h4>
-                        <code>['ff_simple_booking'] </code> Add this shortcode to list & manage providers bookings
+                        <code>[ff_simple_booking] </code> Add this shortcode to list & manage providers bookings
                     </h4>
                     <el-form-item>
                         <template slot="label">

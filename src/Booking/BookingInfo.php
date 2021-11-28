@@ -97,7 +97,7 @@ class BookingInfo
         $service = ArrayHelper::get($data, 'bookingData.service');
         $provider = ArrayHelper::get($data, 'providerData.provider');
 
-        $html = '<table class="ff_all_data" style="margin: 10px 0;" width="600" cellpadding="0" cellspacing="0">
+        $html = '<table  style="margin: 10px 0;" width="600" cellpadding="0" cellspacing="0">
                     <tbody>
                       <tr>
                         <th style="text-align: left;" >

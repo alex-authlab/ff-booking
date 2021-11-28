@@ -35,7 +35,7 @@ class ProviderPage
             'nonce' => wp_create_nonce('ffs_booking_public_nonce')
         ]);
 
-        echo  $this->getBookingsHtml($userId);
+        return  $this->getBookingsHtml($userId);
 
     }
 

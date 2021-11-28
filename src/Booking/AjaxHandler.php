@@ -455,15 +455,17 @@ class AjaxHandler
         return [
             'user' => [
                 'booked' => [
-                    'body' => '<p>Hello %customer_full_name%,</p>
-<p>You have a confirmed scheduled %service_name% booking with %employee_full_name% on %appointment_date_time%. <br>
-Thank you {ff_booking_info}</p>
-{ff_booking_info}',
+                    'body' => 'Hello {ff_booking_user_name},
+<p>You have successfully booked <b>{ff_booking_service}</b> appointment with <b>{ff_booking_provider}</b> on <b>{ff_booking_date_time}</b>. </p>
+<p>Thank you </p>'
+,
                     'status' => 'yes',
                     'subject' => 'Booking Confirmed'
                 ],
                 'pending' => [
-                    'body' => 'confirm {ff_booking_info}',
+                    'body' => 'Hello {ff_booking_user_name},
+<p>You have a pending <b>{ff_booking_service}</b> appointment with <b>{ff_booking_provider}</b> on <b>{ff_booking_date_time}</b>. </p>
+<p>Thank you </p>',
                     'status' => 'yes',
                     'subject' => 'Booking Pending'
                 ],
@@ -473,13 +475,17 @@ Thank you {ff_booking_info}</p>
             ],
             'provider' => [
                 'booked' => [
-                    'body' => 'confirmed {ff_booking_info}',
+                    'body' => 'Hello {ff_booking_provider},
+<p>You have a new booked appointment for {ff_booking_service} on {ff_booking_date_time}. </p>
+<p>Thank you </p>',
                     'status' => 'yes',
                     'subject' => 'Booking Confirmed'
         
                 ],
                 'pending' => [
-                    'body' => 'pedning {ff_booking_info}',
+                    'body' => 'Hello {ff_booking_provider},
+<p>You have a new pending appointment for <b>{ff_booking_service}</b> on <b>{ff_booking_date_time}</b>. </p>
+<p>Thank you </p>',
                     'status' => 'yes',
                     'subject' => 'Booking Pending'
                 ],
