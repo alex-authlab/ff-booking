@@ -32,17 +32,33 @@ class ProviderPage
         );
         wp_localize_script('ffs_booking_provider_js', 'ffs_provider_vars', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('ffs_booking_public_nonce')
+            'nonce'   => wp_create_nonce('ffs_booking_public_nonce')
         ]);
 
-        return  $this->getBookingsHtml($userId);
+        return $this->getBookingsHtml($userId);
 
     }
 
     private function getViewConfig()
     {
-        global $wp;
-        $urlBase = home_url( $wp->request );
+
+        global $post;
+        $pageId = $post->ID;
+
+        $urlBase = false;
+        if ($pageId) {
+            $urlBase = get_permalink($pageId);
+        }
+
+        if (!$urlBase) {
+            $urlBase = add_query_arg([
+                'fluentform_payment' => 'view',
+                'route'              => 'payment'
+            ], site_url('index.php'));
+        }
+
+        $urlBase = apply_filters('fluentform_transaction_view_url', $urlBase);
+
 
         if (!strpos($urlBase, '?')) {
             $urlBase .= '?';
@@ -51,25 +67,25 @@ class ProviderPage
         }
         $wpDateTimeFormat = get_option('time_format') . ' ' . get_option('date_format');
         return apply_filters('ffs_provider_view_config', [
-            'new_tab' => false,
-            'view_text' => __('View', FF_BOOKING_SLUG),
-            'base_url' => $urlBase,
-            'time_format' => get_option('time_format'),
-            'date_format' => get_option('date_format'),
+            'new_tab'          => false,
+            'view_text'        => __('View', FF_BOOKING_SLUG),
+            'base_url'         => $urlBase,
+            'time_format'      => get_option('time_format'),
+            'date_format'      => get_option('date_format'),
             'date_time_format' => $wpDateTimeFormat,
-            'booking_title' => __('Bookings List', FF_BOOKING_SLUG),
-            'confirm_heading' => __('Are you sure you change this booking status? ', FF_BOOKING_SLUG),
-            'confirm_btn' => __('Yes', FF_BOOKING_SLUG),
-            'reschulde_btn' => __('Reschedule', FF_BOOKING_SLUG),
-            'close' => __('Cancel', FF_BOOKING_SLUG),
-            'get_filters' => array(
-                'next' => __('Next Upcoming', FF_BOOKING_SLUG),
+            'booking_title'    => __('Bookings List', FF_BOOKING_SLUG),
+            'confirm_heading'  => __('Are you sure you change this booking status? ', FF_BOOKING_SLUG),
+            'confirm_btn'      => __('Yes', FF_BOOKING_SLUG),
+            'reschulde_btn'    => __('Reschedule', FF_BOOKING_SLUG),
+            'close'            => __('Cancel', FF_BOOKING_SLUG),
+            'get_filters'      => array(
+                'next'    => __('Next Upcoming', FF_BOOKING_SLUG),
                 'pending' => __('Pending', FF_BOOKING_SLUG),
-                'past' => __('Past', FF_BOOKING_SLUG),
-                'all' => __('All', FF_BOOKING_SLUG),
+                'past'    => __('Past', FF_BOOKING_SLUG),
+                'all'     => __('All', FF_BOOKING_SLUG),
 
             ),
-            'booking_status' => BookingHelper::bookingStatuses(),
+            'booking_status'   => BookingHelper::bookingStatuses(),
         ]);
     }
 
@@ -80,11 +96,12 @@ class ProviderPage
         if (isset($_REQUEST['status'])) {
             $filterStatus = sanitize_text_field($_REQUEST['status']);
         }
-        $bookings = \FF_Booking\Booking\Models\BookingModel::getBookingsByProvider($userId, ['status' => $filterStatus]);
+        $bookings = \FF_Booking\Booking\Models\BookingModel::getBookingsByProvider($userId,
+            ['status' => $filterStatus]);
         $viewConfig['filterStatus'] = $filterStatus;
         $bookingHtml = \FF_Booking\Booking\BookingHelper::loadView('providers_bookings', [
             'bookings' => $this->groupBy('formatted_date', $bookings),
-            'config' => $viewConfig,
+            'config'   => $viewConfig,
         ]);
         $html = '<div class="ff_bookings_wrapper">';
         if (!empty($viewConfig['booking_title'])) {

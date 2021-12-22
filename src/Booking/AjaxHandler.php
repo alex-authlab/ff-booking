@@ -20,7 +20,7 @@ class AjaxHandler
 {
     public function init()
     {
-        
+
         $route = sanitize_text_field($_REQUEST['route']);
         BookingHelper::verifyRequest();
 
@@ -31,26 +31,26 @@ class AjaxHandler
     public function handleEndpoint($route)
     {
         $validRoutes = [
-            'enable_booking' => 'enableBookingModule',
-            'disable_booking' => 'disableBookingModule',
-            'toggle_booking' => 'toggleBookingModule',
-            'save_service' => 'saveService',
-            'delete_service' => 'deleteService',
-            'get_service' => 'getService',
-            'get_services' => 'getServices',
+            'enable_booking'               => 'enableBookingModule',
+            'disable_booking'              => 'disableBookingModule',
+            'toggle_booking'               => 'toggleBookingModule',
+            'save_service'                 => 'saveService',
+            'delete_service'               => 'deleteService',
+            'get_service'                  => 'getService',
+            'get_services'                 => 'getServices',
             'save_payment_method_settings' => 'savePaymentMethodSettings',
-            'get_form_settings' => 'getFormSettings',
-            'save_form_settings' => 'saveFormSettings',
-            'get_bookings' => 'getBookings',
-            'get_booking_info' => 'getBookingInfo',
-            'update_booking' => 'updateBooking',
-            'get_providers' => 'getProviders',
-            'save_providers' => 'saveProviders',
-            'delete_provider' => 'deleteProvider',
-            'change_status_booking' => 'changeStatusBooking',
-            'update_user_notify_stat' => 'updateUserNotifyStat',
-            'save_settings' => 'saveSettings',
-            'get_settings' => 'getSettings',
+            'get_form_settings'            => 'getFormSettings',
+            'save_form_settings'           => 'saveFormSettings',
+            'get_bookings'                 => 'getBookings',
+            'get_booking_info'             => 'getBookingInfo',
+            'update_booking'               => 'updateBooking',
+            'get_providers'                => 'getProviders',
+            'save_providers'               => 'saveProviders',
+            'delete_provider'              => 'deleteProvider',
+            'change_status_booking'        => 'changeStatusBooking',
+            'update_user_notify_stat'      => 'updateUserNotifyStat',
+            'save_settings'                => 'saveSettings',
+            'get_settings'                 => 'getSettings',
 
         ];
 
@@ -66,9 +66,9 @@ class AjaxHandler
         $this->enable();
 
         wp_send_json_success([
-            'message' => __('Booking Module successfully enabled!', FF_BOOKING_SLUG),
+            'message'  => __('Booking Module successfully enabled!', FF_BOOKING_SLUG),
             'settings' => '',
-            'reload' => 'yes'
+            'reload'   => 'yes'
         ]);
     }
 
@@ -87,9 +87,9 @@ class AjaxHandler
         update_option('_ff_booking_status', '0', false);
 
         wp_send_json_success([
-            'message' => __('Booking Module successfully disabled!', FF_BOOKING_SLUG),
+            'message'  => __('Booking Module successfully disabled!', FF_BOOKING_SLUG),
             'settings' => '',
-            'reload' => 'yes'
+            'reload'   => 'yes'
         ]);
     }
 
@@ -105,7 +105,7 @@ class AjaxHandler
             // check db version
 
         } else {
-             Migration::run();
+            Migration::run();
         }
     }
 
@@ -113,37 +113,37 @@ class AjaxHandler
     {
         $service = wp_unslash($_REQUEST['service']);
         $validator = fluentValidator($service, [
-            'title' => 'required',
-            'service_type' => 'required',
-            'booking_type' => 'required',
-            'capacity_type' => 'required',
+            'title'                  => 'required',
+            'service_type'           => 'required',
+            'booking_type'           => 'required',
+            'capacity_type'          => 'required',
             'default_booking_status' => 'required',
-            'range_type' => 'required',
-            'max_bookings' => 'required',
-            'status' => 'required'
+            'range_type'             => 'required',
+            'max_bookings'           => 'required',
+            'status'                 => 'required'
         ], [
-            'title.required' => 'The Service Title field is required.',
-            'service_type.required' => 'Service Type field is required.',
-            'booking_type.required' => 'Booking Type field is required.',
-            'capacity_type.required' => 'Booking Capacity Type is required.',
-            'status.required' => 'Service Status is required.',
-            'max_bookings.required' => 'Max Bookings is required.',
+            'title.required'                  => 'The Service Title field is required.',
+            'service_type.required'           => 'Service Type field is required.',
+            'booking_type.required'           => 'Booking Type field is required.',
+            'capacity_type.required'          => 'Booking Capacity Type is required.',
+            'status.required'                 => 'Service Status is required.',
+            'max_bookings.required'           => 'Max Bookings is required.',
             'default_booking_status.required' => 'Default Booking Status is required.',
         ]);
         if ($validator->validate()->fails()) {
             $errors = $validator->errors();
             wp_send_json([
-                'errors' => $errors,
+                'errors'  => $errors,
                 'message' => 'Please fill up all the required fields'
             ], 423);
         }
-        
+
         $serviceId = false;
         if (isset($service['id'])) {
             $serviceId = $service['id'];
             unset($service['id']);
         }
-        
+
         if ($serviceId) {
             (new ServiceModel())->update($serviceId, $service);
         } else {
@@ -151,7 +151,7 @@ class AjaxHandler
         }
 
         wp_send_json_success([
-            'message' => 'Service has been updated successfully',
+            'message'    => 'Service has been updated successfully',
             'service_id' => $serviceId
         ], 200);
     }
@@ -172,40 +172,41 @@ class AjaxHandler
 
         wp_send_json_success($data);
     }
-    
+
     public function getService()
     {
         $serviceId = intval($_REQUEST['service_id']);
         $today = date("Y-m-d");
-        
+
         $serviceData = [
-            'title' => '',
-            'status' => 'active',
-            'service_type' => 'in_person',
-            'range_type' => 'days',
-            'booking_type' => 'time_slot',
-            'duration' => '01:00',
-            'gap_time_after' => '00:30',
-            'capacity_type' => 'single',
-            'show_end_time' => 'show',
-            'show_booked_time' => 'show',
-            'default_booking_status' => 'pending',
-            'append_info' => 'yes',
-            'allowed_future_days' => '1 Month',
-            'slot_capacity' => 1,
-            'allowed_future_date_range' => $today. '-'.date('Y-m-d', strtotime('+1 month', strtotime($today))),
-            'color' => '#BAE0F1',
-            'disable_booking_before' => '1 Day',
-            'allow_user_cancel' => 'no',
-            'allow_user_reschedule' => 'no',
-            'max_bookings' => 20,
-            'notifications' => $this->defaultEmails()
+            'title'                     => '',
+            'status'                    => 'active',
+            'service_type'              => 'in_person',
+            'range_type'                => 'days',
+            'booking_type'              => 'time_slot',
+            'duration'                  => '01:00',
+            'gap_time_after'            => '00:30',
+            'capacity_type'             => 'single',
+            'show_end_time'             => 'show',
+            'show_booked_time'          => 'show',
+            'default_booking_status'    => 'pending',
+            'append_info'               => 'yes',
+            'allowed_future_days'       => '1 Month',
+            'show_remaining_slot'       => 'hide',
+            'slot_capacity'             => 1,
+            'allowed_future_date_range' => $today . '-' . date('Y-m-d', strtotime('+1 month', strtotime($today))),
+            'color'                     => '#BAE0F1',
+            'disable_booking_before'    => '1 Day',
+            'allow_user_cancel'         => 'no',
+            'allow_user_reschedule'     => 'no',
+            'max_bookings'              => 20,
+            'notifications'             => $this->defaultEmails()
         ];
-        
-        if($serviceId){
+
+        if ($serviceId) {
             $serviceModel = new ServiceModel();
-            $data =  (array) $serviceModel->getService($serviceId);
-            if(!$data){
+            $data = (array)$serviceModel->getService($serviceId);
+            if (!$data) {
                 wp_send_json([
                     'message' => 'Invalid Service ID'
                 ], 423);
@@ -265,17 +266,17 @@ class AjaxHandler
     {
         $provider = wp_unslash($_REQUEST['provider']);
         $validator = fluentValidator($provider, [
-            'title' => 'required',
-            'assigned_user' => 'required',
+            'title'             => 'required',
+            'assigned_user'     => 'required',
             'assigned_services' => 'required',
-            'status' => 'required',
-            'start_time' => 'required',
+            'status'            => 'required',
+            'start_time'        => 'required',
         ]);
 
         if ($validator->validate()->fails()) {
             $errors = $validator->errors();
             wp_send_json([
-                'errors' => $errors,
+                'errors'  => $errors,
                 'message' => 'Please fill up all the required fields'
             ], 423);
         }
@@ -293,7 +294,7 @@ class AjaxHandler
         }
 
         wp_send_json_success([
-            'message' => 'Provider has been updated successfully',
+            'message'     => 'Provider has been updated successfully',
             'provider_id' => $providerId
         ], 200);
     }
@@ -344,17 +345,17 @@ class AjaxHandler
         $formId = ArrayHelper::get($info, 'form_id');
 
         $validator = fluentValidator($info, [
-            'id' => 'required',
-            'service_id' => 'required',
-            'provider_id' => 'required',
+            'id'           => 'required',
+            'service_id'   => 'required',
+            'provider_id'  => 'required',
             'booking_date' => 'required',
             'booking_time' => 'required',
-            'form_id' => 'required',
+            'form_id'      => 'required',
         ]);
         if ($validator->validate()->fails()) {
             $errors = $validator->errors();
             wp_send_json([
-                'errors' => $errors,
+                'errors'  => $errors,
                 'message' => 'Please fill up all the required fields'
             ], 423);
         }
@@ -370,11 +371,11 @@ class AjaxHandler
             return;
         }
         do_action('ff_booking_status_changing', $bookingId, $entryId, 'rescheduled');
-    
+
         $bookingId = (new BookingModel())->update($bookingId, $info);
 
         wp_send_json_success([
-            'message' => 'Booking info has been updated successfully',
+            'message'    => 'Booking info has been updated successfully',
             'booking_id' => $bookingId
         ], 200);
     }
@@ -397,7 +398,7 @@ class AjaxHandler
     public function updateUserNotifyStat()
     {
         $data = wp_unslash($_REQUEST['data']);
-        $data = json_decode($data,true);
+        $data = json_decode($data, true);
         $bookingId = intval($data['booking_id']);
         $bookingStatus = sanitize_text_field($data['send_notification']);
         $updateData['send_notification'] = $bookingStatus;
@@ -413,7 +414,7 @@ class AjaxHandler
         $serviceId = intval($_REQUEST['service_id']);
         (new ServiceModel())->delete($serviceId);
         wp_send_json_success([
-            'message' => 'Service has been successfully deleted',
+            'message'   => 'Service has been successfully deleted',
             'coupon_id' => $serviceId
         ], 200);
     }
@@ -423,7 +424,7 @@ class AjaxHandler
         $providerId = intval($_REQUEST['provider_id']);
         (new ProviderModel())->delete($providerId);
         wp_send_json_success([
-            'message' => 'Provider has been successfully deleted',
+            'message'   => 'Provider has been successfully deleted',
             'coupon_id' => $providerId
         ], 200);
     }
@@ -445,7 +446,7 @@ class AjaxHandler
             'settings_data' => $settings ? json_decode($settings) : false
         ], 200);
     }
-    
+
     /**
      * @return array[]
      * notification for all type of status using keys
@@ -453,47 +454,47 @@ class AjaxHandler
     private function defaultEmails(): array
     {
         return [
-            'user' => [
-                'booked' => [
-                    'body' => 'Hello {ff_booking_user_name},
+            'user'     => [
+                'booked'      => [
+                    'body'    => 'Hello {ff_booking_user_name},
 <p>You have successfully booked <b>{ff_booking_service}</b> appointment with <b>{ff_booking_provider}</b> on <b>{ff_booking_date_time}</b>. </p>
 <p>Thank you </p>'
-,
-                    'status' => 'yes',
+                    ,
+                    'status'  => 'yes',
                     'subject' => 'Booking Confirmed'
                 ],
-                'pending' => [
-                    'body' => 'Hello {ff_booking_user_name},
+                'pending'     => [
+                    'body'    => 'Hello {ff_booking_user_name},
 <p>You have a pending <b>{ff_booking_service}</b> appointment with <b>{ff_booking_provider}</b> on <b>{ff_booking_date_time}</b>. </p>
 <p>Thank you </p>',
-                    'status' => 'yes',
+                    'status'  => 'yes',
                     'subject' => 'Booking Pending'
                 ],
-                'canceled' => (object)[],
+                'canceled'    => (object)[],
                 'rescheduled' => (object)[],
-    
+
             ],
             'provider' => [
-                'booked' => [
-                    'body' => 'Hello {ff_booking_provider},
+                'booked'      => [
+                    'body'    => 'Hello {ff_booking_provider},
 <p>You have a new booked appointment for {ff_booking_service} on {ff_booking_date_time}. </p>
 <p>Thank you </p>',
-                    'status' => 'yes',
+                    'status'  => 'yes',
                     'subject' => 'Booking Confirmed'
-        
+
                 ],
-                'pending' => [
-                    'body' => 'Hello {ff_booking_provider},
+                'pending'     => [
+                    'body'    => 'Hello {ff_booking_provider},
 <p>You have a new pending appointment for <b>{ff_booking_service}</b> on <b>{ff_booking_date_time}</b>. </p>
 <p>Thank you </p>',
-                    'status' => 'yes',
+                    'status'  => 'yes',
                     'subject' => 'Booking Pending'
                 ],
-                'canceled' => (object)[],
+                'canceled'    => (object)[],
                 'rescheduled' => (object)[],
             ],
         ];
     }
-    
-    
+
+
 }

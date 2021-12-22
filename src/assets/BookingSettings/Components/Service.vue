@@ -200,7 +200,7 @@
                                         <el-radio label="show">Show</el-radio>
                                         <el-radio label="hide">Hide</el-radio>
                                     </el-radio-group>
-                                    <p>Show Remaining Time Slot in a Mulitple Booking Slot</p>
+                                    <p>Show Remaining Time Slot in a Multiple Booking Slot</p>
                                 </el-form-item>
                             </el-col>
 
