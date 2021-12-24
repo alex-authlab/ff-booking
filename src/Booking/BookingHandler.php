@@ -21,14 +21,7 @@ class BookingHandler
     public function init($app)
     {
         $this->addMenus();
-        // add on page
         add_action('admin_enqueue_scripts', array($this,'enqueScripts'));
-//        add_action('fluentform_addons_page_render_fluentform_booking', array($this, 'renderSettings'));
-//        add_filter('fluentform_addons_extra_menu', function ($menus) {
-//            $menus['fluentform_booking'] = __('Fluent Forms Booking', 'fluentform');
-//            return $menus;
-//        }, 99, 1);
-
         if (!$this->isEnabled()) {
             return;
         }

@@ -122,4 +122,69 @@ jQuery(document).ready(function ($) {
             });
     }
 
+    //google calendar verify
+    $('.ffsb_gverify').on('click',function (e){
+        e.preventDefault();
+        let access_code  = $('#ffsb_google_code').val()
+        let $dom = $('.gcalendar_response');
+        if(access_code){
+
+            let data = { access_code : access_code ,  route : 'save_google_calendar_code'};
+            sendGCalenderReq(data, $(this), (message, status) => {
+                if (status != 'success') {
+                    $dom.addClass('ffsb_error')
+                }
+                console.log(status)
+                console.log(message)
+                $dom.html(message);
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            });
+        }
+
+    })
+    //disconnect googleCalendar
+    $('.ffsb_gverify_diconnect').on('click',function (e){
+        e.preventDefault();
+        let $dom = $('.gcalendar_response');
+
+        let data = { route : 'disconnect_google_calendar_code'};
+        sendGCalenderReq(data, $(this), (message, status) => {
+            if (status != 'success') {
+                $dom.addClass('ffsb_error')
+            }
+            console.log(status)
+            console.log(message)
+            $dom.html(message);
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+        });
+
+    })
+
+    function sendGCalenderReq(data,$elm,callback){
+        data.action = 'handle_booking_frontend_endpoint';
+        data.ffs_booking_public_nonce = window.ffs_provider_vars.nonce;
+        jQuery.post(window.ffs_provider_vars.ajaxUrl, data)
+            .then(response => {
+                console.log(response)
+                callback(response.data.message, 'success');
+            })
+            .catch(errors => {
+
+                if (!errors.responseJSON) {
+                    callback(errors.responseText);
+                } else if (errors.responseJSON.data) {
+                    callback(errors.responseJSON.data.message);
+                } else {
+                    callback('Error. Please try again');
+                }
+            })
+            .always(() => {
+                $elm.prop("disabled", false);
+            });
+    }
+
 })

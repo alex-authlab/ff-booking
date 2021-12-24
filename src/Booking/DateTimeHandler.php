@@ -191,7 +191,8 @@ class DateTimeHandler
             if ($with_end_time) {
                 $time[$i]['label'] .= ' - ' . BookingHelper::formatTime($slotEnd);
             }
-            $time[$i]['value'] = $slotStart;
+            //save 24 hour format in database
+            $time[$i]['value'] = $start->format('H:i');
 
             //add gap time
             $start->modify($gapTime);

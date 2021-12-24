@@ -50,19 +50,7 @@ class BookingHelper
     public static function getTimeZone()
     {
         $timezone = wp_timezone_string(); //wp timezone
-    
-//        date_default_timezone_set(get_option('timezone_string'));
-//
-//        echo date('T'); // will give you three-character string like "EST"
-//
-//        $timezones = array (
-//            'EST' => 'US/Eastern',
-//            'CST' => 'US/Central',
-//            // etc, etc, etc.
-//        );
-//
-//        echo $timezones [ date('T') ];
-    
+
         if (!in_array($timezone, timezone_identifiers_list())) {
             
             //its in offset , convert to timezone string

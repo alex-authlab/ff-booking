@@ -58,6 +58,7 @@ class BookingModel
             self::$table . '.entry_id',
             self::$table . '.send_notification',
             self::$table . '.reschedule_data',
+            self::$table . '.addon_data',
             wpFluent()->raw($wpdb->prefix . 'ff_booking_providers.title AS provider'),
             wpFluent()->raw($wpdb->prefix . 'ff_booking_providers.id AS provider_id'),
             wpFluent()->raw($wpdb->prefix . 'ff_booking_providers.assigned_user'),
@@ -110,6 +111,7 @@ class BookingModel
                     strtotime($datum->created_at),
                     strtotime(current_time('mysql'))
                 );
+                $bookings['data'][$index]->addon_data = \json_decode($bookings['data'][$index]->addon_data,true);
             }
 
             return $bookings;
@@ -123,6 +125,8 @@ class BookingModel
                 strtotime($datum->created_at),
                 strtotime(current_time('mysql'))
             );
+            $bookings[$index]->addon_data = \json_decode($bookings[$index]->addon_data,true);
+
         }
         return $bookings;
     }
@@ -238,6 +242,7 @@ class BookingModel
 				notes text NULL,
 				booking_hash varchar(255) NULL, 
 				reschedule_data LONGTEXT NULL, 
+				addon_data LONGTEXT NULL, 
 				send_notification varchar (10) DEFAULT 'yes',
 				created_at timestamp NULL,
 				updated_at timestamp NULL,
@@ -253,8 +258,7 @@ class BookingModel
     public function update($id, $data)
     {
         $data['updated_at'] = current_time('mysql');
-//        vd($id);
-//        vdd($data);
+
         return wpFluent()->table(self::$table)
             ->where('id', $id)
             ->update($data);
@@ -298,6 +302,7 @@ class BookingModel
             self::$table . '.user_id',
             self::$table . '.entry_id',
             self::$table . '.reschedule_data',
+            self::$table . '.addon_data',
             wpFluent()->raw($wpdb->prefix . 'ff_booking_providers.title AS provider'),
             wpFluent()->raw($wpdb->prefix . 'ff_booking_providers.id AS provider_id'),
             wpFluent()->raw($wpdb->prefix . 'ff_booking_providers.assigned_user'),
@@ -337,6 +342,7 @@ class BookingModel
             $name = maybe_unserialize( $booking->name);
             $booking->name = is_array($name)? join(' ',$name) : $name;
             $booking->reschedule_data = json_decode($booking->reschedule_data);
+            $booking->addon_data = json_decode($booking->addon_data,true);
         }
         return $bookings;
 

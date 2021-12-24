@@ -2,6 +2,7 @@
 
 namespace FF_Booking\Booking;
 
+use FF_Booking\Booking\Addons\GoogleCalendarController;
 use FF_Booking\Booking\Models\BookingModel;
 use FF_Booking\Booking\Models\ProviderModel;
 use \FluentForm\Framework\Helpers\ArrayHelper;
@@ -19,14 +20,16 @@ class FrontEndAjaxHandler
     public function handleEndpoint($route)
     {
         $validRoutes = [
-            'get_service_provider' => 'getServiceProvider',
-            'get_dates' => 'getDates',
-            'get_time_slots' => 'getTimeSlots',
-            'get_time_slots_booking_page' => 'getTimeSlotsBookingPage',
-            'reschedule_booking' => 'rescheduleBooking',
-            'cancel_booking' => 'cancelBooking',
-            'update_provider_booking' => 'updateProviderBooking',
-            'update_provider_note' => 'updateProviderNote'
+            'get_service_provider'            => 'getServiceProvider',
+            'get_dates'                       => 'getDates',
+            'get_time_slots'                  => 'getTimeSlots',
+            'get_time_slots_booking_page'     => 'getTimeSlotsBookingPage',
+            'reschedule_booking'              => 'rescheduleBooking',
+            'cancel_booking'                  => 'cancelBooking',
+            'update_provider_booking'         => 'updateProviderBooking',
+            'update_provider_note'            => 'updateProviderNote',
+            'save_google_calendar_code'       => 'saveGoogleCalendarCode',
+            'disconnect_google_calendar_code' => 'disconnectGoogleCalendarCode',
 
         ];
         if (isset($validRoutes[$route])) {
@@ -54,15 +57,15 @@ class FrontEndAjaxHandler
         $providerId = intval($_REQUEST['provider_id']);
         $formId = intval($_REQUEST['form_id']);
         $validator = fluentValidator($_REQUEST, [
-            'service_id' => 'required',
+            'service_id'  => 'required',
             'provider_id' => 'required',
-            'form_id' => 'required',
+            'form_id'     => 'required',
         ]);
 
         if ($validator->validate()->fails()) {
             $errors = $validator->errors();
             wp_send_json([
-                'errors' => $errors,
+                'errors'  => $errors,
                 'message' => 'Please fill up all the required fields'
             ], 423);
         }
@@ -79,21 +82,21 @@ class FrontEndAjaxHandler
         $date = sanitize_text_field($_REQUEST['date']);
         $formId = intval($_REQUEST['form_id']);
         $validator = fluentValidator($_REQUEST, [
-            'service_id' => 'required',
+            'service_id'  => 'required',
             'provider_id' => 'required',
-            'form_id' => 'required',
-            'date' => 'required',
+            'form_id'     => 'required',
+            'date'        => 'required',
         ], [
-            'service_id.required' => 'Service is required',
+            'service_id.required'  => 'Service is required',
             'provider_id.required' => 'Provider is required',
-            'form_id.required' => 'Form missing',
-            'date.required' => 'Date missing',
+            'form_id.required'     => 'Form missing',
+            'date.required'        => 'Date missing',
         ]);
 
         if ($validator->validate()->fails()) {
             $errors = $validator->errors();
             wp_send_json([
-                'errors' => $errors,
+                'errors'  => $errors,
                 'message' => 'Please fill up all the required fields'
             ]);
         }
@@ -157,15 +160,15 @@ class FrontEndAjaxHandler
         }
         $rescheduleData = $this->getRescheduleData($bookingData, $actionBy, $reason);
         $updateData = [
-            'booking_date' => $bookingDate,
-            'booking_time' => $bookingTime,
+            'booking_date'    => $bookingDate,
+            'booking_time'    => $bookingTime,
             'reschedule_data' => \json_encode($rescheduleData)
         ];
         (new BookingModel())->update($bookingId, $updateData);
-        
+
         do_action('ff_booking_status_changing', $bookingId, $entryId, 'rescheduled');
-    
-    
+
+
         wp_send_json_success([
             'message' => __('Booking has been updated succefully', FF_BOOKING_SLUG)
         ]);
@@ -182,11 +185,11 @@ class FrontEndAjaxHandler
         $updateData = [
             'booking_status' => 'canceled',
         ];
-        
+
         do_action('ff_booking_status_changing', $bookinEntryId, $entryId, 'canceled');
-        
+
         (new BookingModel())->update($bookinEntryId, $updateData);
-    
+
         wp_send_json_success([
             'message' => __('Booking has been canceled succefully', FF_BOOKING_SLUG)
         ]);
@@ -195,13 +198,13 @@ class FrontEndAjaxHandler
     public function updateProviderBooking()
     {
         BookingHelper::verifyRequest('ffs_booking_public_nonce');
-    
+
         $bookinEntryId = intval($_REQUEST['booking_id']);
         $status = sanitize_text_field($_REQUEST['status']);
         $bookingData = (new BookingModel())->getBooking(['id' => $bookinEntryId]);
-        
+
         do_action('ff_booking_status_changing', $bookinEntryId, $bookingData['entry_id'], $status);
-        
+
         $data['booking_status'] = $status;
         (new BookingModel())->update($bookinEntryId, $data);
         wp_send_json_success([
@@ -217,7 +220,7 @@ class FrontEndAjaxHandler
         $notes = sanitize_textarea_field($_REQUEST['notes']);
 
         do_action('ff_booking_status_note_update', $bookingId, $notes);
-        
+
         $data['notes'] = $notes;
         (new BookingModel())->update($bookingId, $data);
         wp_send_json_success([
@@ -275,13 +278,32 @@ class FrontEndAjaxHandler
     {
         $rescheduleData = \json_decode($bookingData['reschedule_data']);
         $rescheduleData[] = array(
-            'action_by' => $actionBy,
-            'reason' => $reason,
+            'action_by'        => $actionBy,
+            'reason'           => $reason,
             'previous_booking' => BookingHelper::formatTime(
                     $bookingData['booking_time']
                 ) . ' ' . BookingHelper::formatDate($bookingData['booking_date']),
-            'updated_at' => date('Y-m-d')
+            'updated_at'       => date('Y-m-d')
         );
         return $rescheduleData;
+    }
+
+    public function saveGoogleCalendarCode()
+    {
+        BookingHelper::verifyRequest('ffs_booking_public_nonce');
+        $data = [
+            'access_code' => sanitize_text_field($_REQUEST['access_code']),
+        ];
+        (new GoogleCalendarController())->saveSettings($data);
+
+    }
+    public function disconnectGoogleCalendarCode()
+    {
+        BookingHelper::verifyRequest('ffs_booking_public_nonce');
+        $data = [
+            'access_code' => '',
+        ];
+        (new GoogleCalendarController())->saveSettings($data);
+
     }
 }

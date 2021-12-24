@@ -3,16 +3,13 @@
         <div class="ff_booking_navigation">
             <ul>
                 <li @click="current_page = 'general'" :class="{ff_active: current_page == 'general'}">General</li>
-                <li @click="current_page = 'bookings'" :class="{ff_active: current_page == 'bookings'}">Bookings</li>
             </ul>
         </div>
 
         <el-form label-position="left" label-width="220px">
             <div class="ff_booking_settings_section">
                 <div v-if="current_page == 'general'">
-                    <h4>
-                        <code>[ff_simple_booking] </code> Add this shortcode to list & manage providers bookings
-                    </h4>
+
                     <el-form-item>
                         <template slot="label">
                             Status
@@ -30,15 +27,17 @@
                         </el-checkbox>
                     </el-form-item>
 
+                  <el-form-item label="Allow Provider To ReSchedule">
+                    <el-switch active-color="#13ce66" v-model="settings_data.allow_provider_reschedule"></el-switch>
+                  </el-form-item>
 
-                </div>
-                <div v-else-if="current_page == 'bookings'">
-
-
-                    <el-form-item label="Allow Provider To ReSchedule">
-                        <el-switch active-color="#13ce66" v-model="settings_data.allow_provider_reschedule"></el-switch>
-                    </el-form-item>
-<!--                    todo auto complete bookings-->
+                  <el-form-item label="Enable Google Calendar">
+                    <el-switch active-color="#13ce66" v-model="settings_data.enable_gcalendar"></el-switch>
+                  </el-form-item>
+                  <h4>
+                    <code>[ff_simple_booking] </code> Add this shortcode to list & manage providers bookings
+                  </h4>
+                  <br>
 
 
                 </div>
@@ -64,11 +63,7 @@
         data() {
             return {
                 general_settings: window.ff_booking_settings,
-                settings_data: {
-                    time_format: 12,
-                    week_start: 'Monday',
-                },
-                weekdays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                settings_data: {},
                 current_page: 'general'
             }
         },

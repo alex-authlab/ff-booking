@@ -5,7 +5,17 @@
     }
     padding: 15px 0px;
   }
-
+  .ffsb_tabs{
+    list-style: none;
+    margin: 10px 0;
+    padding: 0;
+      li{
+        display: inline;
+        .ffs_link{
+          padding: 10px 20px;
+        }
+      }
+  }
   .ffs_booking_date_grp {
     padding: 15px 20px;
     border: 2px solid #e3e8ee;
@@ -19,6 +29,10 @@
     padding: 15px 0;
     flex-direction: row;
     border-top: 1px solid #efefef;
+
+    p{
+      margin: 10px 0;
+    }
 
 
     @media only screen and (max-width: 768px) {
@@ -177,13 +191,17 @@
         font-size: 90%;
         text-transform: capitalize;
 
-        &.ff_booking_status_canceled {
+        &.ff_booking_status_canceled, &.ff_booking_status_rejected {
           background: #ff623e;
           color: white;
         }
 
         &.ff_booking_status_booked {
           background: #67C23A;
+          color: white;
+        }
+        &.ff_booking_status_complete {
+          background: #3a9cc2;
           color: white;
         }
       }
@@ -213,5 +231,32 @@
       background: #cf3917;
       color: white;
     }
+  }
+  .ffsb_label {
+    display: block;
+    margin-bottom: 0.25em;
+  }
+
+  // Input
+  .ffsb_input {
+    border-width: 1px;
+    padding: 10px;
+    margin: 10px 0;
+    border-style: solid;
+    border-color: lightgray;
+    background-color: white;
+    &#ffsb_google_code{
+      width: 330px;
+    }
+    &:focus {
+      border-color: gray;
+    }
+
+    &::placeholder {
+      color: gray;
+    }
+  }
+  .ffsb_error{
+    color: #E04731;
   }
 }

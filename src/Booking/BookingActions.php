@@ -120,14 +120,7 @@ class BookingActions
     {
         $bookingDatetime = explode(" ", $inputDateTime);
         $formattedData['booking_date'] = $bookingDatetime[0];
-        $timeFormat = BookingHelper::getTimePeriod();
-        //if time format 12 hour append am/pm
-        if ($timeFormat == '12') {
-            $formattedData['booking_time'] = $bookingDatetime[1] . ' ' . $bookingDatetime[2];
-            $formattedData['booking_time'] = BookingHelper::convertTime('24', $formattedData['booking_time']);
-        } else {
-            $formattedData['booking_time'] = $bookingDatetime[1];
-        }
+        $formattedData['booking_time'] = $bookingDatetime[1];
         return $formattedData;
     }
 
@@ -135,7 +128,16 @@ class BookingActions
     {
         $bookinEntryId = (new BookingModel())->insert($bookingData);
         do_action('ff_booking_inserted', $bookinEntryId, $insertId, $bookingData);
-        do_action('ff_booking_status_changing', $bookinEntryId, $insertId, $bookingData['booking_status']);
+        do_action('ff_log_data', [
+            'parent_source_id' => $bookingData['form_id'],
+            'source_type'      => 'submission_item',
+            'source_id'        => $insertId,
+            'component'        => 'booking',
+            'status'           => 'success',
+            'title'            => 'FF Simple Booking ',
+            'description'      => 'A new booking Inserted '
+        ]);
+        //do_action('ff_booking_status_changing', $bookinEntryId, $insertId, $bookingData['booking_status']);
     }
 
     private function validate()

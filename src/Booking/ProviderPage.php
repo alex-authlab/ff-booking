@@ -2,6 +2,7 @@
 
 namespace FF_Booking\Booking;
 
+use FF_Booking\Booking\Addons\GoogleCalendarController;
 use FluentForm\Framework\Helpers\ArrayHelper;
 
 class ProviderPage
@@ -10,6 +11,7 @@ class ProviderPage
     public function init()
     {
         add_shortcode('ff_simple_booking', array($this, 'registerShortcode'));
+        (new GoogleCalendarController())->init();
     }
 
     public function registerShortcode()
@@ -35,7 +37,7 @@ class ProviderPage
             'nonce'   => wp_create_nonce('ffs_booking_public_nonce')
         ]);
 
-        return $this->getBookingsHtml($userId);
+        return $this->renderHtml($userId);
 
     }
 
@@ -52,13 +54,10 @@ class ProviderPage
 
         if (!$urlBase) {
             $urlBase = add_query_arg([
-                'fluentform_payment' => 'view',
-                'route'              => 'payment'
+                'ff_booking' => 'view',
+                'route'              => 'bookings'
             ], site_url('index.php'));
         }
-
-        $urlBase = apply_filters('fluentform_transaction_view_url', $urlBase);
-
 
         if (!strpos($urlBase, '?')) {
             $urlBase .= '?';
@@ -67,7 +66,6 @@ class ProviderPage
         }
         $wpDateTimeFormat = get_option('time_format') . ' ' . get_option('date_format');
         return apply_filters('ffs_provider_view_config', [
-            'new_tab'          => false,
             'view_text'        => __('View', FF_BOOKING_SLUG),
             'base_url'         => $urlBase,
             'time_format'      => get_option('time_format'),
@@ -89,26 +87,24 @@ class ProviderPage
         ]);
     }
 
-    private function getBookingsHtml($userId)
+    private function renderHtml($userId)
     {
         $viewConfig = $this->getViewConfig();
         $filterStatus = 'next';
+        $activeTab = 'bookings';
         if (isset($_REQUEST['status'])) {
             $filterStatus = sanitize_text_field($_REQUEST['status']);
         }
-        $bookings = \FF_Booking\Booking\Models\BookingModel::getBookingsByProvider($userId,
-            ['status' => $filterStatus]);
+        if (isset($_REQUEST['route'])) {
+            $activeTab = sanitize_text_field($_REQUEST['route']);
+        }
+        $bookings = \FF_Booking\Booking\Models\BookingModel::getBookingsByProvider($userId, ['status' => $filterStatus]);
         $viewConfig['filterStatus'] = $filterStatus;
-        $bookingHtml = \FF_Booking\Booking\BookingHelper::loadView('providers_bookings', [
+        $viewConfig['activeTab'] = $activeTab;
+        return \FF_Booking\Booking\BookingHelper::loadView('providers_bookings', [
             'bookings' => $this->groupBy('formatted_date', $bookings),
             'config'   => $viewConfig,
         ]);
-        $html = '<div class="ff_bookings_wrapper">';
-        if (!empty($viewConfig['booking_title'])) {
-            $html .= '<h3>' . $viewConfig['booking_title'] . '</h3>';
-        }
-
-        return $html . $bookingHtml . '</div>';
     }
 
     public function groupBy($key, $data)

@@ -74,7 +74,6 @@ class FF_booking_handler {
             $popContent.html(content);
             setTimeout(() => {
                 $popContent.remove()
-
             }, 1500);
 
         });
