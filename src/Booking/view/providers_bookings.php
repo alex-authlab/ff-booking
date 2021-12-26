@@ -7,9 +7,9 @@
 
     <div class="ff_bookings_container">
         <ul class="ffsb_tabs ffs_booking_btns">
-            <li><a class="ffs_link <?php if($config['activeTab'] == 'bookings' ){echo 'ffs_active';} ?>"    href='<?php echo $config['base_url'].'route=bookings' ?>' >Bookings</a></li>
+            <li><a class="ffs_link <?php if($config['activeTab'] == 'bookings' ){echo 'ffs_active';} ?>"    href='<?php echo $config['base_url'].'route=bookings' ?>' > <?php _e('Bookings', FF_BOOKING_SLUG) ?></a></li>
             <?php if(\FluentForm\Framework\Helpers\ArrayHelper::exists($config,'gCalendarData')) { ?>
-            <li><a class="ffs_link  <?php if($config['activeTab'] == 'google_calendar' ){echo 'ffs_active';} ?>"  href='<?php echo $config['base_url'].'route=google_calendar' ?>'>Google Calendar</a></li>
+            <li><a class="ffs_link  <?php if($config['activeTab'] == 'google_calendar' ){echo 'ffs_active';} ?>"  href='<?php echo $config['base_url'].'route=google_calendar' ?>'> <?php _e('Google Calendar', FF_BOOKING_SLUG) ?> </a></li>
             <?php }?>
 
         </ul>
@@ -107,7 +107,7 @@
 
                                         <?php if( $gCalendar = \FluentForm\Framework\Helpers\ArrayHelper::get($addonData,'google_calendar')){
                                             $eventLink = \FluentForm\Framework\Helpers\ArrayHelper::get($gCalendar,'event_link');
-                                            echo "<a href='{$eventLink}' > View Google Calendar Event </a>";
+                                            echo "<p><a target='_blank' href='{$eventLink}' > View Google Calendar Event </a></p>";
                                         } ?>
                                     <?php } ?>
                                 </div>

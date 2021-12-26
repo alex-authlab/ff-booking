@@ -10,8 +10,6 @@ use FF_Booking\Booking\Components\BookingFields;
 use FF_Booking\Booking\Components\BookingDateTime;
 use FF_Booking\Booking\Components\Provider;
 use FF_Booking\Booking\Components\Service;
-use \FluentForm\App\Helpers\Helper;
-use \FluentForm\Framework\Helpers\ArrayHelper;
 use \FluentForm\App\Modules\Form\FormFieldsParser;
 
 
@@ -32,7 +30,6 @@ class BookingHandler
         new Provider();
         (new BookingNotification())->init();
         (new BookingShortCodes())->init();
-
         add_action('fluentform_before_insert_submission', array($this, 'maybeProccessBooking'), 10, 3);
         add_filter('fluentform_form_class', [$this, 'checkBookingForm'], 10, 2);
     }
@@ -42,7 +39,7 @@ class BookingHandler
         if (!FormFieldsParser::hasElement($form, 'booking_datetime')) {
             return;
         }
-        new BookingActions($form, $insertData, $data);
+        (new BookingActions())->init($form, $insertData, $data);
 
     }
 
@@ -59,12 +56,12 @@ class BookingHandler
     public function renderSettings()
     {
         $data = [
-            'time_zones' => \DateTimeZone::listIdentifiers(),
-            'is_setup' => $this->isEnabled(),
+            'time_zones'             => \DateTimeZone::listIdentifiers(),
+            'is_setup'               => $this->isEnabled(),
             'ff_booking_admin_nonce' => wp_create_nonce('ff_booking_admin_nonce'),
-            'active_nav' => 'Bookings',
-            'ajaxUrl' => admin_url('admin-ajax.php'),
-            'booking_status' => BookingHelper::bookingStatuses(),
+            'active_nav'             => 'Bookings',
+            'ajaxUrl'                => admin_url('admin-ajax.php'),
+            'booking_status'         => BookingHelper::bookingStatuses(),
         ];
     
         wp_localize_script('ff-booking-settings', 'ff_booking_settings', $data);
@@ -106,10 +103,10 @@ class BookingHandler
                 'page_title' => 'FF Booking',
                 'menu_title' => 'FF Booking',
                 'capability' => $this->getBookingCapability(),
-                'menu_slug' => 'ff_simple_booking',
-                'callback' => [$this, 'renderSettings'],
-                'icon_url' => 'dashicons-marker',
-                'position' => 25
+                'menu_slug'  => 'ff_simple_booking',
+                'callback'   => [$this, 'renderSettings'],
+                'icon_url'   => 'dashicons-marker',
+                'position'   => 25
             ]
         ];
     }
@@ -119,27 +116,27 @@ class BookingHandler
         return [
             [
                 'parent_slug' => 'ff_simple_booking',
-                'page_title' => 'Services',
-                'menu_title' => 'Services',
-                'capability' => $this->getBookingCapability(),
-                'menu_slug' => 'admin.php?page=ff_simple_booking#/services',
-                'callback' => ''
+                'page_title'  => 'Services',
+                'menu_title'  => 'Services',
+                'capability'  => $this->getBookingCapability(),
+                'menu_slug'   => 'admin.php?page=ff_simple_booking#/services',
+                'callback'    => ''
             ],
             [
                 'parent_slug' => 'ff_simple_booking',
-                'page_title' => 'Provider',
-                'menu_title' => 'Provider',
-                'capability' => $this->getBookingCapability(),
-                'menu_slug' => 'admin.php?page=ff_simple_booking#/provider',
-                'callback' => ''
+                'page_title'  => 'Provider',
+                'menu_title'  => 'Provider',
+                'capability'  => $this->getBookingCapability(),
+                'menu_slug'   => 'admin.php?page=ff_simple_booking#/provider',
+                'callback'    => ''
             ],
             [
                 'parent_slug' => 'ff_simple_booking',
-                'page_title' => 'Settings',
-                'menu_title' => 'Settings',
-                'capability' => $this->getBookingCapability(),
-                'menu_slug' => 'admin.php?page=ff_simple_booking#/settings',
-                'callback' => ''
+                'page_title'  => 'Settings',
+                'menu_title'  => 'Settings',
+                'capability'  => $this->getBookingCapability(),
+                'menu_slug'   => 'admin.php?page=ff_simple_booking#/settings',
+                'callback'    => ''
             ],
         ];
     }

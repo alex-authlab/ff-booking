@@ -50,6 +50,9 @@
 
 
     .ffs_details_info {
+      a{
+        text-decoration: none;
+      }
       min-width: 200px;
       &.with-table{
         flex:1 1 auto;
@@ -136,7 +139,6 @@
     border-bottom: none;
     padding: 15px 20px;
     color: rgb(58, 79, 102);
-
     .ff_booking_info {
       position: relative;
       .ffs_service_badge {

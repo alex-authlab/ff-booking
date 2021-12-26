@@ -134,8 +134,6 @@ jQuery(document).ready(function ($) {
                 if (status != 'success') {
                     $dom.addClass('ffsb_error')
                 }
-                console.log(status)
-                console.log(message)
                 $dom.html(message);
                 setTimeout(() => {
                     window.location.reload();
@@ -154,8 +152,6 @@ jQuery(document).ready(function ($) {
             if (status != 'success') {
                 $dom.addClass('ffsb_error')
             }
-            console.log(status)
-            console.log(message)
             $dom.html(message);
             setTimeout(() => {
                 window.location.reload();
@@ -169,7 +165,6 @@ jQuery(document).ready(function ($) {
         data.ffs_booking_public_nonce = window.ffs_provider_vars.nonce;
         jQuery.post(window.ffs_provider_vars.ajaxUrl, data)
             .then(response => {
-                console.log(response)
                 callback(response.data.message, 'success');
             })
             .catch(errors => {

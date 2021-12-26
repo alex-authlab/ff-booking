@@ -2,6 +2,7 @@
 
 namespace FF_Booking\Booking;
 
+use FluentForm\App\Modules\Form\FormFieldsParser;
 use \FluentForm\Framework\Helpers\ArrayHelper;
 
 
@@ -179,4 +180,68 @@ class BookingHelper
         }
         return date_i18n($format, strtotime($value));
     }
+
+    public static function getUserName($formData, $form = false)
+    {
+        $user = get_user_by('ID', get_current_user_id());
+        if ($user) {
+            $userName = trim($user->first_name . ' ' . $user->last_name);
+            if (!$userName) {
+                $userName = $user->display_name;
+            }
+            if ($userName) {
+                return $userName;
+            }
+        }
+
+        if (!$form) {
+            return '';
+        }
+        FormFieldsParser::resetData();
+        $nameFields = \FluentForm\App\Modules\Form\FormFieldsParser::getInputsByElementTypes($form, ['input_name'], ['attributes']);
+
+        $fieldName = false;
+        foreach ($nameFields as $field) {
+            if ($field['element'] === 'input_name') {
+                $fieldName = $field['attributes']['name'];
+                break;
+            }
+        }
+
+        $name = '';
+        if ($fieldName) {
+            if (!empty(ArrayHelper::get($formData,$fieldName))) {
+                $names = array_filter($formData[$fieldName]);
+                return trim(implode(' ', $names));
+            }
+        }
+
+        return $name;
+    }
+
+    public static function getUserEmail($formData, $form = false)
+    {
+
+        $user = get_user_by('ID', get_current_user_id());
+
+        if ($user) {
+            return $user->user_email;
+        }
+
+        if (!$form) {
+            return '';
+        }
+        FormFieldsParser::resetData();
+        $emailFields =  FormFieldsParser::getInputsByElementTypes($form, ['input_email'], ['attributes']);
+
+        foreach ($emailFields as $field) {
+            $fieldName = $field['attributes']['name'];
+            if (!empty(ArrayHelper::get($formData,$fieldName))) {
+                return $formData[$fieldName];
+            }
+        }
+        return '';
+
+    }
+
 }

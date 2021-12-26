@@ -183,16 +183,14 @@ class DateTimeHandler
         $i = 0;
         $time = [];
         while ($start->format('U') <= $end->format('U')) {
-            $slotStart = $start->format($timeFormat);
+            $time[$i]['value'] = $start->format('H:i'); //save 24 hour format in database
+            $time[$i]['label'] = $start->format($timeFormat);;
+
             //add duration
             $slotEnd = $start->modify($duration)->format($timeFormat);
-
-            $time[$i]['label'] = BookingHelper::formatTime($slotStart);
             if ($with_end_time) {
                 $time[$i]['label'] .= ' - ' . BookingHelper::formatTime($slotEnd);
             }
-            //save 24 hour format in database
-            $time[$i]['value'] = $start->format('H:i');
 
             //add gap time
             $start->modify($gapTime);
@@ -386,8 +384,7 @@ class DateTimeHandler
     
         //booking type timeslot
         if ($service['booking_type'] == 'time_slot') {
-            $selectedTime = date($format, strtotime($time));
-            if (!in_array($selectedTime, $validSlots)) {
+            if (!in_array($time, $validSlots)) {
                 return [
                     'status' => false,
                     'message' => __('Invalid Time slot selected',FF_BOOKING_SLUG)

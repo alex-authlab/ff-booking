@@ -5,13 +5,9 @@
 
                 <el-row class="setting_header">
                     <el-col :md="18">
-                        <h2>
-                            Bookings List
-                        </h2>
+                        <h2> {{$t('Bookings List')}} </h2>
                     </el-col>
-                    <el-col :md="6" class="action-buttons clearfix mb15">
-
-                    </el-col>
+                    <el-col :md="6" class="action-buttons clearfix mb15"></el-col>
                 </el-row>
                 <div >
                     <el-form label-width="150px" label-position="left">
@@ -65,7 +61,9 @@
                         <el-table-column
                                 label="Time">
                             <template slot-scope="props">
-                                {{ formatTime( props.row.booking_time )}}
+
+                                {{ getTime( props.row )}}
+
                             </template>
                         </el-table-column>
 
@@ -290,6 +288,12 @@
                     .always(() => {
 
                     });
+            },
+            getTime(props){
+              if( props.booking_type =='date_slot' ){
+                return "Full Day"
+              }else
+                return this.formatTime( props.booking_time );
             }
 
 
