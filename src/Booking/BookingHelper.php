@@ -33,19 +33,6 @@ class BookingHelper
     }
 
     /**
-     * @return string time period
-     */
-    public static function  getTimePeriod()
-    {
-        $settings = json_decode(get_option('__ff_booking_general_settings'), true);
-        $timePeriod = '12';
-        if ($value = ArrayHelper::get($settings, 'time_format')) {
-            $timePeriod = $value;
-        }
-        return $timePeriod;
-    }
-
-    /**
      * @return string time zone
      */
     public static function getTimeZone()
@@ -126,12 +113,12 @@ class BookingHelper
     public static function bookingStatuses()
     {
         return array(
-            'booked' => __('Booked',FF_BOOKING_SLUG),
-            'canceled' => __('Cancel',FF_BOOKING_SLUG),
-            'rejected' => __('Rejected',FF_BOOKING_SLUG),
-            'pending' => __('Pending',FF_BOOKING_SLUG),
-            'complete' => __('Complete',FF_BOOKING_SLUG),
-            'draft' => __('Draft',FF_BOOKING_SLUG),
+            'booked'   => __('Booked', FF_BOOKING_SLUG),
+            'canceled' => __('Cancel', FF_BOOKING_SLUG),
+            'rejected' => __('Rejected', FF_BOOKING_SLUG),
+            'pending'  => __('Pending', FF_BOOKING_SLUG),
+            'complete' => __('Complete', FF_BOOKING_SLUG),
+            'draft'    => __('Draft', FF_BOOKING_SLUG),
         );
     }
 
