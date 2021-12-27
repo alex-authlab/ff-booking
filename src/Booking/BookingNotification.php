@@ -22,6 +22,7 @@ class BookingNotification
     public function init()
     {
         add_action('ff_booking_status_changing', array($this, 'processEmail'), 10, 3);
+
     }
     
     public function processEmail($bookingEntryId, $insertId, $status)
@@ -31,7 +32,7 @@ class BookingNotification
         if (ArrayHelper::get($bookingData, 'send_notification') != 'yes') {
             return;
         }
-        $this->setupData($bookingData['entry_id']);
+        $this->setupData($insertId);
         $notifications = json_decode(ArrayHelper::get($bookingData, 'notifications'), true);
         
         $userEmail = ArrayHelper::get($notifications, 'user.' . $status);
@@ -56,7 +57,7 @@ class BookingNotification
         }
         //@todo add filters
         $emailBody = $this->parse( ArrayHelper::get($notificationData,'body'));
-        $emailBody = apply_filters('ffb_email_body', $emailBody);
+        $emailBody = apply_filters('ffsb_email_body', $emailBody);
         $email = $this->parse($email);
         $subject = $this->parse( ArrayHelper::get($notificationData,'subject'));
         $headers = [

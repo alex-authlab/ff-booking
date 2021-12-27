@@ -69,6 +69,7 @@ class BookingInfo
             'booking_status',
             'duration',
             'booking_hash',
+            'booking_type',
             'policy',
             'description',
         ]);
@@ -93,6 +94,11 @@ class BookingInfo
         }
         $bookingDate = ArrayHelper::get($data, 'bookingData.booking_date');
         $bookingTime = ArrayHelper::get($data, 'bookingData.booking_time');
+        if(ArrayHelper::get($data,'bookingData.booking_type') == 'date_slot'){
+            $time = __('Full Day',FF_BOOKING_SLUG);
+        }else{
+            $time =  $bookingTime;
+        }
         $status = ucfirst(ArrayHelper::get($data, 'bookingData.booking_status'));
         $service = ArrayHelper::get($data, 'bookingData.service');
         $provider = ArrayHelper::get($data, 'providerData.provider');
@@ -110,7 +116,7 @@ class BookingInfo
                         </td>  
                       </tr>  
                       <tr>
-                        <td><b>Time</b> : ' . $bookingTime . '</td>  
+                        <td><b>Time</b> : ' . $time . '</td>  
                       </tr>
                       <tr>
                          <td><b>Date</b> : ' . $bookingDate . '</td>  
@@ -143,14 +149,17 @@ class BookingInfo
             return ;
         }
         $html = '<table width="600" cellpadding="0" cellspacing="0"><tbody>';
-        $html .= '<tr><td style="padding: 6px 12px 12px 12px;"> Hello,    </td></tr>';
-        $html .= '<tr><td style="padding: 6px 12px 12px 12px;">Here is your Booking Update   </td></tr>';
-
         foreach ($bookingInfo as $key => $value) {
-            if (empty($value) || $key == 'booking_hash') {
+            if (empty($value) || $key == 'booking_hash' || $key == 'booking_type') {
                 continue;
             }
-            $label = str_replace(' ', '_', $key);
+            if($key =='booking_time' && ArrayHelper::get($bookingInfo,'booking_type') == 'date_slot'){
+                $value = __('Full Day',FF_BOOKING_SLUG);
+            }
+            if($key =='duration'){
+                $value = BookingHelper::timeDurationLength($value,true);
+            }
+            $label = str_replace('_', ' ', $key);
             $html .= sprintf(
                 "<tr class=\"field-label\"><th style=\"padding: 6px 12px; background-color: #f8f8f8; text-align: left;\"><strong>%s</strong></th></tr><tr class=\"field-value\"><td style=\"padding: 6px 12px 12px 12px;\">%s</td></tr>",
                 ucwords($label), $value

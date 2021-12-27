@@ -127,7 +127,7 @@ class BookingActions
     {
         $bookinEntryId = (new BookingModel())->insert($bookingData);
         do_action('ff_booking_inserted', $bookinEntryId, $insertId, $bookingData);
-
+        do_action('ff_booking_status_changing', $bookinEntryId, $insertId, $bookingData['booking_status']);
     }
 
     private function validate()

@@ -42,6 +42,9 @@ class BookingShortCodes
             $data = (new BookingInfo($entry->id))->getBookingInfoData();
             $date = ArrayHelper::get($data, 'bookingData.booking_date');
             $time = ArrayHelper::get($data, 'bookingData.booking_time');
+            if(ArrayHelper::get($data, 'bookingData.booking_type') == 'date_slot' ){
+                $time = '';
+            }
             return $time . ' ' . $date;
         }, 10, 2);
 //        {ff_booking_service}

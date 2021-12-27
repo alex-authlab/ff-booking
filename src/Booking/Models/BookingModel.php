@@ -72,6 +72,8 @@ class BookingModel
             wpFluent()->raw($wpdb->prefix . 'ff_booking_services.allow_user_cancel'),
             wpFluent()->raw($wpdb->prefix . 'ff_booking_services.booking_type'),
             wpFluent()->raw($wpdb->prefix . 'ff_booking_services.id AS service_id'),
+            wpFluent()->raw($wpdb->prefix . 'ff_booking_services.service_type'),
+            wpFluent()->raw($wpdb->prefix . 'ff_booking_services.in_person_location'),
             wpFluent()->raw($wpdb->prefix . 'fluentform_forms.title AS form_title'),
         ];
         $query->select($fields);
