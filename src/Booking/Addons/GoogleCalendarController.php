@@ -19,11 +19,11 @@ class GoogleCalendarController
 
     private $optionKey = '_ffsb_gcalendar_settings';
     private $apiUrl = 'https://www.googleapis.com/calendar/v3/';
-    private $currentUserId;
+    private $providerId;
 
     public function __construct()
     {
-        $this->currentUserId = get_current_user_id();
+        $this->providerId = get_current_user_id();
     }
 
     public function init()
@@ -32,11 +32,8 @@ class GoogleCalendarController
             return;
         }
         add_filter('ffs_provider_view_config', array($this, 'addViewConfig'), 10, 1);
-        if(!$this->isActive()){
-            return;
-        }
-        add_action('ff_booking_inserted', array($this, 'addEvent'), 10, 3);
-        add_action('ff_booking_status_changing', array($this,'updateEvent'),10,3);
+
+        add_action('ff_booking_status_changing', array($this, 'addEvent'), 10, 3);
 
     }
 
@@ -95,7 +92,7 @@ class GoogleCalendarController
 
     public function getAccessToken()
     {
-        $tokens = get_user_meta($this->currentUserId, $this->optionKey, true);
+        $tokens = get_user_meta($this->providerId, $this->optionKey, true);
 
         if (!$tokens['status'] == true) {
             return false;
@@ -148,32 +145,41 @@ class GoogleCalendarController
     {
         $settings = $this->getSettings();
         $config['gCalendarData'] = [
-            'authUrl'      => $this->getAUthUrl(),
-            'status'       => ArrayHelper::get($settings, 'status'),
-            'calendarId'   => ArrayHelper::get($settings, 'calendar_id'),
+            'authUrl'    => $this->getAUthUrl(),
+            'status'     => ArrayHelper::get($settings, 'status'),
         ];
         return $config;
     }
 
-    public function saveCalendar($calendarId)
-    {
-        $settings = get_user_meta($this->currentUserId, $this->optionKey, true);
-        $settings['calendar_id'] = $calendarId;
-        update_user_meta($this->currentUserId, $this->optionKey, $settings);
-        wp_send_json_success([
-            'message' => __('Your Calendar has been updated', FF_BOOKING_SLUG),
-            'status'  => true
-        ], 200);
-
-
-    }
-
-    public function addEvent($bookingEntryId, $insertId, $bookingData)
+    public function addEvent($bookingEntryId, $insertId, $status)
     {
         $bookingData = (new BookingModel())->getBooking(['entry_id' => $insertId]);
+        $providerId = ArrayHelper::get($bookingData, 'assigned_user');
+        if(!$this->isActive($providerId)){
+            return;
+        }
         $eventData = $this->getEventData($bookingData);
 
-        $resp = $this->pushEvent($eventData, 'POST' , '');
+        if ($eventId = ArrayHelper::get($bookingData, 'addon_data.google_calendar.event_id')) {
+
+            $resp = $this->pushEvent($eventData, 'PUT', $eventId);
+            if (!is_wp_error($resp)) {
+
+                do_action('ff_log_data', [
+                    'parent_source_id' => $eventData['form_id'],
+                    'source_type'      => 'submission_item',
+                    'source_id'        => $insertId,
+                    'component'        => 'ff_booking',
+                    'status'           => 'success',
+                    'title'            => 'FF Simple Booking - Google Calendar ',
+                    'description'      => 'Event has been Updated in Google calendar'
+                ]);
+            }
+            return;
+        }
+
+        $resp = $this->pushEvent($eventData, 'POST', '');
+
         if (!is_wp_error($resp)) {
             $googleData['addon_data'] = json_encode([
                 'google_calendar' => [
@@ -183,7 +189,7 @@ class GoogleCalendarController
             ]);
             (new BookingModel())->update($bookingEntryId, $googleData);
             do_action('ff_log_data', [
-                'parent_source_id' => $bookingData['form_id'],
+                'parent_source_id' => $eventData['form_id'],
                 'source_type'      => 'submission_item',
                 'source_id'        => $insertId,
                 'component'        => 'booking',
@@ -195,32 +201,8 @@ class GoogleCalendarController
 
     }
 
-    public function updateEvent($bookingEntryId, $insertId, $status)
+    public function pushEvent($data, $reqType, $eventId)
     {
-        $bookingData = (new BookingModel())->getBooking(['entry_id' => $insertId]);
-        if(!$eventId = ArrayHelper::get($bookingData,'addon_data.google_calendar.event_id')){
-            return;
-        }
-        $eventData = $this->getEventData($bookingData);
-        $resp = $this->pushEvent($eventData, 'PUT', $eventId);
-        if (!is_wp_error($resp)) {
-
-            do_action('ff_log_data', [
-                'parent_source_id' => $bookingData['form_id'],
-                'source_type'      => 'submission_item',
-                'source_id'        => $insertId,
-                'component'        => 'ff_booking',
-                'status'           => 'success',
-                'title'            => 'FF Simple Booking - Google Calendar ',
-                'description'      => 'Event has been Updated in Google calendar'
-            ]);
-        }
-
-    }
-
-    public function pushEvent($data,$reqType, $eventId)
-    {
-
         $eventArgs = array(
             'summary'     => $data['summary'],
             'location'    => $data['location'],
@@ -254,7 +236,7 @@ class GoogleCalendarController
         }
 
 
-        $endPoint = 'calendars/primary/events/'.$eventId;
+        $endPoint = 'calendars/primary/events/' . $eventId;
         return $this->makeRequest($this->apiUrl . $endPoint, $eventArgs, $reqType, $this->getStandardHeader());
 
     }
@@ -267,7 +249,7 @@ class GoogleCalendarController
                 'status'      => false
             ];
             // Update the reCaptcha details with siteKey & secretKey.
-            update_user_meta($this->currentUserId, $this->optionKey, $integrationSettings);
+            update_user_meta($this->providerId, $this->optionKey, $integrationSettings);
             wp_send_json_success([
                 'message' => __('Your settings has been updated', FF_BOOKING_SLUG),
                 'status'  => false
@@ -286,7 +268,7 @@ class GoogleCalendarController
             $result['access_code'] = $accessCode;
             $result['created_at'] = time();
             $result['status'] = true;
-            update_user_meta($this->currentUserId, $this->optionKey, $result);
+            update_user_meta($this->providerId, $this->optionKey, $result);
 
         } catch (\Exception $exception) {
             wp_send_json_error([
@@ -302,7 +284,8 @@ class GoogleCalendarController
 
     public function getSettings()
     {
-        $settings = get_user_meta($this->currentUserId, $this->optionKey, true);
+
+        $settings = get_user_meta($this->providerId, $this->optionKey, true);
         if (!$settings) {
             $settings = [];
         }
@@ -313,10 +296,13 @@ class GoogleCalendarController
         return wp_parse_args($settings, $defaults);
     }
 
-    public function isActive()
+    public function isActive($providerId = '')
     {
+        if($providerId){
+            $this->providerId = $providerId;
+        }
         $settings = $this->getSettings();
-        return ArrayHelper::isTrue($settings,'status');
+        return ArrayHelper::isTrue($settings, 'status');
     }
 
     /**
@@ -329,18 +315,20 @@ class GoogleCalendarController
         $bookingDate = ArrayHelper::get($bookingData, 'booking_date');
         $bookingStartTime = ArrayHelper::get($bookingData, 'booking_time');
         $duration = ArrayHelper::get($bookingData, 'duration');
-        $startDateTime = new \DateTime($bookingDate . ' ' . $bookingStartTime, new \DateTimeZone(BookingHelper::getTimeZone()));
+        $startDateTime = new \DateTime($bookingDate . ' ' . $bookingStartTime,
+            new \DateTimeZone(BookingHelper::getTimeZone()));
 
         $eventData = [
-            'booking_type'  => ArrayHelper::get($bookingData, 'booking_type'),
-            'summary'       => ArrayHelper::get($bookingData, 'service'),
-            'email'         => ArrayHelper::get($bookingData, 'email'),
-            'date'          => ArrayHelper::get($bookingData, 'booking_date'),
-            'location'      => ArrayHelper::get($bookingData, 'in_person_location'),
-            'description'   => ArrayHelper::get($bookingData, 'description'),
-            'startDateTime' => $startDateTime->format(\Datetime::ATOM),
-            'endDateTime'   => $startDateTime->modify(BookingHelper::timeDurationLength($duration))->format(\Datetime::ATOM),
-            'timeZone'      => BookingHelper::getTimeZone(),
+            'form_id'          => ArrayHelper::get($bookingData, 'form_id'),
+            'booking_type'     => ArrayHelper::get($bookingData, 'booking_type'),
+            'summary'          => ArrayHelper::get($bookingData, 'service'),
+            'email'            => ArrayHelper::get($bookingData, 'email'),
+            'date'             => ArrayHelper::get($bookingData, 'booking_date'),
+            'location'         => ArrayHelper::get($bookingData, 'in_person_location'),
+            'description'      => ArrayHelper::get($bookingData, 'description'),
+            'startDateTime'    => $startDateTime->format(\Datetime::ATOM),
+            'endDateTime'      => $startDateTime->modify(BookingHelper::timeDurationLength($duration))->format(\Datetime::ATOM),
+            'timeZone'         => BookingHelper::getTimeZone(),
         ];
         if ($bookingData['booking_status'] == 'booked') {
             $eventData['status'] = 'confirmed';
@@ -351,5 +339,7 @@ class GoogleCalendarController
         }
         return $eventData;
     }
+
+
 
 }

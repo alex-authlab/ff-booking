@@ -1,14 +1,21 @@
-.ff-booking-container  .ff-booking-date-time{
-    display: none;
-}
-.ff-booking-container  .flatpickr-calendar {
-    width: 100%;
-    margin-bottom: 20px;
+
+.ff-booking-container
+{
+    .ff-booking-date-time{
+        display: none;
+    }
+    .flatpickr-calendar {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    .flatpickr-day.nextMonthDay:not(.flatpickr-disabled){
+        color: inherit;
+    }
+    .flatpickr-rContainer {
+        margin: 0px auto;
+    }
 }
 
-.ff-booking-container .flatpickr-rContainer {
-    margin: 0px auto;
-}
 .ff-time-slot-container input.ff-el-booking-slot > span{
     border-left: 1px solid #dcdfe6;
 }

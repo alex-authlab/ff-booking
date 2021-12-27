@@ -31,7 +31,7 @@ class BookingHandler
         (new BookingNotification())->init();
         (new BookingShortCodes())->init();
         add_action('fluentform_before_insert_submission', array($this, 'maybeProccessBooking'), 10, 3);
-        add_filter('fluentform_form_class', [$this, 'checkBookingForm'], 10, 2);
+        add_filter('fluentform_form_class', array($this, 'checkBookingForm'), 10, 2);
     }
 
     public function maybeProccessBooking($insertData, $data, $form)
