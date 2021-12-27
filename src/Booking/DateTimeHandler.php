@@ -87,6 +87,9 @@ class DateTimeHandler
         } elseif ($service['capacity_type'] == 'single') {
             $maxCapacity = count($regularSlots);
         }
+        if ($service['booking_type'] == 'date_slot'){
+            $maxCapacity = intval($service['slot_capacity']) ;
+        }
         $maxBookings = intval($service['max_bookings']);
 
         foreach ($bookedDates as $date) {
