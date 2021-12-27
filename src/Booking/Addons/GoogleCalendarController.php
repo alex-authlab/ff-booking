@@ -230,7 +230,16 @@ class GoogleCalendarController
                 array('email' => $data['email']),
             ),
         );
-
+        if (ArrayHelper::get($data,'service_type') == 'google_meet') {
+            $eventArgs['conferenceData'] = array(
+                'createRequest' => array(
+                    'conferenceSolutionKey' => array(
+                        'type' => 'hangoutsMeet'
+                    ),
+                    'requestId' => 'ff_booking_event_' . time()
+                )
+            );
+        }
         // full day event
         if ($data['booking_type'] == 'date_slot') {
             $eventArgs['start'] = array(
@@ -254,7 +263,10 @@ class GoogleCalendarController
         }
 
 
-        $endPoint = 'calendars/primary/events/'.$eventId;
+        $endPoint = 'calendars/primary/events/'.$eventId ;
+        if (ArrayHelper::get($data,'service_type') == 'google_meet') {
+            $endPoint .= '?conferenceDataVersion=1';
+        }
         return $this->makeRequest($this->apiUrl . $endPoint, $eventArgs, $reqType, $this->getStandardHeader());
 
     }
