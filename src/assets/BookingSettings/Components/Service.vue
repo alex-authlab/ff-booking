@@ -45,7 +45,10 @@
                                                        :value="value"></el-option>
                                         </el-select>
                                         <p>Select Where the service will be provided </p>
+                                      <el-input v-model="editing_item.in_person_location"></el-input>
+
                                     </el-form-item>
+
                                 </el-col>
 
                                 <el-col :span="4">
@@ -61,14 +64,18 @@
                                 </el-col>
 
                             </el-row>
-                            <el-form-item label="Active">
-                                <el-switch
-                                        v-model="editing_item.status"
-                                        active-value='active'
-                                        inactive-value='inactive'
-                                        active-color="#13ce66">
-                                </el-switch>
-                            </el-form-item>
+
+                          <el-form-item label="Description">
+                            <el-input type="textarea" v-model="editing_item.description"></el-input>
+                          </el-form-item>
+                          <el-form-item label="Active">
+                            <el-switch
+                                v-model="editing_item.status"
+                                active-value='active'
+                                inactive-value='inactive'
+                                active-color="#13ce66">
+                            </el-switch>
+                          </el-form-item>
 
                         </div>
                     </el-collapse-item>

@@ -79,7 +79,7 @@ class BookingInfo
 
         $date = ArrayHelper::get($data, 'booking_date');
         $bookingData['booking_date'] = BookingHelper::formatDate($date,'l F j Y');
-        return $bookingData;
+        return apply_filters('ffsb_booking_info_data',$bookingData);
     }
     public function getConfirmationHtml()
     {
@@ -148,7 +148,7 @@ class BookingInfo
         if(!$bookingInfo){
             return ;
         }
-        $html = '<table width="600" cellpadding="0" cellspacing="0"><tbody>';
+        $html = '<table width="600" cellpadding="0"><tbody>';
         foreach ($bookingInfo as $key => $value) {
             if (empty($value) || $key == 'booking_hash' || $key == 'booking_type') {
                 continue;
