@@ -105,7 +105,7 @@ class GoogleCalendarController
                 $tokens['access_token'] = $refreshTokens['access_token'];
                 $tokens['expires_in'] = $refreshTokens['expires_in'];
                 $tokens['created_at'] = time();
-                update_user_meta($this->currentUserId, $this->optionKey, $tokens);
+                update_user_meta($this->providerId, $this->optionKey, $tokens);
 
             } else {
                 return false;
@@ -154,8 +154,8 @@ class GoogleCalendarController
     public function addEvent($bookingEntryId, $insertId, $status)
     {
         $bookingData = (new BookingModel())->getBooking(['entry_id' => $insertId]);
-        $providerId = ArrayHelper::get($bookingData, 'assigned_user');
-        if(!$this->isActive($providerId)){
+        $this->providerId = ArrayHelper::get($bookingData, 'assigned_user');
+        if(!$this->isActive()){
             return;
         }
         $eventData = $this->getEventData($bookingData);
@@ -298,9 +298,7 @@ class GoogleCalendarController
 
     public function isActive($providerId = '')
     {
-        if($providerId){
-            $this->providerId = $providerId;
-        }
+
         $settings = $this->getSettings();
         return ArrayHelper::isTrue($settings, 'status');
     }

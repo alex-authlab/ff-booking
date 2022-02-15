@@ -7,7 +7,7 @@ Author: WP Fluent Forms
 Author URI: #
 Plugin URI: #
 License: GPLv2 or later
-Text Domain: fluentformpro
+Text Domain: ff-simple-booking
 Domain Path: /resources/languages
 */
 
