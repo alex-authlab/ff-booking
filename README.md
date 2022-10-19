@@ -19,4 +19,12 @@ Todo
 * time off
 * custom slots
 * Email settings
+* Public Booking Page
+* Let this Booking Page expire after booking
+* Handle Time Zone Issue
+* Update Provider Booking Page with Ajax Call
+* Event Type :
+  - Google Meet : Create Google Meet Link & Add to Provider,Invitee Google Calendar
+  - Zoom : Create Zoom Meeting Link & Add to Provider,Invitee Google Calendar
+  - 
 
