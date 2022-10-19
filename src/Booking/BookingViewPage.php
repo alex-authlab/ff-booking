@@ -7,7 +7,6 @@ use FluentForm\Framework\Helpers\ArrayHelper;
 
 class BookingViewPage
 {
-
     public function init()
     {
         add_action('wp', [$this, 'render'], 100);
@@ -43,7 +42,7 @@ class BookingViewPage
         ];
 
         $pageVars = apply_filters('ff_booking_view_vars', [
-            'title'           => __('FF Simple Booking',FF_BOOKING_SLUG),
+            'title'           => __('FF Simple Booking', FF_BOOKING_SLUG),
             'settings'        => $pageSettings,
             'bg_color'        => $pageSettings['custom_color'],
             'has_header'      => false,
@@ -51,17 +50,15 @@ class BookingViewPage
         ]);
 
         $this->loadBookingView($pageVars);
-
     }
     public function loadBookingView($pageVars)
     {
-
         add_filter('pre_get_document_title', function ($title) use ($pageVars) {
             $separator = apply_filters('document_title_separator', '-');
             return $pageVars['title'] . ' ' . $separator . ' ' . get_bloginfo('name', 'display');
         });
 
-        echo BookingHelper::loadView('booking_page_view',$pageVars);
+        echo BookingHelper::loadView('booking_page_view', $pageVars);
         exit(200);
     }
 
@@ -74,7 +71,7 @@ class BookingViewPage
     {
         $data = (new BookingModel())->getBooking(['booking_hash' => $bookingHash]);
         if (!$data) {
-           return false;
+            return false;
         }
         $returnData = ArrayHelper::only($data, [
             'id',
@@ -122,7 +119,7 @@ class BookingViewPage
     {
         $app = wpFluentForm();
         wp_enqueue_script("jquery");
-        add_action('wp_enqueue_scripts', function () use($app ,$data) {
+        add_action('wp_enqueue_scripts', function () use ($app, $data) {
             wp_enqueue_style('ffs_booking_view', FF_BOOKING_DIR_URL . 'public/css/ffs_booking_page.css', [], FF_BOOKING_VER);
             wp_enqueue_style('flatpickr', $app->publicUrl('libs/flatpickr/flatpickr.min.css'));
             wp_enqueue_script('flatpickr', $app->publicUrl('libs/flatpickr/flatpickr.js'), [], false, true);
@@ -136,11 +133,6 @@ class BookingViewPage
                 'nonce' => wp_create_nonce('ffs_booking_public_nonce'),
             ];
             wp_localize_script('ff-booking-public-view', 'ff_booking_page_vars', $bookingViewVars);
-
         });
-
     }
-
-
-
 }

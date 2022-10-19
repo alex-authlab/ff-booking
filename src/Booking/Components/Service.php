@@ -2,21 +2,19 @@
 
 namespace FF_Booking\Booking\Components;
 
-
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
 
 use FF_Booking\Booking\BookingHelper;
 use FF_Booking\Booking\Models\ServiceModel;
-use \FluentForm\App\Modules\Component\Component;
-use \FluentForm\App\Services\FormBuilder\BaseFieldManager;
-use \FluentForm\App\Services\FormBuilder\Components\Select;
-use \FluentForm\Framework\Helpers\ArrayHelper;
+use FluentForm\App\Modules\Component\Component;
+use FluentForm\App\Services\FormBuilder\BaseFieldManager;
+use FluentForm\App\Services\FormBuilder\Components\Select;
+use FluentForm\Framework\Helpers\ArrayHelper;
 
 class Service extends BaseFieldManager
 {
-
     public function __construct(
         $key = 'ff_booking_service',
         $title = 'Service',
@@ -31,11 +29,11 @@ class Service extends BaseFieldManager
         );
         add_filter('fluentform_response_render_ff_booking_service', function ($value, $field, $formId, $isHtml) {
             $service = (array)(new ServiceModel())->getService($value);
-            return ArrayHelper::get($service,'title');
+            return ArrayHelper::get($service, 'title');
         }, 10, 4);
     }
 
-    function getComponent()
+    public function getComponent()
     {
         return [
             'index' => 29,

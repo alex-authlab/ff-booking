@@ -4,7 +4,6 @@ namespace FF_Booking\Booking;
 
 class MenuApi
 {
-
     public $admin_pages = [];
     public $admin_subpages = [];
 
@@ -135,5 +134,4 @@ class MenuApi
             wp_enqueue_media();
         }
     }
-
 }

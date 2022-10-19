@@ -3,8 +3,7 @@
 namespace FF_Booking\Booking;
 
 use FluentForm\App\Modules\Form\FormFieldsParser;
-use \FluentForm\Framework\Helpers\ArrayHelper;
-
+use FluentForm\Framework\Helpers\ArrayHelper;
 
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
@@ -14,7 +13,7 @@ class BookingHelper
 {
     public static function convertTime($convertTo = '24', $time ='')
     {
-        if(!$time){
+        if (!$time) {
             return '';
         }
         if ($convertTo == '24') {
@@ -40,16 +39,15 @@ class BookingHelper
         $timezone = wp_timezone_string(); //wp timezone
 
         if (!in_array($timezone, timezone_identifiers_list())) {
-            
             //its in offset , convert to timezone string
             list($hours, $minutes) = explode(':', $timezone);
             $seconds = $hours * 60 * 60 + $minutes * 60;
             $tz = timezone_name_from_abbr('', $seconds, 1);
-            if($tz === false) {
+            if ($tz === false) {
                 $tz = timezone_name_from_abbr('', $seconds, 0);
             }
-    
-             $timezone = $tz;
+
+            $timezone = $tz;
         }
         return $timezone;
     }
@@ -130,13 +128,13 @@ class BookingHelper
      * @return string
      * @throws \Exception
      */
-    public static function timeDurationLength($interval ,$isHtml = false)
+    public static function timeDurationLength($interval, $isHtml = false)
     {
         $addTime = '';
         $fraction = explode(':', $interval);
         $interval = new \DateTime($interval);
         $append = ' +';
-        if($isHtml){
+        if ($isHtml) {
             $append = '';
         }
         if ($fraction[0] != '00') {
@@ -160,9 +158,9 @@ class BookingHelper
     {
         return date_i18n(get_option('time_format'), strtotime($value));
     }
-    public static function formatDate($value , $format='')
+    public static function formatDate($value, $format='')
     {
-        if(!$format){
+        if (!$format) {
             $format = get_option('date_format');
         }
         return date_i18n($format, strtotime($value));
@@ -197,7 +195,7 @@ class BookingHelper
 
         $name = '';
         if ($fieldName) {
-            if (!empty(ArrayHelper::get($formData,$fieldName))) {
+            if (!empty(ArrayHelper::get($formData, $fieldName))) {
                 $names = array_filter($formData[$fieldName]);
                 return trim(implode(' ', $names));
             }
@@ -208,7 +206,6 @@ class BookingHelper
 
     public static function getUserEmail($formData, $form = false)
     {
-
         $user = get_user_by('ID', get_current_user_id());
 
         if ($user) {
@@ -223,12 +220,10 @@ class BookingHelper
 
         foreach ($emailFields as $field) {
             $fieldName = $field['attributes']['name'];
-            if (!empty(ArrayHelper::get($formData,$fieldName))) {
+            if (!empty(ArrayHelper::get($formData, $fieldName))) {
                 return $formData[$fieldName];
             }
         }
         return '';
-
     }
-
 }

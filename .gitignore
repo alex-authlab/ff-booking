@@ -5,3 +5,4 @@ public/
 package-lock.json
 .idea/ff-booking.iml
 public/js/jQuery-File-Upload-9.19.2/js/main.js
+*.cache

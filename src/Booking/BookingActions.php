@@ -4,10 +4,9 @@ namespace FF_Booking\Booking;
 
 use FF_Booking\Booking\Models\BookingModel;
 use FF_Booking\Booking\Models\ServiceModel;
-use \FluentForm\App\Modules\Form\FormFieldsParser;
-use \FluentForm\Framework\Helpers\ArrayHelper;
-use \FluentForm\App\Modules\Entries\Entries;
-
+use FluentForm\App\Modules\Form\FormFieldsParser;
+use FluentForm\Framework\Helpers\ArrayHelper;
+use FluentForm\App\Modules\Entries\Entries;
 
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
@@ -16,7 +15,6 @@ if (!defined('ABSPATH')) {
 
 class BookingActions
 {
-
     private $form;
     public $data;
     private $submissionData;
@@ -80,7 +78,6 @@ class BookingActions
         }
 
         $data = $this->submissionData['response'];
-
         foreach ($bookingInputs as $bookingInput) {
             $name = ArrayHelper::get($bookingInput, 'attributes.name');
             if (!$name || !isset($data[$name])) {
@@ -93,9 +90,9 @@ class BookingActions
             if ($element == 'booking_datetime') {
                 $formattedData = $this->getFormattedDateTime($data[$name], $formattedData);
             } elseif ($element == 'ff_booking_provider') {
-                $formattedData['provider_id'] =  ArrayHelper::get($data,$name);
+                $formattedData['provider_id'] =  ArrayHelper::get($data, $name);
             } elseif ($element == 'ff_booking_service') {
-                $formattedData['service_id'] =  ArrayHelper::get($data,$name);
+                $formattedData['service_id'] =  ArrayHelper::get($data, $name);
             }
         }
         $this->bookingInputValues = $formattedData;
@@ -146,13 +143,12 @@ class BookingActions
         }
     }
 
-    
+
     /**
      * Append booking info with submission message
      */
     public function afterSubmissionInfo()
     {
-        
         add_filter('fluentform_submission_message_parse', function ($messageToShow, $insertId, $formData, $form) {
             $html = (new BookingInfo($insertId))->getConfirmationHtml();
             if ($html) {
@@ -161,8 +157,4 @@ class BookingActions
             return $messageToShow;
         }, 10, 4);
     }
-
-
-
-
 }

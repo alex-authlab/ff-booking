@@ -21,7 +21,7 @@ class ServiceModel
                 $service->allowed_form_ids = maybe_unserialize($service->allowed_form_ids);
                 $service->allowed_future_date_range = maybe_unserialize($service->allowed_future_date_range);
                 $service->required_fields = maybe_unserialize($service->required_fields);
-                if(isset($service->notifications)){
+                if (isset($service->notifications)) {
                     $service->notifications  = json_decode($service->notifications);
                 }
             }
@@ -43,16 +43,16 @@ class ServiceModel
         $data['created_at'] = current_time('mysql');
         $data['updated_at'] = current_time('mysql');
         $data['created_by'] = get_current_user_id();
-        if(isset($data['allowed_form_ids'])) {
+        if (isset($data['allowed_form_ids'])) {
             $data['allowed_form_ids'] = maybe_serialize($data['allowed_form_ids']);
         }
-        if(isset($data['allowed_future_date_range'])) {
+        if (isset($data['allowed_future_date_range'])) {
             $data['allowed_future_date_range'] = maybe_serialize($data['allowed_future_date_range']);
         }
-        if(isset($data['required_fields'])) {
+        if (isset($data['required_fields'])) {
             $data['required_fields'] = maybe_serialize($data['required_fields']);
         }
-        if(isset($data['notifications'])) {
+        if (isset($data['notifications'])) {
             $data['notifications'] = json_encode($data['notifications']);
         }
 
@@ -63,18 +63,18 @@ class ServiceModel
     public function update($id, $data)
     {
         $data['updated_at'] = current_time('mysql');
-        if(isset($data['allowed_form_ids'])) {
+        if (isset($data['allowed_form_ids'])) {
             $data['allowed_form_ids'] = maybe_serialize($data['allowed_form_ids']);
-        }else{
+        } else {
             $data['allowed_form_ids']='';
         }
-        if(isset($data['allowed_future_date_range'])) {
+        if (isset($data['allowed_future_date_range'])) {
             $data['allowed_future_date_range'] = maybe_serialize($data['allowed_future_date_range']);
         }
-        if(isset($data['required_fields'])) {
+        if (isset($data['required_fields'])) {
             $data['required_fields'] = maybe_serialize($data['required_fields']);
         }
-        if(isset($data['notifications'])) {
+        if (isset($data['notifications'])) {
             $data['notifications'] = json_encode($data['notifications']);
         }
         return wpFluent()->table($this->table)
@@ -92,16 +92,16 @@ class ServiceModel
     public function getService($serviceId)
     {
         $query = wpFluent()->table($this->table);
-        $query->where('id',$serviceId);
+        $query->where('id', $serviceId);
         $service = $query->first();
-        if(!$service){
+        if (!$service) {
             return false;
         }
         $service->allowed_form_ids = maybe_unserialize($service->allowed_form_ids);
         $service->allowed_future_date_range = maybe_unserialize($service->allowed_future_date_range);
         $service->required_fields = maybe_unserialize($service->required_fields);
         $service->notifications = json_decode($service->notifications);
-        
+
         return $service;
     }
 
@@ -155,6 +155,4 @@ class ServiceModel
             dbDelta($sql);
         }
     }
-
-
 }

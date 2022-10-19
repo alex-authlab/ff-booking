@@ -36,10 +36,10 @@ class ProviderModel
         return $providers;
     }
 
-    public function getServiceProvider($serviceId,$formId)
+    public function getServiceProvider($serviceId, $formId)
     {
         $query = wpFluent()->table($this->table);
-        $query->where('status','active');
+        $query->where('status', 'active');
         $providers = $query->get();
         $validProviders = [];
         foreach ($providers as $key => $provider) {
@@ -61,25 +61,22 @@ class ProviderModel
             $validProviders[] =$provider;
         }
         return $providers;
-
-
-
     }
     public function insert($data)
     {
         $data['created_at'] = current_time('mysql');
         $data['updated_at'] = current_time('mysql');
         $data['created_by'] = get_current_user_id();
-        if(isset($data['allowed_form_ids'])) {
+        if (isset($data['allowed_form_ids'])) {
             $data['allowed_form_ids'] = maybe_serialize($data['allowed_form_ids']);
         }
-        if(isset($data['assigned_services'])) {
+        if (isset($data['assigned_services'])) {
             $data['assigned_services'] = maybe_serialize($data['assigned_services']);
         }
-        if(isset($data['weekend_days'])) {
+        if (isset($data['weekend_days'])) {
             $data['weekend_days'] = maybe_serialize($data['weekend_days']);
         }
-        if(isset($data['holiday_dates'])) {
+        if (isset($data['holiday_dates'])) {
             $data['holiday_dates'] = maybe_serialize($data['holiday_dates']);
         }
 
@@ -90,20 +87,20 @@ class ProviderModel
     public function update($id, $data)
     {
         $data['updated_at'] = current_time('mysql');
-        if(isset($data['allowed_form_ids'])) {
+        if (isset($data['allowed_form_ids'])) {
             $data['allowed_form_ids'] = maybe_serialize($data['allowed_form_ids']);
         }
-        if(isset($data['assigned_services'])) {
+        if (isset($data['assigned_services'])) {
             $data['assigned_services'] = maybe_serialize($data['assigned_services']);
         }
-        if(isset($data['weekend_days'])) {
+        if (isset($data['weekend_days'])) {
             $data['weekend_days'] = maybe_serialize($data['weekend_days']);
         }
-        if(isset($data['holiday_dates'])) {
+        if (isset($data['holiday_dates'])) {
             $data['holiday_dates'] = maybe_serialize($data['holiday_dates']);
         }
 
-        if(isset($data['settings'])) {
+        if (isset($data['settings'])) {
             $data['settings'] = maybe_serialize($data['settings']);
         }
 
@@ -114,22 +111,22 @@ class ProviderModel
     public function getProvider($id)
     {
         $query = wpFluent()->table($this->table);
-        $query->where('id',$id);
-        $query->where('status','active');
+        $query->where('id', $id);
+        $query->where('status', 'active');
         $provider = $query->first();
-        if(!$provider){
+        if (!$provider) {
             return false;
         }
-        if($provider->weekend_days && $provider->weekend_days == ''){
+        if ($provider->weekend_days && $provider->weekend_days == '') {
             $provider->weekend_days= [];
         }
-        if($provider->holiday_dates  && $provider->holiday_dates == ''){
+        if ($provider->holiday_dates  && $provider->holiday_dates == '') {
             $provider->holiday_dates= [];
         }
-        if($provider->allowed_form_ids  && $provider->allowed_form_ids == ''){
+        if ($provider->allowed_form_ids  && $provider->allowed_form_ids == '') {
             $provider->allowed_form_ids= [];
         }
-        if($provider->assigned_services  && $provider->assigned_services == ''){
+        if ($provider->assigned_services  && $provider->assigned_services == '') {
             $provider->assigned_services= [];
         }
         $provider->assigned_services = maybe_unserialize($provider->assigned_services);
@@ -137,7 +134,6 @@ class ProviderModel
         $provider->weekend_days = maybe_unserialize($provider->weekend_days);
         $provider->holiday_dates = maybe_unserialize($provider->holiday_dates);
         return $provider;
-
     }
 
     public function delete($id)
@@ -178,5 +174,4 @@ class ProviderModel
             dbDelta($sql);
         }
     }
-
 }

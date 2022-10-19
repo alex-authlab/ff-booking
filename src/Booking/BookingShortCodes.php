@@ -7,20 +7,18 @@ if (!defined('ABSPATH')) {
 }
 
 use FF_Booking\Booking\Components\BookingFields;
-use \FluentForm\App\Helpers\Helper;
-use \FluentForm\Framework\Helpers\ArrayHelper;
-use \FluentForm\App\Modules\Form\FormFieldsParser;
-
+use FluentForm\App\Helpers\Helper;
+use FluentForm\Framework\Helpers\ArrayHelper;
+use FluentForm\App\Modules\Form\FormFieldsParser;
 
 class BookingShortCodes
 {
-    
     public function init()
     {
         $this->addShortCodes();
     }
-    
-    
+
+
     private function addShortCodes()
     {
         //{ff_booking_info}
@@ -42,7 +40,7 @@ class BookingShortCodes
             $data = (new BookingInfo($entry->id))->getBookingInfoData();
             $date = ArrayHelper::get($data, 'bookingData.booking_date');
             $time = ArrayHelper::get($data, 'bookingData.booking_time');
-            if(ArrayHelper::get($data, 'bookingData.booking_type') == 'date_slot' ){
+            if (ArrayHelper::get($data, 'bookingData.booking_type') == 'date_slot') {
                 $time = '';
             }
             return $time . ' ' . $date;
@@ -72,6 +70,4 @@ class BookingShortCodes
             return ArrayHelper::get($data, 'userData.name');
         }, 10, 2);
     }
-    
-    
 }

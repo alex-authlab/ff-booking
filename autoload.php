@@ -1,9 +1,10 @@
 <?php
+
 defined('ABSPATH') or die;
 
 spl_autoload_register(function ($class) {
     $namespace = 'FF_Booking';
-    
+
 
 
     if (substr($class, 0, strlen($namespace)) !== $namespace) {
@@ -21,8 +22,6 @@ spl_autoload_register(function ($class) {
     $file = $basePath.trim($className, '/').'.php';
 
     if (is_readable($file)) {
-
-
         include $file;
     }
 });

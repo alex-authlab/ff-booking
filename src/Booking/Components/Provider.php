@@ -2,21 +2,19 @@
 
 namespace FF_Booking\Booking\Components;
 
-
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
 
 use FF_Booking\Booking\BookingHelper;
 use FF_Booking\Booking\Models\ProviderModel;
-use \FluentForm\App\Modules\Component\Component;
-use \FluentForm\App\Services\FormBuilder\BaseFieldManager;
-use \FluentForm\App\Services\FormBuilder\Components\Select;
-use \FluentForm\Framework\Helpers\ArrayHelper;
+use FluentForm\App\Modules\Component\Component;
+use FluentForm\App\Services\FormBuilder\BaseFieldManager;
+use FluentForm\App\Services\FormBuilder\Components\Select;
+use FluentForm\Framework\Helpers\ArrayHelper;
 
 class Provider extends BaseFieldManager
 {
-
     public function __construct(
         $key = 'ff_booking_provider',
         $title = 'Provider',
@@ -32,11 +30,11 @@ class Provider extends BaseFieldManager
 
         add_filter('fluentform_response_render_ff_booking_provider', function ($value, $field, $formId, $isHtml) {
             $provider = (array)(new ProviderModel())->getProvider($value);
-            return ArrayHelper::get($provider,'title');
+            return ArrayHelper::get($provider, 'title');
         }, 10, 4);
     }
 
-    function getComponent()
+    public function getComponent()
     {
         return [
             'index' => 30,
@@ -99,15 +97,14 @@ class Provider extends BaseFieldManager
 
     public function render($data, $form)
     {
-
         $class= ' ff_booking_provider';
         $data['attributes']['class'] .= " {$class}";
         $data['attributes']['id'] = $this->makeElementId($data, $form);
-        add_filter('ff_booking_datetime_vars',function ($vars) use ($class,$data){
+        add_filter('ff_booking_datetime_vars', function ($vars) use ($class, $data) {
             $vars['ff_booking_provider_input_class'] = $class;
             $vars['ff_booking_provider_input_id'] = $data['attributes']['id'];
             return $vars;
-        },99,1);
+        }, 99, 1);
 
         $data['settings']['advanced_options'] = [];
         (new Select())->compile($data, $form);

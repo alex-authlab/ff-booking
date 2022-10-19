@@ -7,7 +7,6 @@ use FluentForm\Framework\Helpers\ArrayHelper;
 
 class ProviderPage
 {
-
     public function init()
     {
         add_shortcode('ff_simple_booking', array($this, 'registerShortcode'));
@@ -38,12 +37,10 @@ class ProviderPage
         ]);
 
         return $this->renderHtml($userId);
-
     }
 
     private function getViewConfig()
     {
-
         global $post;
         $pageId = $post->ID;
 
@@ -121,6 +118,4 @@ class ProviderPage
         }
         return $result;
     }
-
-
 }

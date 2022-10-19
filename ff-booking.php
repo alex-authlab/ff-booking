@@ -52,7 +52,7 @@ if (!class_exists('FFBooking')) {
             $this->adminHooks($fluentForm);
             $this->publicHooks($fluentForm);
             $this->loadTextDomain();
-            (new FF_Booking\Booking\BookingHandler)->init($fluentForm);
+            (new FF_Booking\Booking\BookingHandler())->init($fluentForm);
         }
 
         /**
@@ -138,12 +138,11 @@ if (!class_exists('FFBooking')) {
         {
             load_plugin_textdomain(FF_BOOKING_SLUG, false, dirname(plugin_basename(__FILE__)) . '/resources/languages');
         }
-
     }
 
 
     add_action('init', function () {
-        (new FFBooking)->boot();
+        (new FFBooking())->boot();
     });
 
     register_activation_hook(__FILE__, function ($siteWide) {

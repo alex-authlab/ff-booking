@@ -5,11 +5,10 @@ namespace FF_Booking\Booking;
 use FF_Booking\Booking\Addons\GoogleCalendarController;
 use FF_Booking\Booking\Models\BookingModel;
 use FF_Booking\Booking\Models\ProviderModel;
-use \FluentForm\Framework\Helpers\ArrayHelper;
+use FluentForm\Framework\Helpers\ArrayHelper;
 
 class FrontEndAjaxHandler
 {
-
     public function init()
     {
         $route = sanitize_text_field($_REQUEST['route']);
@@ -281,8 +280,8 @@ class FrontEndAjaxHandler
             'action_by'        => $actionBy,
             'reason'           => $reason,
             'previous_booking' => BookingHelper::formatTime(
-                    $bookingData['booking_time']
-                ) . ' ' . BookingHelper::formatDate($bookingData['booking_date']),
+                $bookingData['booking_time']
+            ) . ' ' . BookingHelper::formatDate($bookingData['booking_date']),
             'updated_at'       => date('Y-m-d')
         );
         return $rescheduleData;
@@ -295,7 +294,6 @@ class FrontEndAjaxHandler
             'access_code' => sanitize_text_field($_REQUEST['access_code']),
         ];
         (new GoogleCalendarController())->saveSettings($data);
-
     }
     public function disconnectGoogleCalendarCode()
     {
@@ -304,6 +302,5 @@ class FrontEndAjaxHandler
             'access_code' => '',
         ];
         (new GoogleCalendarController())->saveSettings($data);
-
     }
 }

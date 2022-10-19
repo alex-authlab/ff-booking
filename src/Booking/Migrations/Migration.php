@@ -1,6 +1,5 @@
 <?php
 
-
 namespace FF_Booking\Booking\Migrations;
 
 use FF_Booking\Booking\Models\BookingModel;

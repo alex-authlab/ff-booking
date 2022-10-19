@@ -34,7 +34,6 @@ class GoogleCalendarController
         add_filter('ffs_provider_view_config', array($this, 'addViewConfig'), 10, 1);
 
         add_action('ff_booking_status_changing', array($this, 'addEvent'), 10, 3);
-
     }
 
     public function makeRequest($url, $bodyArgs, $type = 'GET', $headers = false)
@@ -106,7 +105,6 @@ class GoogleCalendarController
                 $tokens['expires_in'] = $refreshTokens['expires_in'];
                 $tokens['created_at'] = time();
                 update_user_meta($this->providerId, $this->optionKey, $tokens);
-
             } else {
                 return false;
             }
@@ -155,16 +153,14 @@ class GoogleCalendarController
     {
         $bookingData = (new BookingModel())->getBooking(['entry_id' => $insertId]);
         $this->providerId = ArrayHelper::get($bookingData, 'assigned_user');
-        if(!$this->isActive()){
+        if (!$this->isActive()) {
             return;
         }
         $eventData = $this->getEventData($bookingData);
 
         if ($eventId = ArrayHelper::get($bookingData, 'addon_data.google_calendar.event_id')) {
-
             $resp = $this->pushEvent($eventData, 'PUT', $eventId);
             if (!is_wp_error($resp)) {
-
                 do_action('ff_log_data', [
                     'parent_source_id' => $eventData['form_id'],
                     'source_type'      => 'submission_item',
@@ -198,7 +194,6 @@ class GoogleCalendarController
                 'description'      => 'Event has been pushed to Google calendar'
             ]);
         }
-
     }
 
     public function pushEvent($data, $reqType, $eventId)
@@ -238,7 +233,6 @@ class GoogleCalendarController
 
         $endPoint = 'calendars/primary/events/' . $eventId;
         return $this->makeRequest($this->apiUrl . $endPoint, $eventArgs, $reqType, $this->getStandardHeader());
-
     }
 
     public function saveSettings($settings)
@@ -269,7 +263,6 @@ class GoogleCalendarController
             $result['created_at'] = time();
             $result['status'] = true;
             update_user_meta($this->providerId, $this->optionKey, $result);
-
         } catch (\Exception $exception) {
             wp_send_json_error([
                 'message' => $exception->getMessage()
@@ -284,7 +277,6 @@ class GoogleCalendarController
 
     public function getSettings()
     {
-
         $settings = get_user_meta($this->providerId, $this->optionKey, true);
         if (!$settings) {
             $settings = [];
@@ -298,7 +290,6 @@ class GoogleCalendarController
 
     public function isActive($providerId = '')
     {
-
         $settings = $this->getSettings();
         return ArrayHelper::isTrue($settings, 'status');
     }
@@ -313,8 +304,10 @@ class GoogleCalendarController
         $bookingDate = ArrayHelper::get($bookingData, 'booking_date');
         $bookingStartTime = ArrayHelper::get($bookingData, 'booking_time');
         $duration = ArrayHelper::get($bookingData, 'duration');
-        $startDateTime = new \DateTime($bookingDate . ' ' . $bookingStartTime,
-            new \DateTimeZone(BookingHelper::getTimeZone()));
+        $startDateTime = new \DateTime(
+            $bookingDate . ' ' . $bookingStartTime,
+            new \DateTimeZone(BookingHelper::getTimeZone())
+        );
 
         $eventData = [
             'form_id'          => ArrayHelper::get($bookingData, 'form_id'),
@@ -337,7 +330,4 @@ class GoogleCalendarController
         }
         return $eventData;
     }
-
-
-
 }

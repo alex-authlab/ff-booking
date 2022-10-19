@@ -26,7 +26,7 @@ class BookingInfo
     private function setupData($insertId)
     {
         $data = (new BookingModel())->getBooking(['entry_id' => $insertId]);
-        if(!$data){
+        if (!$data) {
             return ;
         }
         $this->data = [
@@ -78,8 +78,8 @@ class BookingInfo
         $bookingData['booking_time'] = BookingHelper::formatTime($time);
 
         $date = ArrayHelper::get($data, 'booking_date');
-        $bookingData['booking_date'] = BookingHelper::formatDate($date,'l F j Y');
-        return apply_filters('ffsb_booking_info_data',$bookingData);
+        $bookingData['booking_date'] = BookingHelper::formatDate($date, 'l F j Y');
+        return apply_filters('ffsb_booking_info_data', $bookingData);
     }
     public function getConfirmationHtml()
     {
@@ -94,9 +94,9 @@ class BookingInfo
         }
         $bookingDate = ArrayHelper::get($data, 'bookingData.booking_date');
         $bookingTime = ArrayHelper::get($data, 'bookingData.booking_time');
-        if(ArrayHelper::get($data,'bookingData.booking_type') == 'date_slot'){
-            $time = __('Full Day',FF_BOOKING_SLUG);
-        }else{
+        if (ArrayHelper::get($data, 'bookingData.booking_type') == 'date_slot') {
+            $time = __('Full Day', FF_BOOKING_SLUG);
+        } else {
             $time =  $bookingTime;
         }
         $status = ucfirst(ArrayHelper::get($data, 'bookingData.booking_status'));
@@ -131,7 +131,7 @@ class BookingInfo
     public function getNotifications()
     {
         $notifications = $this->notifications;
-        if(is_array($notifications) && count($notifications)> 0){
+        if (is_array($notifications) && count($notifications)> 0) {
             return $notifications;
         }
         return false;
@@ -144,8 +144,8 @@ class BookingInfo
 
     public function bookingInfoHtml()
     {
-        $bookingInfo = ArrayHelper::get($this->data,'bookingData');
-        if(!$bookingInfo){
+        $bookingInfo = ArrayHelper::get($this->data, 'bookingData');
+        if (!$bookingInfo) {
             return ;
         }
         $html = '<table width="600" cellpadding="0"><tbody>';
@@ -153,27 +153,27 @@ class BookingInfo
             if (empty($value) || $key == 'booking_hash' || $key == 'booking_type') {
                 continue;
             }
-            if($key =='booking_time' && ArrayHelper::get($bookingInfo,'booking_type') == 'date_slot'){
-                $value = __('Full Day',FF_BOOKING_SLUG);
+            if ($key =='booking_time' && ArrayHelper::get($bookingInfo, 'booking_type') == 'date_slot') {
+                $value = __('Full Day', FF_BOOKING_SLUG);
             }
-            if($key =='duration'){
-                $value = BookingHelper::timeDurationLength($value,true);
+            if ($key =='duration') {
+                $value = BookingHelper::timeDurationLength($value, true);
             }
             $label = str_replace('_', ' ', $key);
             $html .= sprintf(
                 "<tr class=\"field-label\"><th style=\"padding: 6px 12px; background-color: #f8f8f8; text-align: left;\"><strong>%s</strong></th></tr><tr class=\"field-value\"><td style=\"padding: 6px 12px 12px 12px;\">%s</td></tr>",
-                ucwords($label), $value
+                ucwords($label),
+                $value
             );
         }
         $html .= '</tbody></table>';
         return $html;
     }
 
-    public function infoPageLinkHtml ()
+    public function infoPageLinkHtml()
     {
-        
     }
-    
+
     /**
      * @param array $data
      * @return mixed
@@ -185,6 +185,4 @@ class BookingInfo
         $userData['name'] = is_array($name) ? join(' ', $name) : $name;
         return $userData;
     }
-    
-    
 }

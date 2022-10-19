@@ -23,7 +23,7 @@ class BookingDateTime extends \FluentForm\App\Services\FormBuilder\BaseFieldMana
             }
             $dateTime = explode(' ', $values['value']);
             $bookingId = ArrayHelper::get($values, 'booking_id');
-                $date = ArrayHelper::get($dateTime, '0');
+            $date = ArrayHelper::get($dateTime, '0');
             $time = ArrayHelper::get($dateTime, '1');
             $time .= ArrayHelper::get($dateTime, '2');
             $dateFormat = BookingHelper::getBookingFieldDateFormat($formId);
@@ -31,10 +31,9 @@ class BookingDateTime extends \FluentForm\App\Services\FormBuilder\BaseFieldMana
             $url = admin_url('admin.php?page=fluent_forms_settings&component=booking_settings_global#/bookings/'.$bookingId);
             return "<span> <a href='{$url}'>{$date} {$time}</a> </span>";
         }, 10, 4);
-
     }
 
-    function getComponent()
+    public function getComponent()
     {
         return [
             'index' => 99,
@@ -124,7 +123,7 @@ class BookingDateTime extends \FluentForm\App\Services\FormBuilder\BaseFieldMana
         $data['settings']['container_class'] .= ' ff-booking-container';
         $data['attributes']['class'] .= ' ff-booking-date-time';
         $this->loadScripts($data, $form);
-        (new \FluentForm\App\Services\FormBuilder\Components\DateTime)->compile($data, $form);
+        (new \FluentForm\App\Services\FormBuilder\Components\DateTime())->compile($data, $form);
     }
 
     /**
@@ -153,7 +152,7 @@ class BookingDateTime extends \FluentForm\App\Services\FormBuilder\BaseFieldMana
 
         wp_localize_script('ff_booking_test_js', 'ff_booking_date_time_vars', $ffBookingVars);
         add_filter('fluentform/frontend_date_format', function ($config, $settings, $form) {
-            if(!ArrayHelper::exists($settings,'target_email')){
+            if (!ArrayHelper::exists($settings, 'target_email')) {
                 return $config; //not booking date picker field
             }
             $config['inline'] = true;
@@ -167,7 +166,6 @@ class BookingDateTime extends \FluentForm\App\Services\FormBuilder\BaseFieldMana
 
     public function validate($errorMessage, $field, $formData, $fields, $form)
     {
-
         $name = \FluentForm\Framework\Helpers\ArrayHelper::get($field, 'name');
         $value = \FluentForm\Framework\Helpers\ArrayHelper::get($formData, $name);
         //check if has time
@@ -180,6 +178,4 @@ class BookingDateTime extends \FluentForm\App\Services\FormBuilder\BaseFieldMana
         }
         return;
     }
-
-
 }

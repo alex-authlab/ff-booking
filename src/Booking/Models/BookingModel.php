@@ -113,7 +113,7 @@ class BookingModel
                     strtotime($datum->created_at),
                     strtotime(current_time('mysql'))
                 );
-                $bookings['data'][$index]->addon_data = \json_decode($bookings['data'][$index]->addon_data,true);
+                $bookings['data'][$index]->addon_data = \json_decode($bookings['data'][$index]->addon_data, true);
             }
 
             return $bookings;
@@ -127,8 +127,7 @@ class BookingModel
                 strtotime($datum->created_at),
                 strtotime(current_time('mysql'))
             );
-            $bookings[$index]->addon_data = \json_decode($bookings[$index]->addon_data,true);
-
+            $bookings[$index]->addon_data = \json_decode($bookings[$index]->addon_data, true);
         }
         return $bookings;
     }
@@ -210,9 +209,10 @@ class BookingModel
         return $query->first();
     }
 
-    public function getBooking($atts){
-        $data = $this->getBookings(false ,$atts);
-        if($data){
+    public function getBooking($atts)
+    {
+        $data = $this->getBookings(false, $atts);
+        if ($data) {
             $data = array_shift($data);
             return (array)$data;
         }
@@ -264,10 +264,9 @@ class BookingModel
         return wpFluent()->table(self::$table)
             ->where('id', $id)
             ->update($data);
-
     }
 
-    public static function getBookingsByProvider($user_id,$atts=[])
+    public static function getBookingsByProvider($user_id, $atts=[])
     {
         $endDate = date('Y-m-d H:i:s', strtotime('+30 days'));
         $startDate = date('Y-m-d H:i:s', strtotime('-30 days'));
@@ -321,16 +320,15 @@ class BookingModel
         $query->leftJoin('fluentform_forms', 'fluentform_forms.id', '=', self::$table . '.form_id');
         $query->join('ff_booking_providers', 'ff_booking_providers.id', '=', self::$table . '.provider_id');
         $query->join('ff_booking_services', 'ff_booking_services.id', '=', self::$table . '.service_id');
-        if ($booking_status && $booking_status != 'all' && $booking_status != 'past' && $booking_status != 'next' ) {
+        if ($booking_status && $booking_status != 'all' && $booking_status != 'past' && $booking_status != 'next') {
             $query->where('booking_status', $booking_status);
         }
 
         $query->where(self::$table . '.created_at', '>=', $startDate);
         $query->where(self::$table . '.created_at', '<=', $endDate);
-        if($booking_status =='past'){
+        if ($booking_status =='past') {
             $query->where(self::$table . '.booking_date', '<=', date('Y-m-d'));
-        }
-        else if($booking_status =='next'){
+        } elseif ($booking_status =='next') {
             $query->where(self::$table . '.booking_date', '>=', date('Y-m-d'));
         }
         $query->orderBy('id', 'DESC');
@@ -340,15 +338,12 @@ class BookingModel
             $booking->formatted_date = date_i18n(get_option('date_format'), strtotime($booking->booking_date));
             $booking->created_date = date_i18n(get_option('time_format').' '.get_option('date_format'), strtotime($booking->created_at));
             $booking->booking_time = date_i18n(get_option('time_format'), strtotime($booking->booking_time));
-            $booking->duration = BookingHelper::timeDurationLength($booking->duration,true);
-            $name = maybe_unserialize( $booking->name);
-            $booking->name = is_array($name)? join(' ',$name) : $name;
+            $booking->duration = BookingHelper::timeDurationLength($booking->duration, true);
+            $name = maybe_unserialize($booking->name);
+            $booking->name = is_array($name) ? join(' ', $name) : $name;
             $booking->reschedule_data = json_decode($booking->reschedule_data);
-            $booking->addon_data = json_decode($booking->addon_data,true);
+            $booking->addon_data = json_decode($booking->addon_data, true);
         }
         return $bookings;
-
     }
-
-
 }

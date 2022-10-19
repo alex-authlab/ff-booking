@@ -2,7 +2,6 @@
 
 namespace FF_Booking\Booking;
 
-
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
@@ -11,16 +10,15 @@ use FF_Booking\Booking\Components\Service;
 use FF_Booking\Booking\Models\BookingModel;
 use FF_Booking\Booking\Models\ProviderModel;
 use FF_Booking\Booking\Models\ServiceModel;
-use \FluentForm\App\Databases\Migrations\FormSubmissions;
-use \FluentForm\App\Helpers\Helper;
-use \FluentForm\Framework\Helpers\ArrayHelper;
+use FluentForm\App\Databases\Migrations\FormSubmissions;
+use FluentForm\App\Helpers\Helper;
+use FluentForm\Framework\Helpers\ArrayHelper;
 use FF_Booking\Booking\Migrations\Migration;
 
 class AjaxHandler
 {
     public function init()
     {
-
         $route = sanitize_text_field($_REQUEST['route']);
         BookingHelper::verifyRequest();
 
@@ -103,7 +101,6 @@ class AjaxHandler
 
         if ($cols && in_array('id', $cols)) {
             // check db version
-
         } else {
             Migration::run();
         }
@@ -495,6 +492,4 @@ class AjaxHandler
             ],
         ];
     }
-
-
 }
