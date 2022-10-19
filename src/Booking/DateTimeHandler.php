@@ -243,7 +243,6 @@ class DateTimeHandler
                 'capacity_type'
             ) == 'multiple';
         $formattedSlots = [];
-        array_shift($regularSlots);
         foreach ($regularSlots as $slot) {
             $data = [
                 'label' => $slot['label'],
