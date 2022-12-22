@@ -13,7 +13,24 @@
     }
     .flatpickr-rContainer {
         margin: 0px auto;
+        width: 100%;
+        max-width: 100%;
+
+        .flatpickr-days{
+            width: 100%;
+            max-width: 100%;
+            .dayContainer{
+                width: 100%;
+                max-width: 100%;
+
+                .flatpickr-day{
+                    width: 100%;
+                    max-width: 100%;
+                }
+            }
+        }
     }
+
 }
 
 .ff-time-slot-container input.ff-el-booking-slot > span{

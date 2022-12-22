@@ -55,7 +55,7 @@
                         <el-table-column
                                 label="Date">
                             <template slot-scope="props">
-                                {{ formatDate( props.row.formatDate )}}
+                                {{ formatDate( props.row.booking_date )}}
                             </template>
                         </el-table-column>
                         <el-table-column

@@ -136,7 +136,7 @@ if (!class_exists('FFBooking')) {
 
         private function loadTextDomain()
         {
-            load_plugin_textdomain(FF_BOOKING_SLUG, false, dirname(plugin_basename(__FILE__)) . '/resources/languages');
+            load_plugin_textdomain('ff-simple-booking', false, dirname(plugin_basename(__FILE__)) . '/resources/languages');
         }
     }
 

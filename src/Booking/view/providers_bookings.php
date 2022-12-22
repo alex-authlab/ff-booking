@@ -9,11 +9,11 @@
         <ul class="ffsb_tabs ffs_booking_btns">
             <li><a class="ffs_link <?php if($config['activeTab'] == 'bookings') {
                 echo 'ffs_active';
-            } ?>"    href='<?php echo $config['base_url'].'route=bookings' ?>' > <?php _e('Bookings', FF_BOOKING_SLUG) ?></a></li>
+            } ?>"    href='<?php echo $config['base_url'].'route=bookings' ?>' > <?php _e('Bookings', 'ff-simple-booking') ?></a></li>
             <?php if(\FluentForm\Framework\Helpers\ArrayHelper::exists($config, 'gCalendarData')) { ?>
             <li><a class="ffs_link  <?php if($config['activeTab'] == 'google_calendar') {
                 echo 'ffs_active';
-            } ?>"  href='<?php echo $config['base_url'].'route=google_calendar' ?>'> <?php _e('Google Calendar', FF_BOOKING_SLUG) ?> </a></li>
+            } ?>"  href='<?php echo $config['base_url'].'route=google_calendar' ?>'> <?php _e('Google Calendar', 'ff-simple-booking') ?> </a></li>
             <?php }?>
 
         </ul>
@@ -37,7 +37,7 @@
             <?php
             if (count($bookings) == 0) {
                 ?>
-                <div class="ff_booking"><p> <?php _e('No Bookings Found', FF_BOOKING_SLUG); ?></p></div>
+                <div class="ff_booking"><p> <?php _e('No Bookings Found', 'ff-simple-booking'); ?></p></div>
                 <?php
             } else {
                 foreach ($bookings as $date => $bookingGroup): ?>
@@ -67,7 +67,7 @@
                                 </div>
                                 <div class="ff_booking_info">
                                     <?php if($booking['booking_type'] =='date_slot') {
-                                        _e('Full Day', FF_BOOKING_SLUG);
+                                        _e('Full Day', 'ff-simple-booking');
                                     } elseif ($booking['booking_type'] =='time_slot') {
                                         echo $booking['duration'];
                                     }
@@ -83,27 +83,27 @@
                             <div  class="ffs_booking_details_text" style="display: none">
 
                                 <div class="ffs_details_info">
-                                    <b><?php _e('Name', FF_BOOKING_SLUG); ?></b>
+                                    <b><?php _e('Name', 'ff-simple-booking'); ?></b>
                                     <p> <?php echo empty($booking['name']) ? '-' : $booking['name'] ?></p>
-                                    <b><?php _e('Email', FF_BOOKING_SLUG); ?></b>
+                                    <b><?php _e('Email', 'ff-simple-booking'); ?></b>
                                     <p><?php echo empty($booking['email']) ? '-' : $booking['email']  ?></p>
                                     <div class="ffs_notes">
-                                        <b><?php _e('Form Name', FF_BOOKING_SLUG); ?></b>
+                                        <b><?php _e('Form Name', 'ff-simple-booking'); ?></b>
                                         <p><?php echo($booking['form_title']) ?>
                                         </p>
-                                        <b><?php _e('Notes', FF_BOOKING_SLUG); ?></b>
+                                        <b><?php _e('Notes', 'ff-simple-booking'); ?></b>
                                         <p><?php echo empty($booking['notes']) ? 'No Notes' : $booking['notes'] ?>
                                         </p>
                                         <div class="ffs_booking_btns">
                                             <button class="ffs_edit_note ffs_link">
-                                                <?php _e("Edit Note", FF_BOOKING_SLUG); ?>
+                                                <?php _e("Edit Note", 'ff-simple-booking'); ?>
                                             </button>
                                         </div>
                                         <div class="ffs_bookings_notes" style=" display:none">
                                             <textarea name="notes"  class="edit-notes" cols="2" rows="2"><?php echo trim($booking['notes']); ?></textarea>
 
                                             <button data-booking_id="<?php echo $booking['id'] ?> " class="ffs_update_note ffs_link">
-                                                <?php _e("Save Note", FF_BOOKING_SLUG); ?>
+                                                <?php _e("Save Note", 'ff-simple-booking'); ?>
                                             </button>
                                         </div>
                                         <div class="ffs_note_response"></div>
@@ -127,25 +127,25 @@
                                                     <td colspan="2"></td>
                                                 </tr>
                                                 <tr>
-                                                    <th><?php _e('Rescheduled on', FF_BOOKING_SLUG); ?></th>
+                                                    <th><?php _e('Rescheduled on', 'ff-simple-booking'); ?></th>
                                                     <td>
                                                         <?php echo \FF_Booking\Booking\BookingHelper::formatDate($entry->updated_at); ?>
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <th><?php _e('Rescheduled By', FF_BOOKING_SLUG); ?></th>
+                                                    <th><?php _e('Rescheduled By', 'ff-simple-booking'); ?></th>
                                                     <td>
                                                         <?php echo ucfirst($entry->action_by); ?>
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <th><?php _e('Reason', FF_BOOKING_SLUG); ?></th>
+                                                    <th><?php _e('Reason', 'ff-simple-booking'); ?></th>
                                                     <td>
                                                         <?php echo trim($entry->reason); ?>
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <th><?php _e('Previous Booking', FF_BOOKING_SLUG); ?></th>
+                                                    <th><?php _e('Previous Booking', 'ff-simple-booking'); ?></th>
                                                     <td><?php echo $entry->previous_booking; ?></td>
                                                 </tr>
 
@@ -157,7 +157,7 @@
 
                                 <div class="ffs_details_info_actions ffs_booking_btns">
 
-                                    <span><?php _e('Change status', FF_BOOKING_SLUG); ?></span>
+                                    <span><?php _e('Change status', 'ff-simple-booking'); ?></span>
                                     <select name="" class="ffs_link ffs_booking_status" data-booking_id="<?php echo $booking['id'] ?> ">
                                         <?php foreach ($config['booking_status'] as $key => $status) {
                                             $selected ='';
@@ -175,7 +175,7 @@
                                     </a>
 
                                     <div>
-                                        <small> <?php _e('Created', FF_BOOKING_SLUG); ?> <?php echo $booking['created_at'] ?> </small>
+                                        <small> <?php _e('Created', 'ff-simple-booking'); ?> <?php echo $booking['created_at'] ?> </small>
                                     </div>
                                 </div>
 
@@ -202,23 +202,23 @@
         </div>
         <?php elseif($config['activeTab'] == 'google_calendar'): ?>
         <div class="ffsb_tab_body">
-            <h4><?php _e('Google Calendar Settings', FF_BOOKING_SLUG)?></h4>
+            <h4><?php _e('Google Calendar Settings', 'ff-simple-booking')?></h4>
             <form>
 
                 <?php if(!\FluentForm\Framework\Helpers\ArrayHelper::isTrue($config, 'gCalendarData.status')) {?>
                 <div class="gcalendar_code">
-                    <small><a target="_blank" href="<?php echo  \FluentForm\Framework\Helpers\ArrayHelper::get($config, 'gCalendarData.authUrl')?>"><?php _e('Get Access Code', FF_BOOKING_SLUG) ?></a></small>
+                    <small><a target="_blank" href="<?php echo  \FluentForm\Framework\Helpers\ArrayHelper::get($config, 'gCalendarData.authUrl')?>"><?php _e('Get Access Code', 'ff-simple-booking') ?></a></small>
                     <label class="ffsb_label" for="input">Access Code</label>
                     <input class="ffsb_input" type="text" id="ffsb_google_code">
                     <div class="ffs_booking_btns">
-                        <a class="ffs_link ffsb_gverify "> <?php _e('Verify', FF_BOOKING_SLUG) ?></a>
+                        <a class="ffs_link ffsb_gverify "> <?php _e('Verify', 'ff-simple-booking') ?></a>
                     </div>
                 </div>
                 <?php } else { ?>
 
-                    <?php _e('Google Calendar Connected', FF_BOOKING_SLUG) ?>
+                    <?php _e('Google Calendar Connected', 'ff-simple-booking') ?>
                     <div class="ffs_booking_btns">
-                        <a class="ffs_link ffsb_gverify_diconnect "> <?php _e('Disconnect Google', FF_BOOKING_SLUG) ?></a>
+                        <a class="ffs_link ffsb_gverify_diconnect "> <?php _e('Disconnect Google', 'ff-simple-booking') ?></a>
                     </div>
                 <?php }; ?>
                 <div class="gcalendar_response">

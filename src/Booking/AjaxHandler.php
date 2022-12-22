@@ -64,7 +64,7 @@ class AjaxHandler
         $this->enable();
 
         wp_send_json_success([
-            'message'  => __('Booking Module successfully enabled!', FF_BOOKING_SLUG),
+            'message'  => __('Booking Module successfully enabled!', 'ff-simple-booking'),
             'settings' => '',
             'reload'   => 'yes'
         ]);
@@ -85,7 +85,7 @@ class AjaxHandler
         update_option('_ff_booking_status', '0', false);
 
         wp_send_json_success([
-            'message'  => __('Booking Module successfully disabled!', FF_BOOKING_SLUG),
+            'message'  => __('Booking Module successfully disabled!', 'ff-simple-booking'),
             'settings' => '',
             'reload'   => 'yes'
         ]);
@@ -402,7 +402,7 @@ class AjaxHandler
 
         (new BookingModel())->update($bookingId, $updateData);
         wp_send_json_success([
-            'message' => __('Send User notification status has been updated successfully', FF_BOOKING_SLUG)
+            'message' => __('Send User notification status has been updated successfully', 'ff-simple-booking')
         ], 200);
     }
 

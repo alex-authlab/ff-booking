@@ -60,13 +60,13 @@ class BookingDateTime extends \FluentForm\App\Services\FormBuilder\BaseFieldMana
                 'validation_rules' => [
                     'required' => [
                         'value' => false,
-                        'message' => __('This field is required', FF_BOOKING_SLUG),
+                        'message' => __('This field is required', 'ff-simple-booking'),
                     ]
                 ],
                 'conditional_logics' => []
             ],
             'editor_options' => [
-                'title' => __('Booking Time & Date', FF_BOOKING_SLUG),
+                'title' => __('Booking Time & Date', 'ff-simple-booking'),
                 'icon_class' => 'ff-edit-date',
                 'template' => 'inputText'
             ],
@@ -174,7 +174,7 @@ class BookingDateTime extends \FluentForm\App\Services\FormBuilder\BaseFieldMana
         }
         $formatValue = explode(' ', $value);
         if (!is_array($formatValue) || count($formatValue) < 2) {
-            return [__('Please select a time slot.', FF_BOOKING_SLUG)];
+            return [__('Please select a time slot.', 'ff-simple-booking')];
         }
         return;
     }

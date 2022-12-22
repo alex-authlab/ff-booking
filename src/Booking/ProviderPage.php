@@ -63,21 +63,21 @@ class ProviderPage
         }
         $wpDateTimeFormat = get_option('time_format') . ' ' . get_option('date_format');
         return apply_filters('ffs_provider_view_config', [
-            'view_text'        => __('View', FF_BOOKING_SLUG),
+            'view_text'        => __('View', 'ff-simple-booking'),
             'base_url'         => $urlBase,
             'time_format'      => get_option('time_format'),
             'date_format'      => get_option('date_format'),
             'date_time_format' => $wpDateTimeFormat,
-            'booking_title'    => __('Bookings List', FF_BOOKING_SLUG),
-            'confirm_heading'  => __('Are you sure you change this booking status? ', FF_BOOKING_SLUG),
-            'confirm_btn'      => __('Yes', FF_BOOKING_SLUG),
-            'reschulde_btn'    => __('Reschedule', FF_BOOKING_SLUG),
-            'close'            => __('Cancel', FF_BOOKING_SLUG),
+            'booking_title'    => __('Bookings List', 'ff-simple-booking'),
+            'confirm_heading'  => __('Are you sure you change this booking status? ', 'ff-simple-booking'),
+            'confirm_btn'      => __('Yes', 'ff-simple-booking'),
+            'reschulde_btn'    => __('Reschedule', 'ff-simple-booking'),
+            'close'            => __('Cancel', 'ff-simple-booking'),
             'get_filters'      => array(
-                'next'    => __('Next Upcoming', FF_BOOKING_SLUG),
-                'pending' => __('Pending', FF_BOOKING_SLUG),
-                'past'    => __('Past', FF_BOOKING_SLUG),
-                'all'     => __('All', FF_BOOKING_SLUG),
+                'next'    => __('Next Upcoming', 'ff-simple-booking'),
+                'pending' => __('Pending', 'ff-simple-booking'),
+                'past'    => __('Past', 'ff-simple-booking'),
+                'all'     => __('All', 'ff-simple-booking'),
 
             ),
             'booking_status'   => BookingHelper::bookingStatuses(),

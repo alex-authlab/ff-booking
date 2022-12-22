@@ -154,7 +154,7 @@ class FrontEndAjaxHandler
         $actionBy = ($ifProviderLoggedIn) ? 'provider' : 'user';
         $isValid = $this->ifUserCanReschedule($actionBy, $bookingData);
         if (!$isValid) {
-            wp_send_json(['message' => __('Permission Error', FF_BOOKING_SLUG)]);
+            wp_send_json(['message' => __('Permission Error', 'ff-simple-booking')]);
             return;
         }
         $rescheduleData = $this->getRescheduleData($bookingData, $actionBy, $reason);
@@ -169,7 +169,7 @@ class FrontEndAjaxHandler
 
 
         wp_send_json_success([
-            'message' => __('Booking has been updated succefully', FF_BOOKING_SLUG)
+            'message' => __('Booking has been updated succefully', 'ff-simple-booking')
         ]);
     }
 
@@ -190,7 +190,7 @@ class FrontEndAjaxHandler
         (new BookingModel())->update($bookinEntryId, $updateData);
 
         wp_send_json_success([
-            'message' => __('Booking has been canceled succefully', FF_BOOKING_SLUG)
+            'message' => __('Booking has been canceled succefully', 'ff-simple-booking')
         ]);
     }
 
@@ -207,7 +207,7 @@ class FrontEndAjaxHandler
         $data['booking_status'] = $status;
         (new BookingModel())->update($bookinEntryId, $data);
         wp_send_json_success([
-            'message' => __('Booking has been updated successfully,refreshing in 2 sec', FF_BOOKING_SLUG)
+            'message' => __('Booking has been updated successfully,refreshing in 2 sec', 'ff-simple-booking')
         ]);
     }
 
@@ -223,7 +223,7 @@ class FrontEndAjaxHandler
         $data['notes'] = $notes;
         (new BookingModel())->update($bookingId, $data);
         wp_send_json_success([
-            'message' => __('Note has been updated succefully, refreshing in 2 sec', FF_BOOKING_SLUG)
+            'message' => __('Note has been updated succefully, refreshing in 2 sec', 'ff-simple-booking')
         ]);
     }
 

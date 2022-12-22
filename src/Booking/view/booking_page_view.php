@@ -170,7 +170,7 @@ echo $settings['design_style']; ?>">
                                     <textarea class="ffb-input" name="reason" id="ffs-reason-text" cols="30" rows="3"></textarea>
                                     <div class="ff_booking_bttns">
                                         <button class="ffb_bttns ffb-submit-bttn ffb-input">
-                                            <?php _e('Submit', FF_BOOKING_SLUG) ?>
+                                            <?php _e('Submit', 'ff-simple-booking') ?>
                                         </button>
                                     </div>
                                    
@@ -187,13 +187,13 @@ echo $settings['design_style']; ?>">
                         <?php
                         } ?>
                         <div class="user_cancel_confirm" style="display: none">
-                            <?php echo __('Are You sure to cancel this booking?', FF_BOOKING_SLUG)?>
+                            <?php echo __('Are You sure to cancel this booking?', 'ff-simple-booking')?>
                             <div class="ff_booking_bttns">
                                 <button class="ffb_bttns cancel-confirm" >
-                                    <?php echo __('Confirm', FF_BOOKING_SLUG)?>
+                                    <?php echo __('Confirm', 'ff-simple-booking')?>
                                 </button>
                                 <button class="ffb_bttns close-confirm" >
-                                    <?php echo __('No', FF_BOOKING_SLUG)?>
+                                    <?php echo __('No', 'ff-simple-booking')?>
                                 </button>
                             </div>
 

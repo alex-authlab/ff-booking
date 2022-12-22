@@ -14,6 +14,7 @@
   * Set Holiday & Weekends
 
 Todo
+* Remove Provides booked slot from other Services
 * automated emails 
 * third party calendars
 * time off

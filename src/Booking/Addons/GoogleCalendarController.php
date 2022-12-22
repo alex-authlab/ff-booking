@@ -245,7 +245,7 @@ class GoogleCalendarController
             // Update the reCaptcha details with siteKey & secretKey.
             update_user_meta($this->providerId, $this->optionKey, $integrationSettings);
             wp_send_json_success([
-                'message' => __('Your settings has been updated', FF_BOOKING_SLUG),
+                'message' => __('Your settings has been updated', 'ff-simple-booking'),
                 'status'  => false
             ], 200);
         }
@@ -270,7 +270,7 @@ class GoogleCalendarController
         }
 
         wp_send_json_success([
-            'message' => __('Your Google Calendar api key has been verified and successfully set', FF_BOOKING_SLUG),
+            'message' => __('Your Google Calendar api key has been verified and successfully set', 'ff-simple-booking'),
             'status'  => true
         ], 200);
     }

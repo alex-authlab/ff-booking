@@ -95,7 +95,7 @@ class BookingInfo
         $bookingDate = ArrayHelper::get($data, 'bookingData.booking_date');
         $bookingTime = ArrayHelper::get($data, 'bookingData.booking_time');
         if (ArrayHelper::get($data, 'bookingData.booking_type') == 'date_slot') {
-            $time = __('Full Day', FF_BOOKING_SLUG);
+            $time = __('Full Day', 'ff-simple-booking');
         } else {
             $time =  $bookingTime;
         }
@@ -154,7 +154,7 @@ class BookingInfo
                 continue;
             }
             if ($key =='booking_time' && ArrayHelper::get($bookingInfo, 'booking_type') == 'date_slot') {
-                $value = __('Full Day', FF_BOOKING_SLUG);
+                $value = __('Full Day', 'ff-simple-booking');
             }
             if ($key =='duration') {
                 $value = BookingHelper::timeDurationLength($value, true);

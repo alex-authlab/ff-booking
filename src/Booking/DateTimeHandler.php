@@ -47,7 +47,7 @@ class DateTimeHandler
             }
         }
         $data['weekend_days'] = $weekOffDaysFormatted;
-        
+        //remove providers bookings from other services
         $holidays = ArrayHelper::get($provider, 'holiday_dates');
         $formattedHoliday = [];
         if (is_array($holidays)) {
@@ -255,7 +255,7 @@ class DateTimeHandler
                 }
                 if ($showRemainingSlot) {
                     $remainingSlot = $this->getRemainingSlot($service, $slot, $bookedSlots);
-                    $data['remaining_slot'] = sprintf(__('%d slot remaining', FF_BOOKING_SLUG), $remainingSlot);
+                    $data['remaining_slot'] = sprintf(__('%d slot remaining', 'ff-simple-booking'), $remainingSlot);
                 }
                 $formattedSlots[] = $data;
                 continue;
@@ -264,7 +264,7 @@ class DateTimeHandler
             if ($showRemainingSlot) {
                 $remainingSlot = ArrayHelper::get($service, 'slot_capacity');
                 $data['remaining_slot'] = sprintf(
-                    __('%d slot remaining', FF_BOOKING_SLUG),
+                    __('%d slot remaining', 'ff-simple-booking'),
                     $remainingSlot
                 );
             }
@@ -308,21 +308,21 @@ class DateTimeHandler
         if (!$provider || !$service) {
             return [
                 'status'  => false,
-                'message' => __('Invalid Data, try again', FF_BOOKING_SLUG)
+                'message' => __('Invalid Data, try again', 'ff-simple-booking')
             ];
         }
         
         if (!in_array($this->serviceId, $provider['assigned_services'])) {
             return [
                 'status'  => false,
-                'message' => __('Invalid Service', FF_BOOKING_SLUG)
+                'message' => __('Invalid Service', 'ff-simple-booking')
             ];
         }
         if ($formIds = ArrayHelper::get($provider, 'allowed_form_ids')) {
             if (!in_array($this->formId, $formIds)) {
                 return [
                     'status'  => false,
-                    'message' => __('Invalid Provider Form', FF_BOOKING_SLUG)
+                    'message' => __('Invalid Provider Form', 'ff-simple-booking')
                 ];
             }
         }
@@ -330,7 +330,7 @@ class DateTimeHandler
             if (!in_array($this->formId, $formIds)) {
                 return [
                     'status'  => false,
-                    'message' => __('Invalid Service Form', FF_BOOKING_SLUG)
+                    'message' => __('Invalid Service Form', 'ff-simple-booking')
                 ];
             }
         }
@@ -338,7 +338,7 @@ class DateTimeHandler
         if ($this->date < $minDate || $this->date > $maxDate) {
             return [
                 'status'  => false,
-                'message' => __('Selected date is not in valid range', FF_BOOKING_SLUG)
+                'message' => __('Selected date is not in valid range', 'ff-simple-booking')
             ];
         }
         
@@ -351,7 +351,7 @@ class DateTimeHandler
         if (in_array($this->date, $disabledDates)) {
             return [
                 'status'  => false,
-                'message' => __('Invalid Date Selected', FF_BOOKING_SLUG)
+                'message' => __('Invalid Date Selected', 'ff-simple-booking')
             ];
         }
         $weekOffDays = ArrayHelper::get($provider, 'weekend_days');
@@ -391,14 +391,14 @@ class DateTimeHandler
             if (!in_array($time, $validSlots)) {
                 return [
                     'status'  => false,
-                    'message' => __('Invalid Time slot selected', FF_BOOKING_SLUG)
+                    'message' => __('Invalid Time slot selected', 'ff-simple-booking')
                 ];
             }
             //single booking validation
             if ($bookedSlotsByTime->total >= 1 && $service['capacity_type'] == 'single') {
                 return [
                     'status'  => false,
-                    'message' => __('This Slot is Booked', FF_BOOKING_SLUG)
+                    'message' => __('This Slot is Booked', 'ff-simple-booking')
                 ];
             } //multiple booking
             else {
@@ -407,7 +407,7 @@ class DateTimeHandler
                     ) && $service['capacity_type'] == 'multiple') {
                     return [
                         'status'  => false,
-                        'message' => __('No more Slot is left on this time', FF_BOOKING_SLUG)
+                        'message' => __('No more Slot is left on this time', 'ff-simple-booking')
                     ];
                 }
             }
@@ -418,7 +418,7 @@ class DateTimeHandler
                 if ($service['capacity_type'] == 'single' && $bookedSlotsByDate->total >= 1) {
                     return [
                         'status'  => false,
-                        'message' => __('This date is already booked', FF_BOOKING_SLUG)
+                        'message' => __('This date is already booked', 'ff-simple-booking')
                     ];
                 } //if slot type is multiple
                 else {
@@ -427,7 +427,7 @@ class DateTimeHandler
                         )) {
                         return [
                             'status'  => false,
-                            'message' => __('No more Slot is left on this date', FF_BOOKING_SLUG)
+                            'message' => __('No more Slot is left on this date', 'ff-simple-booking')
                         ];
                     }
                 }

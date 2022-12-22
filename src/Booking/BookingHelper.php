@@ -111,12 +111,12 @@ class BookingHelper
     public static function bookingStatuses()
     {
         return array(
-            'booked'   => __('Booked', FF_BOOKING_SLUG),
-            'canceled' => __('Cancel', FF_BOOKING_SLUG),
-            'rejected' => __('Rejected', FF_BOOKING_SLUG),
-            'pending'  => __('Pending', FF_BOOKING_SLUG),
-            'complete' => __('Complete', FF_BOOKING_SLUG),
-            'draft'    => __('Draft', FF_BOOKING_SLUG),
+            'booked'   => __('Booked', 'ff-simple-booking'),
+            'canceled' => __('Cancel', 'ff-simple-booking'),
+            'rejected' => __('Rejected', 'ff-simple-booking'),
+            'pending'  => __('Pending', 'ff-simple-booking'),
+            'complete' => __('Complete', 'ff-simple-booking'),
+            'draft'    => __('Draft', 'ff-simple-booking'),
         );
     }
 

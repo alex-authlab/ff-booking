@@ -42,7 +42,7 @@ class BookingViewPage
         ];
 
         $pageVars = apply_filters('ff_booking_view_vars', [
-            'title'           => __('FF Simple Booking', FF_BOOKING_SLUG),
+            'title'           => __('FF Simple Booking', 'ff-simple-booking'),
             'settings'        => $pageSettings,
             'bg_color'        => $pageSettings['custom_color'],
             'has_header'      => false,
